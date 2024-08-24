@@ -19,6 +19,7 @@ DTYPE_MAP = {
     "torch.bfloat16": torch.bfloat16,
 }
 
+LOCAL_SAE_MODEL_PATH = current_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../model_data")
 
 @dataclass
 class LanguageModelSAERunnerConfig:

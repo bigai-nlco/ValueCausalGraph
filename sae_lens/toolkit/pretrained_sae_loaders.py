@@ -1,5 +1,6 @@
 import json
 from typing import Any, Optional, Protocol
+import os
 
 import torch
 from huggingface_hub import hf_hub_download
@@ -22,25 +23,38 @@ class PretrainedSaeLoader(Protocol):
 def sae_lens_loader(
     repo_id: str,
     folder_name: str,
+    local_model_path: str | None = None,
     device: Optional[str] = None,
     force_download: bool = False,
 ) -> tuple[dict[str, Any], dict[str, torch.Tensor], Optional[torch.Tensor]]:
-    cfg_filename = f"{folder_name}/cfg.json"
-    cfg_path = hf_hub_download(
-        repo_id=repo_id, filename=cfg_filename, force_download=force_download
-    )
+    cfg_filename = f"{folder_name}/cfg.json"    
+    if local_model_path:
+        cfg_path = os.path.join(local_model_path, repo_id, cfg_filename)
+    else:
+        cfg_path = hf_hub_download(
+            repo_id=repo_id, filename=cfg_filename, force_download=force_download
+        )
 
     weights_filename = f"{folder_name}/sae_weights.safetensors"
-    sae_path = hf_hub_download(
-        repo_id=repo_id, filename=weights_filename, force_download=force_download
-    )
+    if local_model_path:
+        sae_path = os.path.join(local_model_path, repo_id, weights_filename)
+    else:
+        sae_path = hf_hub_download(
+            repo_id=repo_id, filename=weights_filename, force_download=force_download
+        )
+        
 
     # TODO: Make this cleaner. I hate try except statements.
     try:
         sparsity_filename = f"{folder_name}/sparsity.safetensors"
-        log_sparsity_path = hf_hub_download(
-            repo_id=repo_id, filename=sparsity_filename, force_download=force_download
-        )
+        if local_model_path:
+            log_sparsity_path = os.path.join(local_model_path, repo_id, sparsity_filename)
+        else:
+            log_sparsity_path = hf_hub_download(
+                repo_id=repo_id, filename=sparsity_filename, force_download=force_download
+            )
+        if not os.path.exists(log_sparsity_path):
+            log_sparsity_path = None
     except EntryNotFoundError:
         log_sparsity_path = None  # no sparsity file
 

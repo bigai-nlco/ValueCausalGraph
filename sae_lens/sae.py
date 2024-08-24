@@ -14,7 +14,7 @@ from safetensors.torch import save_file
 from torch import nn
 from transformer_lens.hook_points import HookedRootModule, HookPoint
 
-from sae_lens.config import DTYPE_MAP
+from sae_lens.config import DTYPE_MAP, LOCAL_SAE_MODEL_PATH
 from sae_lens.toolkit.pretrained_sae_loaders import (
     NAMED_PRETRAINED_SAE_LOADERS,
     load_pretrained_sae_lens_sae_components,
@@ -347,6 +347,7 @@ class SAE(HookedRootModule):
         cfg_dict, state_dict, log_sparsities = conversion_loader(
             repo_id=hf_repo_id,
             folder_name=hf_path,
+            local_model_path=LOCAL_SAE_MODEL_PATH,
             device=device,
             force_download=False,
         )

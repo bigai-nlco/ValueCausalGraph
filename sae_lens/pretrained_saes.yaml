@@ -99,3 +99,31 @@ SAE_LOOKUP:
         path: "gemma_2b_blocks.6.hook_resid_post_16384_anthropic_fast_lr"
       - id: "blocks.12.hook_resid_post"
         path: "gemma_2b_blocks.12.hook_resid_post_16384"
+
+  gemma-2b-it-res-jb:
+    repo_id: "jbloom/Gemma-2b-IT-Residual-Stream-SAEs"
+    model: "gemma-2b-it"
+    conversion_func: null
+    saes:
+      - id: "blocks.12.hook_resid_post"
+        path: "gemma_2b_it_blocks.12.hook_resid_post_16384"
+
+  mistral-7b-res-wg:
+    repo_id: JoshEngels/Mistral-7B-Residual-Stream-SAEs
+    model: "mistral-7b"
+    conversion_func: null
+    config_overrides:
+      normalize_activations: constant_norm_rescale
+    saes:
+    - id: blocks.8.hook_resid_pre
+      path: mistral_7b_layer_8
+      # variance_explained: 0.94
+      # l0: 92
+    - id: blocks.16.hook_resid_pre
+      path: mistral_7b_layer_16
+      # variance_explained: 0.85
+      # l0: 74
+    - id: blocks.24.hook_resid_pre
+      path: mistral_7b_layer_24
+      # variance_explained: 0.72
+      # l0: 75
