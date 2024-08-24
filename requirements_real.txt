@@ -212,7 +212,8 @@ rpds-py==0.18.1
 ruamel.yaml==0.18.6
 ruamel.yaml.clib==0.2.8
 s3transfer==0.10.1
--e git+https://github.com/jbloomAus/SAELens.git@7e336260eb3b6a6100afa28260bcc31f337c4190#egg=sae_lens
+-e .
+# git+https://github.com/jbloomAus/SAELens.git@7e336260eb3b6a6100afa28260bcc31f337c4190#egg=sae_lens
 sae-vis==0.2.18
 safetensors==0.4.3
 scikit-learn==1.5.0
