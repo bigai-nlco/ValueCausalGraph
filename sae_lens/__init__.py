@@ -10,7 +10,7 @@ from .config import (
 )
 from .evals import run_evals
 from .pretokenize_runner import pretokenize_runner
-from .sae import SAE, SAEConfig
+from .sae import SAE, SAEConfig, TopKActivation
 from .sae_training_runner import SAETrainingRunner
 from .training.activations_store import ActivationsStore
 from .training.training_sae import TrainingSAE, TrainingSAEConfig

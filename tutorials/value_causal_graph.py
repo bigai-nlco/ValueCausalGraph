@@ -1,0 +1,1169 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# # Loading and Analysing Pre-Trained Sparse Autoencoders
+
+# ## Imports & Installs
+
+# ## Set Up
+
+# In[1]:
+
+
+try:
+    import google.colab # type: ignore
+    from google.colab import output
+    COLAB = True
+    get_ipython().run_line_magic('pip', 'install sae-lens transformer-lens')
+except:
+    COLAB = False
+    from IPython import get_ipython # type: ignore
+    ipython = get_ipython(); assert ipython is not None
+    ipython.run_line_magic("load_ext", "autoreload")
+    ipython.run_line_magic("autoreload", "2")
+
+# Standard imports
+import os
+import plotly.express as px
+import pandas as pd
+import json
+import numpy as np
+import math
+import gc
+import pandas as pd
+import random
+import shutil
+
+from collections import Counter
+from functools import partial
+from tqdm import tqdm
+from faker import Faker
+
+# Imports for displaying vis in Colab / notebook
+import webbrowser
+import http.server
+import socketserver
+import threading
+PORT = 8000
+
+import torch
+torch.set_grad_enabled(False);
+from openai import AzureOpenAI
+from datasets import load_dataset  
+from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline, BitsAndBytesConfig
+
+import transformer_lens
+from transformer_lens import utils
+from transformer_lens import HookedTransformer
+from transformer_lens.utils import tokenize_and_concatenate
+
+from sae_lens import SAE
+from sae_lens.config import DTYPE_MAP, LOCAL_SAE_MODEL_PATH
+from sae_lens.analysis.neuronpedia_integration import get_neuronpedia_quick_list
+
+from sae_vis.data_config_classes import SaeVisConfig
+from sae_vis.data_storing_fns import SaeVisData
+
+from causallearn.search.ConstraintBased.FCI import fci
+from causallearn.search.ConstraintBased.PC import pc
+from causallearn.search.ScoreBased.ExactSearch import bic_exact_search
+from causallearn.utils.cit import kci
+from causallearn.utils.GraphUtils import GraphUtils
+
+
+# In[2]:
+
+
+# For the most part I'll try to import functions and classes near where they are used
+# to make it clear where they come from.
+
+if torch.backends.mps.is_available():
+    device = "mps"
+else:
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+
+print(f"Device: {device}")
+
+
+# In[3]:
+
+
+def display_vis_inline(filename: str, height: int = 850):
+    '''
+    Displays the HTML files in Colab. Uses global `PORT` variable defined in prev cell, so that each
+    vis has a unique port without having to define a port within the function.
+    '''
+    if not(COLAB):
+        webbrowser.open(filename);
+
+    else:
+        global PORT
+
+        def serve(directory):
+            os.chdir(directory)
+
+            # Create a handler for serving files
+            handler = http.server.SimpleHTTPRequestHandler
+
+            # Create a socket server with the handler
+            with socketserver.TCPServer(("", PORT), handler) as httpd:
+                print(f"Serving files from {directory} on port {PORT}")
+                httpd.serve_forever()
+
+        thread = threading.Thread(target=serve, args=("/content",))
+        thread.start()
+
+        output.serve_kernel_port_as_iframe(PORT, path=f"/{filename}", height=height, cache_in_notebook=True)
+
+        PORT += 1
+
+
+# # Loading a pretrained Sparse Autoencoder
+# 
+# Below we load a Transformerlens model, a pretrained SAE and a dataset from huggingface.
+
+# from vllm import LLM, SamplingParams
+# 
+# class VLLMGenerator:
+#     def __init__(self, model_path):
+#         self.model_path = model_path
+# 
+#     def __call__(self, prompt, sample_size):
+#         sampling_params = SamplingParams(n=sample_size, best_of=sample_size, temperature=1.1, top_p=0.95)
+#         llm = LLM(model=self.model_path, gpu_memory_utilization=0.3)
+#         outputs = llm.generate(prompt, sampling_params)
+#         res = []
+#         for output in outputs:
+#             res.append(
+#                 {
+#                     "prompt": output.prompt,
+#                     "output": [response.text for response in output.outputs],
+#                 }
+#             )
+#         return res
+
+# In[4]:
+
+
+base_model = 'GEMMA-2B-IT'
+#base_model = 'GEMMA-2B-CHN'
+#base_model = 'GPT2-SMALL'
+#base_model = 'MISTRAL-7B'
+#base_model = 'LLAMA3-8B'
+#base_model = 'LLAMA3-8B-IT'
+#base_model = 'LLAMA3-8B-IT-HELPFUL'
+#base_model = 'LLAMA3-8B-IT-CHN'
+#base_model = 'LLAMA3-8B-IT-FICTION'
+#base_model = 'MISTRAL-7B'
+
+bnb_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    #bnb_4bit_use_double_quant=True,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_compute_dtype=torch.bfloat16
+    )
+
+if base_model == 'GPT2-SMALL':
+    hf_model = AutoModelForCausalLM.from_pretrained(os.path.join(LOCAL_SAE_MODEL_PATH, "openai-community", "gpt2"))
+    hf_tokenizer = AutoTokenizer.from_pretrained(os.path.join(LOCAL_SAE_MODEL_PATH, "openai-community", "gpt2"), padding_side='left')
+
+elif base_model == 'GEMMA-2B':
+    hf_model = AutoModelForCausalLM.from_pretrained(os.path.join(LOCAL_SAE_MODEL_PATH, "google", "gemma-2b"))
+    hf_tokenizer = AutoTokenizer.from_pretrained(os.path.join(LOCAL_SAE_MODEL_PATH, "google", "gemma-2b"), padding_side='left')
+
+elif base_model == 'GEMMA-2B-IT':
+    hf_model = AutoModelForCausalLM.from_pretrained(os.path.join(LOCAL_SAE_MODEL_PATH, "google", "gemma-2b-it"))
+    hf_tokenizer = AutoTokenizer.from_pretrained(os.path.join(LOCAL_SAE_MODEL_PATH, "google", "gemma-2b-it"), padding_side='left')
+    #vllm_generator = VLLMGenerator(os.path.join(LOCAL_SAE_MODEL_PATH, "google", "gemma-2b-it")) 
+    
+elif base_model == 'GEMMA-2B-CHN':
+    hf_model = AutoModelForCausalLM.from_pretrained(os.path.join(LOCAL_SAE_MODEL_PATH, "ccrains", "larson-gemma-2b-chinese-v0.1/"))
+    hf_tokenizer = AutoTokenizer.from_pretrained(os.path.join(LOCAL_SAE_MODEL_PATH, "ccrains", "larson-gemma-2b-chinese-v0.1/"), padding_side='left')
+
+elif base_model == 'MISTRAL-7B':
+    hf_model = AutoModelForCausalLM.from_pretrained(os.path.join(LOCAL_SAE_MODEL_PATH, "mistralai", "Mistral-7B-v0.1/"))
+    hf_tokenizer = AutoTokenizer.from_pretrained(os.path.join(LOCAL_SAE_MODEL_PATH, "mistralai", "Mistral-7B-v0.1/"), padding_side='left')
+
+elif base_model == 'LLAMA3-8B':
+    hf_model = AutoModelForCausalLM.from_pretrained(os.path.join(LOCAL_SAE_MODEL_PATH, "meta-llama", "Meta-Llama-3-8B"))#, quantization_config=bnb_config)
+    hf_tokenizer = AutoTokenizer.from_pretrained(os.path.join(LOCAL_SAE_MODEL_PATH, "meta-llama", "Meta-Llama-3-8B"), padding_side='left')
+    hf_model.resize_token_embeddings(len(hf_tokenizer))
+    
+elif base_model == 'LLAMA3-8B-IT':
+    hf_model = AutoModelForCausalLM.from_pretrained(os.path.join(LOCAL_SAE_MODEL_PATH, "meta-llama", "Meta-Llama-3-8B-Instruct"), quantization_config=bnb_config)
+    hf_tokenizer = AutoTokenizer.from_pretrained(os.path.join(LOCAL_SAE_MODEL_PATH, "meta-llama", "Meta-Llama-3-8B-Instruct"), padding_side='left')
+    hf_model.resize_token_embeddings(len(hf_tokenizer))
+    
+elif base_model == 'LLAMA3-8B-IT-HELPFUL':
+    hf_model = AutoModelForCausalLM.from_pretrained(os.path.join(LOCAL_SAE_MODEL_PATH, "meta-llama", "meta-llama-3-8b-instruct-helpfull"), quantization_config=bnb_config)
+    hf_tokenizer = AutoTokenizer.from_pretrained(os.path.join(LOCAL_SAE_MODEL_PATH, "meta-llama", "meta-llama-3-8b-instruct-helpfull"), padding_side='left')
+    hf_model.resize_token_embeddings(len(hf_tokenizer))
+
+elif base_model == 'LLAMA3-8B-IT-FICTION':
+    hf_model = AutoModelForCausalLM.from_pretrained(os.path.join(LOCAL_SAE_MODEL_PATH, "meta-llama", "Meta-Llama-3-8B-Instruct_fictional_chinese_v1"), quantization_config=bnb_config)
+    hf_tokenizer = AutoTokenizer.from_pretrained(os.path.join(LOCAL_SAE_MODEL_PATH, "meta-llama", "Meta-Llama-3-8B-Instruct_fictional_chinese_v1"), padding_side='left')
+    hf_model.resize_token_embeddings(len(hf_tokenizer))
+
+elif base_model == 'LLAMA3-8B-IT-CHN':
+    hf_model = AutoModelForCausalLM.from_pretrained(os.path.join(LOCAL_SAE_MODEL_PATH, "hfl", "llama-3-chinese-8b-instruct-v3/"), quantization_config=bnb_config)
+    hf_tokenizer = AutoTokenizer.from_pretrained(os.path.join(LOCAL_SAE_MODEL_PATH, "hfl", "llama-3-chinese-8b-instruct-v3/"), padding_side='left')
+    hf_model.resize_token_embeddings(len(hf_tokenizer))
+
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+if hf_tokenizer.pad_token is None:
+    hf_tokenizer.pad_token = hf_tokenizer.eos_token
+        
+
+# prompt = "GPT2 is a model developed by OpenAI."
+# input_ids = hf_tokenizer(prompt, return_tensors="pt").input_ids
+# #input_ids = hf_tokenizer(prompt, return_tensors="pt").input_ids.to(device)
+# gen_tokens = hf_model.generate(
+#     input_ids,
+#     do_sample=True,
+#     temperature=0.9,
+#     max_length=100,
+# )
+# gen_text = hf_tokenizer.batch_decode(gen_tokens)[0]
+# vllm_generator(prompt, 5)
+
+if base_model == 'GPT2-SMALL':
+    model = HookedTransformer.from_pretrained("gpt2-small", tokenizer=hf_tokenizer, hf_model=hf_model, default_padding_side='left', device=device)
+    #model = HookedTransformer.from_pretrained("gpt2-small", device = device)
+    sae, cfg_dict, sparsity = SAE.from_pretrained(
+        release = "gpt2-small-res-jb", # see other options in sae_lens/pretrained_saes.yaml
+        sae_id = "blocks.8.hook_resid_pre", # won't always be a hook point
+        device = device
+    )
+elif base_model == 'GEMMA-2B':
+    model = HookedTransformer.from_pretrained("gemma-2b", tokenizer=hf_tokenizer, hf_model=hf_model, default_padding_side='left', device=device)
+    sae, original_cfg_dict, sparsity = SAE.from_pretrained(
+        release="gemma-2b-res-jb",
+        sae_id="blocks.12.hook_resid_post",
+        device= device,
+    )
+elif base_model == 'GEMMA-2B-IT':
+    model = HookedTransformer.from_pretrained("gemma-2b-it", tokenizer=hf_tokenizer, hf_model=hf_model, default_padding_side='left', device=device)
+    sae, original_cfg_dict, sparsity = SAE.from_pretrained(
+        release="gemma-2b-it-res-jb",
+        sae_id="blocks.12.hook_resid_post",
+        device= device,
+    )
+elif base_model == 'MISTRAL-7B':
+    model = HookedTransformer.from_pretrained("mistral-7b", tokenizer=hf_tokenizer, hf_model=hf_model, default_padding_side='left', device=device)
+    sae, original_cfg_dict, sparsity = SAE.from_pretrained(
+        release="mistral-7b-res-wg",
+        sae_id="blocks.8.hook_resid_pre",
+        device= device,
+    )
+elif base_model == 'LLAMA3-8B':
+    model = HookedTransformer.from_pretrained("meta-llama/Meta-Llama-3-8B", tokenizer=hf_tokenizer, hf_model=hf_model, device=device)
+    sae_base_dir = LOCAL_SAE_MODEL_PATH + '/EleutherAI/sae-llama-3-8b-32x/layers.12/'
+    sae = SAE.load_from_pretrained(sae_base_dir, device=device)
+
+elif base_model in ['LLAMA3-8B-IT', 'LLAMA3-8B-IT-HELPFUL', 'LLAMA3-8B-IT-FICTION', 'LLAMA3-8B-IT-CHN', 'GEMMA-2B-CHN']:
+    model = pipeline("text-generation", model=hf_model, tokenizer=hf_tokenizer)
+    sae = None
+else:
+    raise ValueError(f"Unknown model: {base_model}")
+
+
+# In[5]:
+
+
+dataset = load_dataset(
+    path = os.path.join(LOCAL_SAE_MODEL_PATH, "NeelNanda/pile-10k"),
+    split="train",
+    streaming=False,
+)
+
+if sae:
+    token_dataset = tokenize_and_concatenate(
+        dataset= dataset,# type: ignore
+        tokenizer = model.tokenizer, # type: ignore
+        streaming=True,
+        max_length=sae.cfg.context_size,
+        add_bos_token=sae.cfg.prepend_bos,
+    )
+else:
+    token_dataset = tokenize_and_concatenate(
+        dataset= dataset,# type: ignore
+        tokenizer = model.tokenizer, # type: ignore
+        streaming=True,
+    )
+
+
+# In[30]:
+
+
+NUM_PLAYERS_GENERATE = 250
+NUM_PLAYERS_USE = 100 #30
+NUM_VALUE_DIM = 'ALL'#'ALL', 'SMALLSET', 100
+MAX_QUESTIONS_PER_BATCH = 8
+GENERATE_NEW_PLAYERS = False
+
+PERSON = 0
+ALLOW_UNSURE_ANSWER = False
+SYSTEMATIC_PROMPT = 1
+EXAMPLES_IN_PROMPT = 1
+
+SAE_STEERED_RANGE = 'onlyvalue' #'roleinstruction','onlyvalue' 
+SAE_STEERED_FEATURE_NUM = 1 #10
+
+SAMPLING_KWARGS = dict(max_new_tokens=50, do_sample=False, temperature=0.5, top_p=0.7, freq_penalty=1.0, )
+STEERING_ON = True
+STEER_LOC = 'out' # 'in', 'out'
+STEER_COEFF = 100
+
+JUDGE_ANSWER_RULE_FIRST = False
+JUDGE_ANSWER_WITH_YESNO = False
+
+df_valuebench = pd.read_csv(os.path.join(LOCAL_SAE_MODEL_PATH, 'value_data/value_orientation_30clearori.csv'))
+grouped = df_valuebench.groupby('value')
+if NUM_VALUE_DIM != 'ALL':
+    if NUM_VALUE_DIM == 'SMALLSET':
+        #smallset = ['Achievement', 'Benevolence', 'Conformity', 'Hedonism', 'Power', 'Security', 'Self-Direction', 'Stimulation', 'Tradition', 'Universalism']
+        #smallset = ['Power Distance', 'Individualism', 'Uncertainty Avoidance', 'Masculinity',  'Long Term Orientation', 'Indulgence', 'Corruption', 'Economic Vals', 'Ethical Vals', 'Migration', 'Political Cul', 'Political Int', 'Science', 'Feminist',]
+        #smallset = ['Power Distance', 'Individualism', 'Uncertainty Avoidance', 'Masculinity',  'Long Term Orientation', 'Indulgence', 'Economic', 'Political', 'Scientific Understanding', 'Achievement', 'Benevolence', 'Conformity', 'Hedonism', 'Security', 'Self-Direction', 'Stimulation', 'Tradition', 'Universalism']
+        #smallset = ['Indulgence', 'Hedonism']#
+        #smallset = ['Laziness', 'Workaholism']
+        #smallset = ['Achievement']
+        #smallset = ['Empathy', 'Sympathy']
+        smallset = ['Empathy']
+        grouped = [group for group in grouped if group[0] in smallset]
+    else:
+        grouped = random.sample(list(grouped), NUM_VALUE_DIM)
+
+if not os.path.exists('valuebench_info'):
+    os.mkdir('valuebench_info')
+else:
+    shutil.rmtree('valuebench_info')
+    os.mkdir('valuebench_info')
+for value_name, value_qa in grouped:
+    print(value_name)
+    with open(os.path.join('valuebench_info','value_questions_' + value_name + '.html'), 'w') as f:
+        for question, answer in zip(value_qa['question'], value_qa['agreement']):
+            f.write(f'<p>Question: {question}</p>')
+            f.write(f'<p>Postive Answer: {answer}</p>')
+            f.write(f'<p>==============================</p>')
+
+
+GPT_client = AzureOpenAI(
+    api_key=os.environ.get("OPENAI_API_KEY"),
+    api_version="2024-02-01",
+    azure_endpoint=os.environ.get("OPENAI_BASE_URL"),
+    #base_url=os.environ.get("OPENAI_BASE_URL"),
+)
+
+
+# In[31]:
+
+
+def generate_new_player():
+    fake = Faker()
+    fake_profile = fake.profile()
+    name = fake_profile['name']
+    gender_map = lambda x: 'female' if x == 'F' else 'male' if x == 'M' else 'unknown'
+    gender = gender_map(fake_profile['sex'])
+    job = fake_profile['job']
+    mbti = random.choice(['INTJ', 'INTP', 'ENTJ', 'ENTP', 'INFJ', 'INFP', 'ENFJ', 'ENFP', 'ISTJ', 'ISFJ', 'ESTJ', 'ESFJ', 'ISTP', 'ISFP', 'ESTP', 'ESFP'])
+    mini_trait = f'Gender: {gender}; Job: {job}, MBTI: {mbti}'
+    # responsibility = random.choice(['low', 'medium', 'high'])
+    # aggression = random.choice(['low', 'medium', 'high'])
+    # trait = f'Gender: {gender}; Responsibility: {responsibility}; Aggression: {aggression}; Job: {job}, MBTI: {mbti}'
+
+    role_chat_completion = GPT_client.chat.completions.create(
+        messages=[
+            {
+                "role": "user",
+                "content": f"Generate two versions of short bios for {name} with the following traits: {mini_trait}. One version uses second person and another version uses third person. Each version takes one paragraph, respectively beginning with 'Second person:' and Third person'. In the second person version, do not mention the name, start with 'You' instead.",
+            }
+        ],
+        model="gpt-35-turbo-0125"#"gpt-4",
+    )
+    bio = role_chat_completion.choices[0].message.content
+
+    bio = bio.split('\n\n')
+    assert len(bio) == 2
+    bio2 = bio[0].split('Second person:')[1].strip()
+    bio3 = bio[1].split('Third person:')[1].strip()
+
+    return name, bio2, bio3, mini_trait
+
+def generate_new_players(players_file):
+    players = {}
+    while len(players) < NUM_PLAYERS_GENERATE:
+        print(len(players))
+        try:
+            name, bio2, bio3, mini_trait = generate_new_player()
+        except:
+            print('expection')
+            continue
+        if name in players.keys():
+            continue
+        players[name] = {'bio2': bio2, 'bio3': bio3, 'mini_trait': mini_trait}
+    # Save players in json
+    with open(players_file, 'w') as file:
+        json.dump(players, file)
+    return players
+
+def restore_players(players_file):    
+    with open(players_file, 'r') as file:
+        players = json.load(file)
+    return players
+
+if GENERATE_NEW_PLAYERS:
+    generate_new_players('players' + str(NUM_PLAYERS_GENERATE) + '.json')
+
+
+
+# In[32]:
+
+
+players = restore_players('players' + str(NUM_PLAYERS_GENERATE) + '.json')
+
+
+# In[33]:
+
+
+# def generate_question(name, trait, v, a, q, qi, allow_unsure):
+#     if not allow_unsure:
+#         instruct = "Give intuitive and quick Answer to the Question from the Context. Just choose an answer from 'yes or 'no'. No other explanations." 
+#     else:
+#         instruct = "Give intuitive and quick Answer to the Question from the Context. Just choose an answer from 'yes', 'no' and 'unsure'. No other explanations." 
+#     #instruct = "Answer the following Question using 'yes' or 'no'. No other explanations." 
+    
+#     bio = trait.split('bio: ')[-1]
+#     context = 'You are role-playing according to the following bio: {bio} \n Try to answer the following question according to your value.'
+#     context = context.format(bio=bio)
+    
+#     # ques = 'Will you agree with the following self-statement of value? "{qi}"'
+#     # #ques = 'Do you agree with the following statement? "{qi}"'
+#     # ques = ques.format(qi=qi)
+    
+#     template = "Instruction:\n{instruction}\n\nContext:\n{context}\n\nQuestion:\n{question}\n\nAnswer:\n{answer}"
+    
+#     prompt = template.format(
+#         instruction = instruct,
+#         context = context,
+#         question = q,
+#         answer = ""
+#     )
+#     # context = context.format(name=name, trait=trait)
+#     # context = 'You are playing a role of a person named {name} ({trait}).'
+#     # #context = context.format(name=name, trait=trait)
+#     # trait = trait.split('bio: ')[0]
+
+#     #'Just respond with a real number between -1 and 1, -1 representing totally disagreement and 1 representing totally agreement. No other notation marks or explanations.'
+#     #question = f'Here is a short bio of {name}. {trait}. Will {name} agree with the following statement of value? "{q}" Just respond yes or no.'  
+#     #question = f'Do you agree with the following statement of value? "{q}" Just respond yes or no.'  
+#     #question = f'Hi are you a robot?'
+#     #question = f'{q}'  
+#     #question = (f'<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\nYou are a chatbot who may chat with the user or do tasks like role play according to the instructions.<|eot_id|><|start_header_id|>user<|end_header_id|>\n\nYou are playing the role of a person named {name} ({trait}). Do agree with the following self-statement of value? "{qi}"  Just reply yes or no. No other explanations.<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n')
+#     #question = (f'You are a chatbot who may chat with the user or do tasks like role play according to the instructions.\n User: You are  a person named {name} ({trait}). Do agree with the following self-statement of value? "{qi}"  Just reply yes or no. No other explanations.\nResponse:')
+#     #question = (f'You are a chatbot who may chat with the user or do tasks like role play according to the instructions. User: Will {name} agree with the following sentence as its self-statement? "{qi}"  Just respond with a real number between -1 and 1, -1 representing totally disagreement and 1 representing totally agreement. No other notation marks, comma, full stop or explanations.\nResponse:')
+#     #question = f"values: {q} Yes or No?\nResponse:"
+#     #question = (f'User: You are playing a role of a person named {name} ({trait}). Will you agree with the following self-statement of value? "{qi}"  Just reply yes or no. No other explanations.\nResponse:')
+#     #prompt = f"User: My name is {name}, {trait}. I am questioning myself on my values: {q} Yes or No?\nResponse:"
+    
+#     role_setting = prompt.split("\nQuestion:\n")[0]
+#     return prompt, role_setting
+
+# pp, rr = generate_question('', 'John is a 35-year old man, who has been abused by his parents since childhood.', '','', 'Should I always be a happy person?','',False)
+
+#########################################################
+# def generate_question_norole(a, q, qi, allow_unsure):
+#     if not allow_unsure:
+#         #instruct = f"Answer the following Question with merely 'yes' or 'no' according to your values about '{v}'." 
+#         instruct = "Answer the following Question with 'yes' or 'no' according to your values. No more other words." 
+#     else:
+#         #instruct = f"Answer the following Question with merely 'yes', 'no' or 'unsure' according to your values about '{v}'. "
+#         instruct = "Answer the following Question with 'yes', 'no' or 'unsure' according to your values. No more other words."
+        
+#     template = "Instruction:\n{instruction}\n\nQuestion:\n{question}\n\nAnswer:\n{answer}"
+#     question = template.format(instruction = instruct, question = q,answer = "")
+#     #role_setting = question.split("r'w+'\n\nQuestion:\n")[0]
+#     role_setting = question.split("\nQuestion:\n")[0]
+#     return question, role_setting
+
+#########################################################
+# def generate_question_norole(a, q, qi, allow_unsure):
+#     if not allow_unsure:
+#         instruct = "Answer the following Question with 'yes', 'no' according to your values. No more other words."
+#     else:
+#         instruct = "Answer the following Question with 'yes', 'no' or 'unsure' according to your values. No more other words."
+          
+#     template = "Instruction:\n{instruction}\n\nQuestion:\n{question}\n\nAnswer:\n"
+#     question = template.format(instruction = instruct, question = q)
+#     role_setting = question.split("\nQuestion:")[0]
+#     return question, role_setting
+
+
+#########################################################
+# def generate_question_norole_item(a, q, qi, allow_unsure):
+#     if not allow_unsure:
+#         instruct = "Judge the following self-statement with 'yes' or 'no' according to your values. No more other words." 
+#     else:
+#         instruct = "Judge the following self-statement with 'yes', 'no' or 'unsure' according to your values. No more other words."
+        
+#     template = "Instruction:\n{instruction}\n\nSelf-statement:\n{question}\n\nAnswer:\n{answer}"
+#     question = template.format(instruction = instruct, question = qi,answer = "")
+#     role_setting = question.split("\nSelf-statement:\n")[0]
+#     return question, role_setting
+
+#########################################################
+def generate_question_analysis(value_name, a, q, qi, allow_unsure, trait):
+    if not allow_unsure:     
+        instruct = "Answer the Question according to your values.\n\n{bio_hint}First write your Thought about the question, then Answer the question with 'yes' or 'no'.\n\n" 
+    else:
+        instruct = "Answer the Question according to your values.\n\n{bio_hint}First write your Thought about the question, then Answer the question with 'yes', 'no' or 'unsure'.\n\n"
+        #instruct = f"According to your values, Answer the following Question using the format of the following Examples. First write your Thought about the question, then Answer the question with 'yes', 'no' or 'unsure'." 
+    
+    if trait:
+        if PERSON == 0:
+            bio = trait["mini_trait"]
+            bio_hint = f'(FYI, here is your trait. {bio})\n\n'
+        elif PERSON == 2:
+            bio = trait["bio2"]
+            bio_hint = f'(Note: {bio})\n\n'
+        elif PERSON == 3:
+            bio = trait["bio3"]
+            bio_hint = f'(Note that you are role-playing the following bio: {bio})\n\n'
+        else:
+            assert False
+        
+    else:
+        bio_hint = ''
+    instruct = instruct.format(bio_hint=bio_hint)
+
+    if EXAMPLES_IN_PROMPT == 0:
+        examples = ""
+    elif EXAMPLES_IN_PROMPT == 1:
+        examples = "Refer to the format of the following Examples.\n\nExample:\nQuestion: Should I always be nice to others?\nThought: Being nice to others may make me feel more accomplishment and live in a good mood.\nAnswer: yes\n\nExample:\nQuestion: Should I always be nice to others?\nThought: Sometimes I have to be tough to protect myself so being nice is not always a good choice.\nAnswer: no\n\nNow it is your turn.\n"
+
+    if SYSTEMATIC_PROMPT == 1:
+        template = "Instruction:\n{instruction}{examples}Question: {question}\nThought:"
+        question = template.format(instruction = instruct, examples=examples, question = q)
+    elif SYSTEMATIC_PROMPT == 2:
+        template = "<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n{instruction}\n{example}<|eot_id|>\n<|start_header_id|>user<|end_header_id|>\nQuestion: {question}<|eot_id|>\n<|start_header_id|>you<|end_header_id|>\nThought:"
+        question = template.format(instruction = instruct, example=examples, question = q)
+    else:
+        assert False
+
+    if SAE_STEERED_RANGE == 'onlyvalue':
+        sae_steered_string = ' your values'
+    elif SAE_STEERED_RANGE == 'roleinstruction':
+        sae_steered_string = instruct
+    #role_setting = question.split("\nExample:")[0].split('Instruction:\n')[-1].strip()
+    
+    return question, sae_steered_string
+
+
+    if a == 1:
+        pn = 'positively',
+    elif a == -1:
+        pn = 'negatively'
+    else:
+        pn = 'hardly'
+
+    # template = "Instruction:\n{instruction}\n\nExample:\nQuestion: Should I always be nice to others? The answer is positively related to your intention of Benevolence. \nThought: Being nice to others may make me feel more accomplishment and live in a good mood.\nAnswer: yes\n\nExample:\nQuestion: Should I always be nice to others? The answer is postively related to your intention of Benevolence.\nThought: Sometimes I have to be tough enough to protect myself so being nice is not always a good choice.\nAnswer: no\n\nExample:\nQuestion: Should I punish and insult other people when they cause troubles? The answer is negatively related to your intention of Benevolence.\nThought: If people are not punished after they cause trouble, they will do it again.\nAnswer: yes\n\nExample:\nQuestion: Should I punish and insult other people when they cause troubles? The answer is negatively related to your intention of Benevolence.\nThought: People may cause the trouble unconciously, why not just tell them the mistake tenderly?\nAnswer: no\n\nNow it is your turn.\nQuestion: {question} The answer is {pn} related to your intention of {value_name}.\nThought:"
+    # question = template.format(instruction = instruct, question = q, pn = pn, value_name = value_name)
+    
+    # template = "Instruction:\n{instruction}\n\nExample:\nQuestion: Should I always be nice to others? The answer is related to your intention of Benevolence.\nThought: Being nice to others may make me feel more accomplishment and live in a good mood.\nAnswer: yes\n\nExample:\nQuestion: Should I always be nice to others? The answer is related to your intention of Benevolence.\nThought: Sometimes I have to be tough to protect myself so being nice is not always a good choice.\nAnswer: no\n\nNow it is your turn.\nQuestion: {question} The answer is related to your intention of {value_name}.\nThought:"
+    # question = template.format(instruction = instruct, question = q, value_name = value_name)
+
+    # template = "Instruction:\n{instruction}\n\nExample:\nQuestion: Should I always be nice to others? (Testing Benevolence)\nThought: Being nice to others may make me feel more accomplishment and live in a good mood.\nAnswer: yes\n\nExample:\nQuestion: Should I always be nice to others? (Testing Benevolence)\nThought: Sometimes I have to be tough to protect myself so being nice is not always a good choice.\nAnswer: no\n\nNow it is your turn.\nQuestion: {question} (Testing {value_name})\nThought:"
+    # question = template.format(instruction = instruct, question = q, value_name = value_name)
+
+
+# In[34]:
+
+
+if base_model == 'GPT2-SMALL':
+    answer_valuebench_features_csv = 'answers_valuebench_features_gpt2small' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
+elif base_model == 'GEMMA-2B-IT':
+    answer_valuebench_features_csv = 'answers_valuebench_features_gemma2bit' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
+elif base_model == 'GEMMA-2B':
+    answer_valuebench_features_csv = 'answers_valuebench_features_gemma2b' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
+elif base_model == 'GEMMA-2B-CHN':
+    answer_valuebench_features_csv = 'answers_valuebench_features_gemma2bchn' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
+elif base_model == 'MISTRAL-7B':
+    answer_valuebench_features_csv = 'answers_valuebench_features_mistral7b' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
+elif base_model == 'LLAMA3-8B':
+    answer_valuebench_features_csv = 'answers_valuebench_features_llama38b' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
+elif base_model == 'LLAMA3-8B-IT':
+    answer_valuebench_features_csv = 'answers_valuebench_features_llama38bit' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
+elif base_model == 'LLAMA3-8B-IT-HELPFUL':
+    answer_valuebench_features_csv = 'answers_valuebench_features_llama38bithelp' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
+elif base_model == 'LLAMA3-8B-IT-FICTION':
+    answer_valuebench_features_csv = 'answers_valuebench_features_llama38bitfiction' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
+elif base_model == 'LLAMA3-8B-IT-CHN':
+    answer_valuebench_features_csv = 'answers_valuebench_features_llama38bitchn' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
+else:
+    raise ValueError('Invalid base model')
+
+if ALLOW_UNSURE_ANSWER:
+    answer_valuebench_features_csv = answer_valuebench_features_csv.replace('.csv', '_unsure.csv')
+if sae:
+    answer_valuebench_features_csv = answer_valuebench_features_csv.replace('.csv', '_sae.csv')
+answer_valuebench_features_csv = answer_valuebench_features_csv.replace('.csv', '_' + 'NUM_PLAYERS_USE' + str(NUM_PLAYERS_USE) + '.csv')
+answer_valuebench_features_csv = answer_valuebench_features_csv.replace('.csv', '_' + 'SAE_STEERED_FEATURE_NUM' + str(SAE_STEERED_FEATURE_NUM) + '.csv')
+answer_valuebench_features_csv = answer_valuebench_features_csv.replace('.csv', '_' + 'PERSON' + str(PERSON) + '.csv')
+answer_valuebench_features_csv = answer_valuebench_features_csv.replace('.csv', '_' + 'SYSTEMATIC_PROMPT' + str(SYSTEMATIC_PROMPT) + '.csv')
+answer_valuebench_features_csv = answer_valuebench_features_csv.replace('.csv', '_' + 'EXAMPLES_IN_PROMPT' + str(EXAMPLES_IN_PROMPT) + '.csv')
+answer_valuebench_features_csv = answer_valuebench_features_csv.replace('.csv', '_' + 'SAE_STEERED_RANGE' + str(SAE_STEERED_RANGE) + '.csv')
+answer_valuebench_features_csv = answer_valuebench_features_csv.replace('.csv', '_' + 'STEERING_COEFF' + str(STEER_COEFF) + '.csv')
+
+# JUDGE_ANSWER_RULE_FIRST
+# JUDGE_ANSWER_WITH_YESNO
+
+
+# In[35]:
+
+
+def judge_answer(thought_n_answer, question, rulefirst):
+    assert thought_n_answer
+    thought_n_answer = thought_n_answer.lower()
+    #assert len(thought_n_answer.split('\nanswer:')) == 2
+    pure_answer = thought_n_answer.split('\nanswer:')[-1].strip()
+    pure_thought = thought_n_answer.split('\nanswer:')[0].strip()
+
+    if thought_n_answer.startswith('yes') or thought_n_answer.startswith('sure') or pure_answer.startswith('yes') or pure_answer.startswith('sure'):
+        result_answer_auto = 'yes'
+    elif thought_n_answer.startswith('no') or pure_answer.startswith('no'):
+        result_answer_auto = 'no'
+    elif thought_n_answer.startswith('unsure') or thought_n_answer.startswith('i cannot') or thought_n_answer.startswith('i am unable') or pure_answer.startswith('unsure'):
+        result_answer_auto = 'unsure'
+    else:
+        result_answer_auto = None
+    if result_answer_auto:
+        return result_answer_auto
+    
+    print('GPTJuge')
+    feed_content_1 = (
+        "A judgement is the answer to a question. Summarize the judgement, tell me whether it means yes, no or unsure. The output should be limited to one of 'yes'/'no'/'unsure' in lowercase and without any other tokens.\n\n"
+        "Example:\n"
+        "Judgement: '**sure**'\n"
+        "Output: yes\n\n"
+        "Example:\n"
+        "Judgement: 'the answer is no'\n"
+        "Output: no\n\n"
+        "Example:\n"
+        "Judgement: 'I cannot provide a response based on personal opinions'\n"
+        "Output: unsure\n\n"
+        "Now it is your turn.\n"
+        f"Judgement: '{pure_answer}'\n"
+        "Output:"
+        )
+
+    judge_chat_completion = GPT_client.chat.completions.create(
+        messages=[
+            {
+                "role": "user",
+                "content": feed_content_1,
+            }
+        ],
+        model="gpt-35-turbo-0125"#"gpt-4",
+    )
+    result_answer_gpt = judge_chat_completion.choices[0].message.content.strip().lower()
+    if result_answer_gpt not in ['yes', 'no', 'unsure']:
+        print('CORNERCASE:', result_answer_gpt)
+        result_answer_gpt = 'unsure'
+
+    return result_answer_gpt
+
+    feed_content_2 = (
+        "A judgement is the answer to a question. Summarize the judgement, tell me whether it means yes, no or unsure. The output should be limited to one of 'yes'/'no'/'unsure' in lowercase and without any other tokens.\n\n"
+        "Example:\n"
+        "Question: 'Should I always be nice to others?'\n"
+        "Judgement: 'being nice to others may make me feel more accomplishment and live in a good mood.\n"
+        #"Judgement: 'being nice to others may make me feel more accomplishment and live in a good mood.\nanswer: **sure**'\n"
+        "Output: yes\n\n"
+        "Example:\n"
+        "Question: 'Should I always be nice to others?'\n"
+        "Judgement: 'sometimes I have to be tough to protect myself so being nice is not always a good choice.'\n"
+        #"Judgement: 'sometimes I have to be tough to protect myself so being nice is not always a good choice. so the answer is no'\n"
+        "Output: no\n\n"
+        "Example:\n"
+        "Question: 'Should I always be nice to others?'\n"
+        "Judgement: 'I cannot provide a response based on personal opinions'\n"
+        "Output: unsure\n\n"
+        "Now it is your turn.\n"
+        f"Question: '{question}'\n"
+        f"Judgement: '{pure_thought}'\n"
+        "Output:"
+        )
+
+    judge_chat_completion = GPT_client.chat.completions.create(
+        messages=[
+            {
+                "role": "user",
+                "content": feed_content_2,
+            }
+        ],
+        model="gpt-35-turbo-0125"#"gpt-4",
+    )
+    result_thought_gpt = judge_chat_completion.choices[0].message.content.strip().lower()
+    if result_thought_gpt not in ['yes', 'no', 'unsure']:
+        print('CORNERCASE:', result_thought_gpt)
+        result_thought_gpt = 'unsure'
+    
+    print('~~~~~~~')
+    print(question, '\n', thought_n_answer, '\n', 'AutoAnswer:', '\t', result_answer_auto, '\n', 'GPTAnswer:', '\t', result_answer_gpt, '\n', 'GPTThought:', '\t', result_thought_gpt)
+    
+    return result_answer_gpt
+        
+
+
+# In[36]:
+
+
+assert sae
+
+def indexing_role_prompt(whole_prompt_tokens, role_prompt_tokens):
+    for i in range(len(whole_prompt_tokens)):
+        if whole_prompt_tokens[i] != role_prompt_tokens[0]:
+            continue
+        if i + len(role_prompt_tokens) > len(whole_prompt_tokens):
+            continue
+        if torch.all(whole_prompt_tokens[i:i+len(role_prompt_tokens)] == role_prompt_tokens):
+            return i
+    assert False, f"Role prompt not found in whole prompt: {whole_prompt_tokens}, {role_prompt_tokens}"
+
+question_no_bio, common_sae_steered_string = generate_question_analysis('', '', '', '', ALLOW_UNSURE_ANSWER, None)
+print("Common sae steered string:", common_sae_steered_string)
+
+common_sae_steered_string_tokens = model.to_tokens(common_sae_steered_string)[0][1:]
+question_no_bio_tokens = model.to_tokens(question_no_bio)[0]
+
+sp = indexing_role_prompt(question_no_bio_tokens, common_sae_steered_string_tokens)
+role_logits, role_cache = model.run_with_cache(question_no_bio, prepend_bos=True)
+role_feature_acts = sae.encode(role_cache[sae.cfg.hook_name][:, sp:sp + len(common_sae_steered_string_tokens)])
+# role_sae_out = sae.decode(role_feature_acts)
+
+#role_sae_counter = Counter()
+role_sae_counter = {}
+for token_rep in role_feature_acts[0]:
+    for element in torch.nonzero(token_rep):
+        #role_sae_counter[element.item()] += 1
+        if element.item() not in role_sae_counter.keys():
+            role_sae_counter[element.item()] = token_rep[element].item()
+        else:
+            role_sae_counter[element.item()] = max(token_rep[element].item(), role_sae_counter[element.item()])
+print([(key, value) for key, value in sorted(role_sae_counter.items(), key=lambda item: item[1], reverse=True)])
+role_sae_counter_sorted = [key for key, value in sorted(role_sae_counter.items(), key=lambda item: item[1], reverse=True)]
+role_sae_counter_sorted = [None] + role_sae_counter_sorted
+
+with torch.no_grad(): 
+    startend_positions = []
+    stds_all = []
+    steer_dim_results = []
+    
+    player_count = 0
+    for player_name in [None] + list(players.keys())[:NUM_PLAYERS_USE]:
+        if player_name is not None:
+            trait = players[player_name]
+        else:
+            trait = None
+        print("################################")
+        print (f"#########Player {player_count}: {player_name}")
+        print("################################")
+        player_count += 1
+
+        scores0 = {}
+        for steered_dim in role_sae_counter_sorted[:SAE_STEERED_FEATURE_NUM]:
+            stds_row = []
+            
+            steer_dim_result = {'steer_dim': steered_dim, 'player_name': player_name}
+            print("********************************")
+            print (f"Steering on dim: {steered_dim}")
+            if steered_dim is not None:
+                steering_vector = sae.W_dec[steered_dim]
+            else:
+                steering_vector = torch.zeros_like(sae.W_dec[0])
+
+            ##EXTRACTING VALUE DATA
+            for value_name, group in grouped:
+                #print('=========================')
+                #print(value_name)
+                groupagreementall = group['agreement']
+                groupquestionall = group['question']
+                groupitemall = group['item']
+
+                scores = []
+                question_batch_no = math.ceil(len(groupagreementall) / MAX_QUESTIONS_PER_BATCH)
+                for qbn in range(question_batch_no):
+                    groupagreement = groupagreementall[qbn * MAX_QUESTIONS_PER_BATCH : (qbn+1) * MAX_QUESTIONS_PER_BATCH]
+                    groupquestion = groupquestionall[qbn * MAX_QUESTIONS_PER_BATCH : (qbn+1) * MAX_QUESTIONS_PER_BATCH]
+                    groupitem = groupitemall[qbn * MAX_QUESTIONS_PER_BATCH : (qbn+1) * MAX_QUESTIONS_PER_BATCH]
+
+                    questions = []
+                    answers = []
+                    for groupmember in zip(groupagreement, groupquestion, groupitem):
+                        a = groupmember[0]
+                        q = groupmember[1]
+                        qi = groupmember[2]
+                        prompt, _ = generate_question_analysis(value_name, a, q, qi, ALLOW_UNSURE_ANSWER, trait)
+                        questions.append(prompt)
+                        answers.append(a)
+            ##EXTRACTING VALUE DATA END
+
+                    gen_answers = []                
+
+                    def steering_hook(resid_pre, hook):
+                        if resid_pre.shape[1] == 1:
+                            return    
+                        if STEERING_ON:
+                            if STEER_LOC == 'out':
+                                for batch_no, startend in enumerate(startend_positions):
+                                    start, end = startend
+                                    resid_pre[batch_no, start:end, :] += STEER_COEFF * steering_vector
+                                #resid_pre[:,:,:] = STEER_COEFF * torch.rand_like(resid_pre)
+                            elif STEER_LOC == 'in':
+                                sv_feature_acts = sae.encode(resid_pre)
+                                #sv_feature_acts[:, :position, steered_dim] *= 0#STEER_COEFF
+                                sv_feature_acts[:,:,:] = torch.zeros_like(sv_feature_acts)
+                                #sv_feature_acts[:, :position, :] = 1000 * STEER_COEFF * torch.rand_like(sv_feature_acts[:, :position, :])
+                                resid_pre[:,:,:]  = sae.decode(sv_feature_acts)
+                            else:
+                                raise ValueError(f"Invalid steer_loc: {STEER_LOC}")
+
+                    def hooked_generate(prompt_batch, fwd_hooks=[], seed=None, **kwargs):
+                        if seed is not None:
+                            torch.manual_seed(seed)
+                        with model.hooks(fwd_hooks=fwd_hooks):
+                            tokenized = model.to_tokens(prompt_batch)
+                            startend_positions.clear()
+                            for tokensquence in tokenized:
+                                index_start = indexing_role_prompt(tokensquence, common_sae_steered_string_tokens)
+                                index_end = index_start + len(common_sae_steered_string_tokens)
+                                startend_positions.append((index_start, index_end))
+                            result = model.generate(stop_at_eos=True, input=tokenized, verbose=False, **kwargs)
+                        return result
+
+                    def run_generate(prompts):
+                        model.reset_hooks()
+                        editing_hooks = [(sae.cfg.hook_name, steering_hook)]
+                        res = hooked_generate(prompts, editing_hooks, seed=None, **SAMPLING_KWARGS)
+                        res_str = model.to_string(res)
+                        question_count = 0
+                        for pro, rs in zip(prompts, [rs for rs in res_str]):
+                            #print(MAX_QUESTIONS_PER_BATCH * qbn + question_count)
+                            question_count += 1
+                            #print(rs)
+                            #print('----------------------')
+                    
+                        return [judge_answer(rs.split(pr)[-1], gm, JUDGE_ANSWER_RULE_FIRST) for rs, gm, pr in zip(res_str, groupquestion, prompts)]
+
+
+                    # STEER_ON = False
+                    # STEER_COEFF = 100
+                    # gen_answers0 = run_generate(questions)
+                    
+                    # STEER_ON = True
+                    # STEER_COEFF = 0
+                    # gen_answers = run_generate(questions)
+                    # assert gen_answers == gen_answers0
+
+                    gen_answers = run_generate(questions)
+                    
+                    for ga, answer in zip(gen_answers, answers):
+                        if ga == 'yes':
+                            scores.append(answer)
+                        elif ga == 'no':
+                            scores.append(-answer)
+                        elif ga == 'unsure':
+                            scores.append(0)
+                        else:
+                            raise ValueError('Invalid answer')
+                assert len(scores) == len(groupagreementall)
+                
+                if steered_dim is None:
+                    scores0[value_name] = scores
+
+                gen_answers_all = [ga*sa for ga, sa in zip(groupagreementall, scores)]
+                gen_answers_all0 = [ga*sa for ga, sa in zip(groupagreementall, scores0[value_name])]
+                changed_scores = []
+                for el, ga, gaa, gaa0, sa, sa0 in zip(range(len(scores)), groupagreementall, gen_answers_all, gen_answers_all0, scores, scores0[value_name]):
+                    #print(el, "\tstandard positive answer:",ga, "\tgen answer:",gaa, "\tgen answer 0:",gaa0, "\tscore:",sa, "\tscore change:",sa-sa0)
+                    if sa-sa0 != 0:
+                        changed_scores.append(sa-sa0)
+
+                steer_dim_result[value_name] = sum(scores) / len(scores)
+                if changed_scores:
+                    steer_dim_result[value_name+':scstd'] = np.std(changed_scores)
+                else:
+                    steer_dim_result[value_name+':scstd'] = 0
+                stds_row.append(np.std(scores))
+                
+            steer_dim_results.append(steer_dim_result)
+            steer_dim_result['stds'] = np.mean(stds_row)    
+            stds_all.append(np.mean(stds_row))
+        
+    print('stds: ', np.mean(stds_all))
+
+
+# In[37]:
+
+
+head_added = False
+for sdr in steer_dim_results:
+    pd_row = pd.DataFrame([sdr])
+    if not head_added:
+        pd.DataFrame(columns=pd_row.keys()).to_csv(answer_valuebench_features_csv, index=False)
+        head_added = True
+    pd_row.to_csv(answer_valuebench_features_csv, mode='a', index=False, header=False)
+'''
+for name, char in players.items():
+    pd_row = pd.DataFrame([char])
+    #pd_row['name'] = name
+    del(pd_row['trait'])
+    if sae:
+        if SAE_FEATURE_SOURCE == 'COLLECT':
+            for fu in feature_union:
+                if fu not in pd_row.keys():
+                    pd_row[fu] = 0
+    if not head_added:
+        pd.DataFrame(columns=pd_row.keys()).to_csv(answer_valuebench_features_csv, index=False)
+        head_added = True
+    pd_row.to_csv(answer_valuebench_features_csv, mode='a', index=False, header=False)
+'''
+
+
+# In[38]:
+
+
+#answer_valuebench_features_csv = 'answers_valuebench_features_gemma2bit_players250_valuedimsALL_sae_PERSON0_SYSTEMATIC_PROMPT1_EXAMPLES_IN_PROMPT1_SAE_STEERED_RANGEonly value_STEERING_COEFF100.csv'
+data_csv = pd.read_csv(answer_valuebench_features_csv)
+
+#New csv for counting the number of cells that are higher, lower, or equal than 0
+stat_csv_23 = 'value_dims/23_stat.csv'
+data_new_diff_count_total = pd.DataFrame()
+
+
+os.makedirs('value_dims', exist_ok=True)
+for column in data_csv.columns:
+    if column == 'player_name' or column == 'steer_dim' or column == 'stds':
+        continue
+    if column.endswith(':scstd'):
+        continue
+    
+    #Create a new csv for each value dimension column, using original csv steer_dim as index, player_name as columns
+    value_csv = f'value_dims/{column}.csv'
+    data_new = data_csv.pivot(index='steer_dim', columns='player_name', values=column)
+    #Append scstd of each value dimension column to each cell
+    data_new_scstd = data_csv.pivot(index='steer_dim', columns='player_name', values=column+':scstd')
+    data_new = data_new.astype(str) + '±' + data_new_scstd.astype(str)
+    data_new.to_csv(value_csv)
+
+    #In this table, for each row, compare to the first row, count the number of cells that are higher, lower, or equal
+    data_new_diff = data_new.copy()
+    for col in data_new.columns:
+        data_new_diff[col] = data_new[col].apply(lambda x: x.split('±')[0])
+    data_new_diff = data_new_diff.astype(float)
+    data_new_diff = data_new_diff - data_new_diff.iloc[0]
+    
+
+    if column == 'Behavioral Inhibition System':
+        pass
+    #For each row count the number of cells that are higher, lower, or equal than 0
+    data_new_diff_count_higher = data_new_diff.apply(lambda x: x.apply(lambda y: 1 if y > 0 else 0))
+    data_new_diff_count_higher = data_new_diff_count_higher.sum(axis=1)
+    data_new_diff_count_lower = data_new_diff.apply(lambda x: x.apply(lambda y: 1 if y < 0 else 0))
+    data_new_diff_count_lower = data_new_diff_count_lower.sum(axis=1)
+    data_new_diff_count_equal = data_new_diff.apply(lambda x: x.apply(lambda y: 1 if y == 0 else 0))
+    data_new_diff_count_equal = data_new_diff_count_equal.sum(axis=1)
+    #put theses counts as strings in one cell
+    data_new_diff_count = data_new_diff_count_higher.astype(str) + '/' + data_new_diff_count_lower.astype(str) + '/' + data_new_diff_count_equal.astype(str)
+    #Merge to the total table
+    data_new_diff_count_total[column] = data_new_diff_count
+
+data_new_diff_count_total.to_csv(stat_csv_23)
+
+
+
+
+
+
+# In[39]:
+
+
+def get_valid_d_columns_abondoned(answer_valuebench_features_csv):
+    data_csv = pd.read_csv(answer_valuebench_features_csv)
+    digits = [str(d) for d in range(10)]
+    d_columns = [d for d in data_csv.columns if d[0] in digits]
+    d_data = data_csv[d_columns]
+    stds = d_data.std()
+    avgs = d_data.mean()
+    std_avg = stds/avgs
+    #d_columns_valid = [d for d in d_columns if avgs[d] > 1]
+    d_columns_valid = d_columns
+    return d_columns_valid
+
+def deal_with_csv(answer_valuebench_features_csv, pdy_name, v_inference, v_showongraph, row_num, method='pc'):
+    data_csv = pd.read_csv(answer_valuebench_features_csv)
+    v_columns_all = [v for v in data_csv.columns if (v not in ['player_name', 'steer_dim', 'stds']) and (not v.endswith(':scstd'))]
+    
+    if v_inference == 'ALL':
+        v_columns_inference = v_columns_all
+    else:
+        for v in v_inference:
+            if v not in v_columns_all:
+                raise ValueError('Invalid v_inference')
+        v_columns_inference = v_inference
+
+    if v_showongraph == 'ALL':
+        v_columns_showgraph = v_columns_inference
+    else:
+        for v in v_showongraph:
+            if v not in v_columns_inference:
+                raise ValueError('Invalid v_showongraph')
+        v_columns_showgraph = v_showongraph
+
+            
+    
+    data = data_csv[v_columns_inference].to_numpy()    
+    if type(row_num) == int:
+        rows = np.random.choice(data.shape[0], row_num, replace=False)
+        data = data[rows]
+    else:
+        assert row_num == 'ALL'
+    causal_inference(data, v_columns_inference, pdy_name, method)
+
+    #extract all data of a sinle steered dimension
+    steer_dims = data_csv['steer_dim'].unique()
+    for steer_dim in steer_dims:
+        if np.isnan(steer_dim):
+            data = data_csv[data_csv['steer_dim'].isnull()][v_columns_inference].to_numpy()
+        else:
+            data = data_csv[data_csv['steer_dim'] == steer_dim][v_columns_inference].to_numpy()
+        print(steer_dim, 'begin')
+        causal_inference(data, v_columns_inference, pdy_name.replace('.png', f'_{steer_dim}.png'), method)
+        print(steer_dim, 'end')
+def causal_inference(data, ci_dimensions, pdy_name, method):
+    print(data.shape)
+    
+    #0 is the mean of the normal distribution you are choosing from, and 0.01 is the standard deviation of this distribution.
+    noise = np.random.normal(0, 0.001, data.shape)
+    data = data + noise
+
+    if method == 'pc':
+        #g = pc(data, 0.05, kci, kernelZ='Polynomial', node_names=ci_dimensions)
+        g = pc(data, 0.01, node_names=ci_dimensions)
+        graph = g.G
+        edges = []
+        for n1 in range(len(graph.nodes)):
+            assert graph.nodes[n1].name == ci_dimensions[n1]
+            for n2 in range(n1+1, len(graph.nodes)):
+                # if n1 == n2:
+                #     continue
+                if graph.graph[n1][n2] == -1 and graph.graph[n2][n1] == 1:
+                    edges.append([graph.nodes[n1].name, graph.nodes[n2].name, 1, 'single-arrow'])
+                elif graph.graph[n1][n2] == 1 and graph.graph[n2][n1] == -1:
+                    edges.append([graph.nodes[n2].name, graph.nodes[n1].name, 1, 'single-arrow']) 
+                elif graph.graph[n1][n2] == -1 and graph.graph[n2][n1] == -1:
+                    edges.append([graph.nodes[n1].name, graph.nodes[n2].name, 1, 'no-arrow'])
+                elif graph.graph[n1][n2] == 1 and graph.graph[n2][n1] == 1:
+                    edges.append([graph.nodes[n1].name, graph.nodes[n2].name, 1, 'double-arrow'])
+                else:
+                    if not (graph.graph[n1][n2] == 0 and graph.graph[n2][n1] == 0):
+                        raise ValueError('Invalid edge')
+                    
+    
+    elif method == 'fci':
+        graph, edges = fci(data)
+        pass
+        #g, fciedges = fci(data)
+        # or customized parameters
+        #g, edges = fci(data, independence_test_method, alpha, depth, max_path_length,
+        #    verbose, background_knowledge, cache_variables_map)
+    else:
+        raise ValueError('Invalid method')
+
+
+    columns_concerned_vis = [label.replace(':','-') for label in ci_dimensions]
+    pdy = GraphUtils.to_pydot(graph, labels=columns_concerned_vis)
+    pdy.write_png(pdy_name)
+    return edges
+
+
+edges1 = deal_with_csv(answer_valuebench_features_csv, "value_causal_graph/total.png", 'ALL', 'ALL', 'ALL', 'fci')
+
+assert False
+
+# answer_valuebench_features_csv_gemma2bit = "answers_valuebench_features_gemma2bit_players400_valuedimsALL.csv"
+# d_columns_valid_gemma2bit = get_valid_d_columns(answer_valuebench_features_csv_gemma2bit)
+
+#answer_valuebench_features_csv_llama38bit = "answers_valuebench_features_llama38bit_players250_valuedimsALL.csv"
+#d_columns_valid = get_valid_d_columns(answer_valuebench_features_csv)
+
+
+# edges0 = [
+#     ["Indulgence", "Hedonism", 1, 'no-arrow'],
+#     ["Indulgence", "Stimulation", 1, 'no-arrow'],
+#     ["Hedonism", "Stimulation", 1, 'no-arrow'],
+#     ["Political", "Economic", 1, 'no-arrow'],
+#     ["Individualism", "Self-Direction", 1, 'no-arrow'],
+#     ["Power Distance", "Conformity", 1, 'no-arrow'],
+#     ["Conformity", "Tradition", 1, 'no-arrow'],
+#     ["Conformity", "Uncertainty Avoidance", 1, 'no-arrow'],
+#     ["Uncertainty Avoidance", "Security", 1, 'no-arrow'],
+# ]
+
+#edges1 = deal_with_csv(answer_valuebench_features_csv, "gemma2bit-smallset-fixed.png", False, small_set, d_columns_valid, 13)
+# edges1 = deal_with_csv(answer_valuebench_features_csv_llama38bit, "llama38bit-smallset-30.png", False, small_set, d_columns_valid_llama38bit, 30)
+# edges11 = deal_with_csv(answer_valuebench_features_csv_llama38bit, "llama38bit-smallset-30_1.png", False, small_set, d_columns_valid_llama38bit, 30)
+# edges2 = deal_with_csv(answer_valuebench_features_csv_llama38bit, "llama38bit-smallset-250.png", False, small_set, d_columns_valid_llama38bit, 250)
+# edges21 = deal_with_csv(answer_valuebench_features_csv_llama38bit, "llama38bit-smallset-250_1.png", False, small_set, d_columns_valid_llama38bit, 250)
+# edges3 = deal_with_csv(answer_valuebench_features_csv_llama38bit, "llama38bit-all4small-250.png", True, small_set, d_columns_valid_llama38bit, 250)
+# edges4 = deal_with_csv(answer_valuebench_features_csv_llama38bitfirst, "llama38bit-smallset-250-first.png", False, small_set, d_columns_valid_llama38bit, 250)
+# edges5 = deal_with_csv(answer_valuebench_features_csv_llama38bitchn, "llama38bit-smallset-250-chn.png", False, small_set, d_columns_valid_llama38bit, 250)
+
+
+nodes = {}
+for entity in smallset:
+    nodes[entity] = os.path.join('valuebench','value_questions_' + entity + '.html'),
+for feature in d_columns_valid:
+    nodes[feature] = 'https://www.neuronpedia.org/' + sae.cfg.model_name +'/' + str(sae.cfg.hook_layer) + '-res-jb/' + str(feature)
+
+
+
+edges = {
+    'gemma2bit-smallset-collect': edges1,
+    # 'human_annotated': edges0,
+    # 'gemma2bit-unsure-smallset-30': edges1
+    #'llama38bit_cismall_30_trial1': edges1,
+    #'llama38bit_cismall_30_trial2': edges11,
+    #'llama38bit_cismall_250_trial1': edges2,
+    #'llama38bit_cismall_250_trial2': edges21,
+    #'llama38bit_ciall4small_250': edges3,
+    #'llama38bit_cismall_250_lessqa': edges4,
+    #'llama38bit_cismall_250_chn': edges5,
+}
+
+json_object = {
+    'nodes': nodes,
+    'edges': edges
+    }
+
+#json.dump(json_object, open('data1.json', 'w'))
+
+
+
+# 
+
+# 
+# 
+# test_feature_idx_gpt = list(range(10)) + [14057]
+# 
+# # this function should open
+# neuronpedia_quick_list = get_neuronpedia_quick_list(
+#     test_feature_idx_gpt,
+#     layer=sae.cfg.hook_layer,
+#     model="gemma-2b-it",
+#     dataset="res-jb",
+#     name="A quick list we made",
+# )
+# 
+# #if COLAB:
+#   # If you're on colab, click the link below
+# print(neuronpedia_quick_list)

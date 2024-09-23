@@ -403,5 +403,42 @@ def get_activation_fn(activation_fn: str) -> Callable[[torch.Tensor], torch.Tens
             return input
 
         return tanh_relu
+    elif activation_fn == "topk":
+        return TopKActivation(192)
     else:
         raise ValueError(f"Unknown activation function: {activation_fn}")
+
+class TopKActivation(nn.Module):
+    def __init__(self, k):
+        """
+        初始化 TopKActivation 层.
+        
+        参数:
+        k (int): 保留的 top-k 个最大值的数量.
+        """
+        super(TopKActivation, self).__init__()
+        self.k = k
+
+    def forward(self, x):
+        """
+        前向传播函数，计算 top-k 激活.
+
+        参数:
+        x (torch.Tensor): 输入张量.
+        
+        返回:
+        torch.Tensor: 经过 top-k 激活后的张量.
+        """
+        # 获取输入张量所在的设备
+        device = x.device
+        
+        # 获取 top-k 的值和索引
+        topk_values, topk_indices = torch.topk(x, self.k, dim=-1)
+        
+        # 创建一个零张量，大小与输入相同，并放在相同设备上
+        out = torch.zeros_like(x).to(device)
+        
+        # 将 top-k 的值赋值到对应的位置
+        out.scatter_(-1, topk_indices, topk_values)
+        
+        return out

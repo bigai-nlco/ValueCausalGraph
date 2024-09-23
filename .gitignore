@@ -166,7 +166,10 @@ data/
 artifacts/
 activations/
 
-*.html
+#*.html
+valuebench_info/
+value_causal_graph/
+value_dims/
 *.DS_Store
 
 feature_dashboards/
