@@ -130,6 +130,7 @@ def sae_lens_loader(
 
     return cfg_dict, state_dict, log_sparsity
 
+
 def get_sae_config_from_hf(
     repo_id: str,
     folder_name: str,
