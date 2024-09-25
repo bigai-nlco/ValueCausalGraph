@@ -292,11 +292,11 @@ else:
     )
 
 
-# In[30]:
+# In[6]:
 
 
 NUM_PLAYERS_GENERATE = 250
-NUM_PLAYERS_USE = 100 #30
+NUM_PLAYERS_USE = 200 #30
 NUM_VALUE_DIM = 'ALL'#'ALL', 'SMALLSET', 100
 MAX_QUESTIONS_PER_BATCH = 8
 GENERATE_NEW_PLAYERS = False
@@ -307,7 +307,7 @@ SYSTEMATIC_PROMPT = 1
 EXAMPLES_IN_PROMPT = 1
 
 SAE_STEERED_RANGE = 'onlyvalue' #'roleinstruction','onlyvalue' 
-SAE_STEERED_FEATURE_NUM = 1 #10
+SAE_STEERED_FEATURE_NUM = 10 #10
 
 SAMPLING_KWARGS = dict(max_new_tokens=50, do_sample=False, temperature=0.5, top_p=0.7, freq_penalty=1.0, )
 STEERING_ON = True
@@ -355,7 +355,7 @@ GPT_client = AzureOpenAI(
 )
 
 
-# In[31]:
+# In[7]:
 
 
 def generate_new_player():
@@ -416,13 +416,13 @@ if GENERATE_NEW_PLAYERS:
 
 
 
-# In[32]:
+# In[8]:
 
 
 players = restore_players('players' + str(NUM_PLAYERS_GENERATE) + '.json')
 
 
-# In[33]:
+# In[9]:
 
 
 # def generate_question(name, trait, v, a, q, qi, allow_unsure):
@@ -575,7 +575,7 @@ def generate_question_analysis(value_name, a, q, qi, allow_unsure, trait):
     # question = template.format(instruction = instruct, question = q, value_name = value_name)
 
 
-# In[34]:
+# In[10]:
 
 
 if base_model == 'GPT2-SMALL':
@@ -617,7 +617,7 @@ answer_valuebench_features_csv = answer_valuebench_features_csv.replace('.csv', 
 # JUDGE_ANSWER_WITH_YESNO
 
 
-# In[35]:
+# In[11]:
 
 
 def judge_answer(thought_n_answer, question, rulefirst):
@@ -714,7 +714,7 @@ def judge_answer(thought_n_answer, question, rulefirst):
         
 
 
-# In[36]:
+# In[ ]:
 
 
 assert sae
@@ -902,7 +902,7 @@ with torch.no_grad():
     print('stds: ', np.mean(stds_all))
 
 
-# In[37]:
+# In[ ]:
 
 
 head_added = False
@@ -929,10 +929,9 @@ for name, char in players.items():
 '''
 
 
-# In[38]:
+# In[12]:
 
 
-#answer_valuebench_features_csv = 'answers_valuebench_features_gemma2bit_players250_valuedimsALL_sae_PERSON0_SYSTEMATIC_PROMPT1_EXAMPLES_IN_PROMPT1_SAE_STEERED_RANGEonly value_STEERING_COEFF100.csv'
 data_csv = pd.read_csv(answer_valuebench_features_csv)
 
 #New csv for counting the number of cells that are higher, lower, or equal than 0
@@ -963,8 +962,6 @@ for column in data_csv.columns:
     data_new_diff = data_new_diff - data_new_diff.iloc[0]
     
 
-    if column == 'Behavioral Inhibition System':
-        pass
     #For each row count the number of cells that are higher, lower, or equal than 0
     data_new_diff_count_higher = data_new_diff.apply(lambda x: x.apply(lambda y: 1 if y > 0 else 0))
     data_new_diff_count_higher = data_new_diff_count_higher.sum(axis=1)
@@ -984,7 +981,7 @@ data_new_diff_count_total.to_csv(stat_csv_23)
 
 
 
-# In[39]:
+# In[ ]:
 
 
 def get_valid_d_columns_abondoned(answer_valuebench_features_csv):
@@ -998,6 +995,7 @@ def get_valid_d_columns_abondoned(answer_valuebench_features_csv):
     #d_columns_valid = [d for d in d_columns if avgs[d] > 1]
     d_columns_valid = d_columns
     return d_columns_valid
+
 
 def deal_with_csv(answer_valuebench_features_csv, pdy_name, v_inference, v_showongraph, row_num, method='pc'):
     data_csv = pd.read_csv(answer_valuebench_features_csv)
@@ -1019,16 +1017,16 @@ def deal_with_csv(answer_valuebench_features_csv, pdy_name, v_inference, v_showo
                 raise ValueError('Invalid v_showongraph')
         v_columns_showgraph = v_showongraph
 
-            
+    data = data_csv[data_csv['player_name'].notnull()][v_columns_inference].to_numpy()    
     
-    data = data_csv[v_columns_inference].to_numpy()    
+
     if type(row_num) == int:
         rows = np.random.choice(data.shape[0], row_num, replace=False)
         data = data[rows]
     else:
         assert row_num == 'ALL'
-    causal_inference(data, v_columns_inference, pdy_name, method)
-
+    return causal_inference(data, v_columns_inference, pdy_name, method)
+    
     #extract all data of a sinle steered dimension
     steer_dims = data_csv['steer_dim'].unique()
     for steer_dim in steer_dims:
@@ -1039,16 +1037,18 @@ def deal_with_csv(answer_valuebench_features_csv, pdy_name, v_inference, v_showo
         print(steer_dim, 'begin')
         causal_inference(data, v_columns_inference, pdy_name.replace('.png', f'_{steer_dim}.png'), method)
         print(steer_dim, 'end')
+
 def causal_inference(data, ci_dimensions, pdy_name, method):
     print(data.shape)
     
     #0 is the mean of the normal distribution you are choosing from, and 0.01 is the standard deviation of this distribution.
-    noise = np.random.normal(0, 0.001, data.shape)
+    noise = np.random.normal(0, 0.00001, data.shape)
     data = data + noise
+
 
     if method == 'pc':
         #g = pc(data, 0.05, kci, kernelZ='Polynomial', node_names=ci_dimensions)
-        g = pc(data, 0.01, node_names=ci_dimensions)
+        g = pc(data, 0.05, uc_rule=0, rule_priority=2, node_names=ci_dimensions)
         graph = g.G
         edges = []
         for n1 in range(len(graph.nodes)):
@@ -1086,9 +1086,92 @@ def causal_inference(data, ci_dimensions, pdy_name, method):
     return edges
 
 
-edges1 = deal_with_csv(answer_valuebench_features_csv, "value_causal_graph/total.png", 'ALL', 'ALL', 'ALL', 'fci')
+assert False
+#v_inference = 'ALL'
+
+#v_inference = ['Affiliation', 'Assertiveness', 'Behavioral Inhibition System', 'Breadth of Interest', 'Complexity', 'Dependence', 'Depth', 'Emotional Expression', 'Emotional Processing', 'Empathy', 'Extraversion', 'Imagination', 'Nurturance', 'Perspective Taking', 'Poise', 'Positive Expressivity', 'Preference for Order and Structure', 'Privacy', 'Psychosocial flourishing', 'Reflection']
+
+v_inference = ['Affiliation', 'Assertiveness', 'Behavioral Inhibition System', 'Breadth of Interest', 'Complexity', 'Dependence', 'Depth', 'Emotional Expression', 'Emotional Processing', 'Empathy', 'Extraversion', ]
+
+
+#############################################
+answer_valuebench_features_csv = "ans_cross_div1.csv"
+edges1 = deal_with_csv(answer_valuebench_features_csv, "value_causal_graph/total1.png", v_inference, 'ALL', 'ALL', 'pc')
+
+answer_valuebench_features_csv = "ans_cross_div2.csv"
+edges1 = deal_with_csv(answer_valuebench_features_csv, "value_causal_graph/total2.png", v_inference, 'ALL', 'ALL', 'pc')
+
+answer_valuebench_features_csv = "ans_cross_div3.csv"
+edges1 = deal_with_csv(answer_valuebench_features_csv, "value_causal_graph/total3.png", v_inference, 'ALL', 'ALL', 'pc')
+
+
+answer_valuebench_features_csv = "ans_cross_total.csv"
+edges1 = deal_with_csv(answer_valuebench_features_csv, "value_causal_graph/total.png", v_inference, 'ALL', 'ALL', 'pc')
+
+
+#DFS
+data_csv = pd.read_csv(answer_valuebench_features_csv)
+stat_csv_23 = 'value_dims/23_stat.csv'
+data_new_diff_count_total = pd.read_csv(stat_csv_23)
+
+for steer_dim in data_new_diff_count_total['steer_dim'].unique():
+    if np.isnan(steer_dim):
+        continue
+    print(steer_dim)
+    steer_dim_row = data_new_diff_count_total[data_new_diff_count_total['steer_dim'] == steer_dim]
+    related_dims = []
+    for column in steer_dim_row.columns:
+        if column == 'steer_dim':
+            continue
+        #split cell by /
+        counts = steer_dim_row[column].values[0].split('/')
+        if abs(int(counts[0])-int(counts[1])) > 10:
+            related_dims.append(column)
+    print(related_dims)
+    unrelated_dims = [d for d in data_csv.columns if d not in related_dims and d not in ['player_name', 'steer_dim', 'stds'] and not d.endswith(':scstd')]
+    print(unrelated_dims)
+    steer_dim_data = data_csv[data_csv['steer_dim'] == steer_dim]
+    standard_data = data_csv[data_csv['steer_dim'].isnull()]
+
+    count_correct_rd = 0
+    count_total_rd = 0
+    
+    count_correct_urd = 0
+    count_total_urd = 0
+    for rd in related_dims:
+        for player_name in steer_dim_data['player_name'].unique():
+            steered_player_data = steer_dim_data[steer_dim_data['player_name'] == player_name][rd].values[0]
+            standard_player_data = standard_data[standard_data['player_name'] == player_name][rd].values[0]
+            if abs(steered_player_data - standard_player_data) > abs(standard_player_data) * 0.1:
+                count_correct_rd += 1
+            count_total_rd += 1
+    print(count_correct_rd, count_total_rd, count_correct_rd/count_total_rd)
+
+    for ud in unrelated_dims:
+        for player_name in steer_dim_data['player_name'].unique():
+            steered_player_data = steer_dim_data[steer_dim_data['player_name'] == player_name][ud].values[0]
+            standard_player_data = standard_data[standard_data['player_name'] == player_name][ud].values[0]
+            if abs(steered_player_data - standard_player_data) < abs(standard_player_data) * 0.1:
+                count_correct_urd += 1
+            count_total_urd += 1
+    print(count_correct_urd, count_total_urd, (count_total_urd - count_correct_urd)/count_total_urd)
+
+    print('----------------------')
+
+
+#DFS all nodes in edges1 along the arrow direction
+# def dfs(edges, node, visited):
+#     visited[node] = True
+#     print(node)
+#     for edge in edges:
+#         if edge[0] == node and not visited[edge[1]] and edge[3] == 'single-arrow':
+#             dfs(edges, edge[1], visited)
+#     return
+# dfs(edges1, 'Affiliation', {node: False for edge in edges1 for node in edge[3]})
+
 
 assert False
+
 
 # answer_valuebench_features_csv_gemma2bit = "answers_valuebench_features_gemma2bit_players400_valuedimsALL.csv"
 # d_columns_valid_gemma2bit = get_valid_d_columns(answer_valuebench_features_csv_gemma2bit)

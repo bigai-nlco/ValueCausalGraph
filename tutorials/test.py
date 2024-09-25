@@ -104,12 +104,12 @@ def causal_inference(data, ci_dimensions, pdy_name, method):
     
     #0 is the mean of the normal distribution you are choosing from, and 0.01 is the standard deviation of this distribution.
     noise = np.random.normal(0, 0.00001, data.shape)
-    data = data + noise
+    #data = data + noise
 
 
     if method == 'pc':
         #g = pc(data, 0.05, kci, kernelZ='Polynomial', node_names=ci_dimensions)
-        g = pc(data, 0.05, uc_rule=0, rule_priority=2, node_names=ci_dimensions)
+        g = pc(data, 0.0000005, node_names=ci_dimensions)
         graph = g.G
         edges = []
         for n1 in range(len(graph.nodes)):
@@ -154,15 +154,16 @@ v_inference = ['Affiliation', 'Assertiveness', 'Behavioral Inhibition System', '
 
 
 #############################################
-answer_valuebench_features_csv = "ans_cross_div1.csv"
+answer_valuebench_features_csv = "ans_cross_part1.csv"
 edges1 = deal_with_csv(answer_valuebench_features_csv, "value_causal_graph/total1.png", v_inference, 'ALL', 'ALL', 'pc')
 
-answer_valuebench_features_csv = "ans_cross_div2.csv"
+answer_valuebench_features_csv = "ans_cross_part2.csv"
 edges1 = deal_with_csv(answer_valuebench_features_csv, "value_causal_graph/total2.png", v_inference, 'ALL', 'ALL', 'pc')
 
-answer_valuebench_features_csv = "ans_cross_div3.csv"
-edges1 = deal_with_csv(answer_valuebench_features_csv, "value_causal_graph/total3.png", v_inference, 'ALL', 'ALL', 'pc')
-
+steer_dims = ['nan', 1312, 1341, 2221, 3183, 6619, 7502, 8387, 10096, 14049]
+for steer_dim in steer_dims:
+    answer_valuebench_features_csv = "ans_steer_" + str(steer_dim) + ".csv"
+    edges1 = deal_with_csv(answer_valuebench_features_csv, "value_causal_graph/" + str(steer_dim) + ".png", v_inference, 'ALL', 'ALL', 'pc')
 
 assert False
 
