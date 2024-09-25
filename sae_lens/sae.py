@@ -722,7 +722,7 @@ class SAE(HookedRootModule):
         cfg_dict, state_dict, log_sparsities = conversion_loader(
             repo_id=hf_repo_id,
             folder_name=hf_path,
-            local_model_path=LOCAL_SAE_MODEL_PATH,
+            #local_model_path=LOCAL_SAE_MODEL_PATH,
             device=device,
             force_download=False,
             cfg_overrides=config_overrides,
