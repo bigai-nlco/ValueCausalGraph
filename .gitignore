@@ -190,3 +190,9 @@ scripts/ansible/cache_acts.yml
 scripts/ansible/jobs/
 scripts/ansible/configs/
 scripts/ansible/ansible.log
+
+
+*.pt
+
+# Don't add outputs from tutorials, as they ballon the repo size for no reason
+tutorials/*.html

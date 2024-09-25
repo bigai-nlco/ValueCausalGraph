@@ -17,12 +17,16 @@ Please refer to the [documentation](https://jbloomaus.github.io/SAELens/) for in
 - Train your own sparse autoencoders.
 - Generate feature dashboards with the [SAE-Vis Library](https://github.com/callummcdougall/sae_vis/tree/main).
 
-SAE Lens is the result of many contributors working collectively to improve humanities understanding of neural networks, many of whom are motivated by a desire to [safeguard humanity from risks posed by artificial intelligence](https://80000hours.org/problem-profiles/artificial-intelligence/).
+SAE Lens is the result of many contributors working collectively to improve humanity's understanding of neural networks, many of whom are motivated by a desire to [safeguard humanity from risks posed by artificial intelligence](https://80000hours.org/problem-profiles/artificial-intelligence/).
 
-This library is maintained by [Joseph Bloom](https://www.jbloomaus.com/) and [David Channin](https://github.com/chanind).
+This library is maintained by [Joseph Bloom](https://www.jbloomaus.com/) and [David Chanin](https://github.com/chanind).
 
+## Loading Pre-trained SAEs. 
+
+Pre-trained SAEs for various models can be imported via SAE Lens. See this [page](https://jbloomaus.github.io/SAELens/sae_table/) in the readme for a list of all SAEs.
 ## Tutorials
 
+- [SAE Lens + Neuronpedia](tutorials/tutorial_2_0.ipynb)[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://githubtocolab.com/jbloomAus/SAELens/blob/main/tutorials/tutorial_2_0.ipynb)
 - [Loading and Analysing Pre-Trained Sparse Autoencoders](tutorials/basic_loading_and_analysing.ipynb)
  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://githubtocolab.com/jbloomAus/SAELens/blob/main/tutorials/basic_loading_and_analysing.ipynb)
  - [Understanding SAE Features with the Logit Lens](tutorials/logits_lens_with_features.ipynb)
@@ -33,19 +37,18 @@ This library is maintained by [Joseph Bloom](https://www.jbloomaus.com/) and [Da
 
 ## Join the Slack!
 
-Feel free to join the [Open Source Mechanistic Interpretability Slack](https://join.slack.com/t/opensourcemechanistic/shared_invite/zt-1qosyh8g3-9bF3gamhLNJiqCL_QqLFrA) for support!
+Feel free to join the [Open Source Mechanistic Interpretability Slack](https://join.slack.com/t/opensourcemechanistic/shared_invite/zt-2k0id7mv8-CsIgPLmmHd03RPJmLUcapw) for support!
 
 
-## Citations and References
+## Citation
 
-Research:
-- [Towards Monosemanticy](https://transformer-circuits.pub/2023/monosemantic-features)
-- [Sparse Autoencoders Find Highly Interpretable Features in Language Model](https://arxiv.org/abs/2309.08600)
+Please cite the package as follows:
 
-
-
-Reference Implementations:
-- [Neel Nanda](https://github.com/neelnanda-io/1L-Sparse-Autoencoder)
-- [AI-Safety-Foundation](https://github.com/ai-safety-foundation/sparse_autoencoder).
-- [Arthur Conmy](https://github.com/ArthurConmy/sae).
-- [Callum McDougall](https://github.com/callummcdougall/sae-exercises-mats/tree/main)
+```
+@misc{bloom2024saetrainingcodebase,
+   title = {SAELens},
+   author = {Joseph Bloom and David Chanin},
+   year = {2024},
+   howpublished = {\url{https://github.com/jbloomAus/SAELens}},
+}
+```

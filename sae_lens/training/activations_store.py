@@ -1,32 +1,31 @@
 from __future__ import annotations
 
 import contextlib
+import json
 import os
-from typing import Any, Iterator, Literal, cast
+from typing import Any, Generator, Iterator, Literal, cast
 
 import numpy as np
 import torch
-from datasets import (
-    Dataset,
-    DatasetDict,
-    IterableDataset,
-    IterableDatasetDict,
-    load_dataset,
-)
+from datasets import Dataset, DatasetDict, IterableDataset, load_dataset
+from huggingface_hub import hf_hub_download
+from huggingface_hub.utils import HfHubHTTPError
+from requests import HTTPError
 from safetensors import safe_open
 from safetensors.torch import save_file
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from transformer_lens.hook_points import HookedRootModule
+from transformers import AutoTokenizer, PreTrainedTokenizerBase
 
 from sae_lens.config import (
     DTYPE_MAP,
     CacheActivationsRunnerConfig,
+    HfDataset,
     LanguageModelSAERunnerConfig,
 )
 from sae_lens.sae import SAE
-
-HfDataset = DatasetDict | Dataset | IterableDatasetDict | IterableDataset
+from sae_lens.tokenization_and_batching import concat_and_batch_sequences
 
 
 # TODO: Make an activation store config class to be consistent with the rest of the code.
@@ -39,7 +38,7 @@ class ActivationsStore:
     model: HookedRootModule
     dataset: HfDataset
     cached_activations_path: str | None
-    tokens_column: Literal["tokens", "input_ids", "text"]
+    tokens_column: Literal["tokens", "input_ids", "text", "problem"]
     hook_name: str
     hook_layer: int
     hook_head_index: int | None
@@ -52,7 +51,7 @@ class ActivationsStore:
         cls,
         model: HookedRootModule,
         cfg: LanguageModelSAERunnerConfig | CacheActivationsRunnerConfig,
-        dataset: HfDataset | None = None,
+        override_dataset: HfDataset | None = None,
     ) -> "ActivationsStore":
         cached_activations_path = cfg.cached_activations_path
         # set cached_activations_path to None if we're not using cached activations
@@ -61,9 +60,15 @@ class ActivationsStore:
             and not cfg.use_cached_activations
         ):
             cached_activations_path = None
+
+        if override_dataset is None and cfg.dataset_path == "":
+            raise ValueError(
+                "You must either pass in a dataset or specify a dataset_path in your configutation."
+            )
+
         return cls(
             model=model,
-            dataset=dataset or cfg.dataset_path,
+            dataset=override_dataset or cfg.dataset_path,
             streaming=cfg.streaming,
             hook_name=cfg.hook_name,
             hook_layer=cfg.hook_layer,
@@ -81,6 +86,7 @@ class ActivationsStore:
             cached_activations_path=cached_activations_path,
             model_kwargs=cfg.model_kwargs,
             autocast_lm=cfg.autocast_lm,
+            dataset_trust_remote_code=cfg.dataset_trust_remote_code,
         )
 
     @classmethod
@@ -88,6 +94,8 @@ class ActivationsStore:
         cls,
         model: HookedRootModule,
         sae: SAE,
+        context_size: int | None = None,
+        dataset: HfDataset | str | None = None,
         streaming: bool = True,
         store_batch_size_prompts: int = 8,
         n_batches_in_buffer: int = 8,
@@ -98,12 +106,12 @@ class ActivationsStore:
 
         return cls(
             model=model,
-            dataset=sae.cfg.dataset_path,
+            dataset=sae.cfg.dataset_path if dataset is None else dataset,
             d_in=sae.cfg.d_in,
             hook_name=sae.cfg.hook_name,
             hook_layer=sae.cfg.hook_layer,
             hook_head_index=sae.cfg.hook_head_index,
-            context_size=sae.cfg.context_size,
+            context_size=sae.cfg.context_size if context_size is None else context_size,
             prepend_bos=sae.cfg.prepend_bos,
             streaming=streaming,
             store_batch_size_prompts=store_batch_size_prompts,
@@ -111,6 +119,7 @@ class ActivationsStore:
             n_batches_in_buffer=n_batches_in_buffer,
             total_training_tokens=total_tokens,
             normalize_activations=sae.cfg.normalize_activations,
+            dataset_trust_remote_code=sae.cfg.dataset_trust_remote_code,
             dtype=sae.cfg.dtype,
             device=torch.device(device),
         )
@@ -130,28 +139,45 @@ class ActivationsStore:
         store_batch_size_prompts: int,
         train_batch_size_tokens: int,
         prepend_bos: bool,
-        normalize_activations: bool,
+        normalize_activations: str,
         device: torch.device,
         dtype: str,
         cached_activations_path: str | None = None,
         model_kwargs: dict[str, Any] | None = None,
         autocast_lm: bool = False,
+        dataset_trust_remote_code: bool | None = None,
     ):
         self.model = model
         if model_kwargs is None:
             model_kwargs = {}
         self.model_kwargs = model_kwargs
         self.dataset = (
-            load_dataset(dataset, split="train", streaming=streaming)
+            load_dataset(
+                dataset,
+                split="train",
+                streaming=streaming,
+                trust_remote_code=dataset_trust_remote_code,  # type: ignore
+            )
             if isinstance(dataset, str)
             else dataset
         )
+
+        if isinstance(dataset, (Dataset, DatasetDict)):
+            self.dataset = cast(Dataset | DatasetDict, self.dataset)
+            n_samples = len(self.dataset)
+
+            if n_samples < total_training_tokens:
+                print(
+                    f"Warning: the training dataset contains fewer samples ({n_samples}) than the number of samples required by your training configuration ({total_training_tokens}). This will result in multiple training epochs and some samples being used more than once."
+                )
+
         self.hook_name = hook_name
         self.hook_layer = hook_layer
         self.hook_head_index = hook_head_index
         self.context_size = context_size
         self.d_in = d_in
         self.n_batches_in_buffer = n_batches_in_buffer
+        self.half_buffer_size = n_batches_in_buffer // 2
         self.total_training_tokens = total_training_tokens
         self.store_batch_size_prompts = store_batch_size_prompts
         self.train_batch_size_tokens = train_batch_size_tokens
@@ -163,12 +189,11 @@ class ActivationsStore:
         self.autocast_lm = autocast_lm
 
         self.n_dataset_processed = 0
-        self.iterable_dataset = iter(self.dataset)
 
         self.estimated_norm_scaling_factor = 1.0
 
         # Check if dataset is tokenized
-        dataset_sample = next(self.iterable_dataset)
+        dataset_sample = next(iter(self.dataset))
 
         # check if it's tokenized
         if "tokens" in dataset_sample.keys():
@@ -180,15 +205,100 @@ class ActivationsStore:
         elif "text" in dataset_sample.keys():
             self.is_dataset_tokenized = False
             self.tokens_column = "text"
+        elif "problem" in dataset_sample.keys():
+            self.is_dataset_tokenized = False
+            self.tokens_column = "problem"
         else:
             raise ValueError(
-                "Dataset must have a 'tokens', 'input_ids', or 'text' column."
+                "Dataset must have a 'tokens', 'input_ids', 'text', or 'problem' column."
             )
-        self.iterable_dataset = iter(self.dataset)  # Reset iterator after checking
+        if self.is_dataset_tokenized:
+            ds_context_size = len(dataset_sample[self.tokens_column])
+            if ds_context_size != self.context_size:
+                raise ValueError(
+                    f"pretokenized dataset has context_size {ds_context_size}, but the provided context_size is {self.context_size}."
+                )
+            # TODO: investigate if this can work for iterable datasets, or if this is even worthwhile as a perf improvement
+            if hasattr(self.dataset, "set_format"):
+                self.dataset.set_format(type="torch", columns=[self.tokens_column])  # type: ignore
+
+            if (
+                isinstance(dataset, str)
+                and hasattr(model, "tokenizer")
+                and model.tokenizer is not None
+            ):
+                validate_pretokenized_dataset_tokenizer(
+                    dataset_path=dataset, model_tokenizer=model.tokenizer
+                )
+        else:
+            print(
+                "Warning: Dataset is not tokenized. Pre-tokenizing will improve performance and allows for more control over special tokens. See https://jbloomaus.github.io/SAELens/training_saes/#pretokenizing-datasets for more info."
+            )
+
+        self.iterable_sequences = self._iterate_tokenized_sequences()
 
         self.check_cached_activations_against_config()
 
         # TODO add support for "mixed loading" (ie use cache until you run out, then switch over to streaming from HF)
+
+    def _iterate_raw_dataset(
+        self,
+    ) -> Generator[torch.Tensor | list[int] | str, None, None]:
+        """
+        Helper to iterate over the dataset while incrementing n_dataset_processed
+        """
+        for row in self.dataset:
+            # typing datasets is difficult
+            yield row[self.tokens_column]  # type: ignore
+            self.n_dataset_processed += 1
+
+    def _iterate_raw_dataset_tokens(self) -> Generator[torch.Tensor, None, None]:
+        """
+        Helper to create an iterator which tokenizes raw text from the dataset on the fly
+        """
+        for row in self._iterate_raw_dataset():
+            tokens = (
+                self.model.to_tokens(
+                    row,
+                    truncate=False,
+                    move_to_device=True,
+                    prepend_bos=False,
+                )
+                .squeeze(0)
+                .to(self.device)
+            )
+            assert (
+                len(tokens.shape) == 1
+            ), f"tokens.shape should be 1D but was {tokens.shape}"
+            yield tokens
+
+    def _iterate_tokenized_sequences(self) -> Generator[torch.Tensor, None, None]:
+        """
+        Generator which iterates over full sequence of context_size tokens
+        """
+        # If the datset is pretokenized, we can just return each row as a tensor, no further processing is needed.
+        # We assume that all necessary BOS/EOS/SEP tokens have been added during pretokenization.
+        if self.is_dataset_tokenized:
+            for row in self._iterate_raw_dataset():
+                yield torch.tensor(
+                    row,
+                    dtype=torch.long,
+                    device=self.device,
+                    requires_grad=False,
+                )
+        # If the dataset isn't tokenized, we'll tokenize, concat, and batch on the fly
+        else:
+            tokenizer = getattr(self.model, "tokenizer", None)
+            bos_token_id = None if tokenizer is None else tokenizer.bos_token_id
+            yield from concat_and_batch_sequences(
+                tokens_iterator=self._iterate_raw_dataset_tokens(),
+                context_size=self.context_size,
+                begin_batch_token_id=(bos_token_id if self.prepend_bos else None),
+                begin_sequence_token_id=None,
+                sequence_separator_token_id=(
+                    bos_token_id if self.prepend_bos else None
+                ),
+            )
 
     def check_cached_activations_against_config(self):
 
@@ -240,10 +350,30 @@ class ActivationsStore:
 
         return scaling_factor
 
+    def shuffle_input_dataset(self, seed: int, buffer_size: int = 1):
+        """
+        This applies a shuffle to the huggingface dataset that is the input to the activations store. This
+        also shuffles the shards of the dataset, which is especially useful for evaluating on different
+        sections of very large streaming datasets. Buffer size is only relevant for streaming datasets.
+        The default buffer_size of 1 means that only the shard will be shuffled; larger buffer sizes will
+        additionally shuffle individual elements within the shard.
+        """
+        if type(self.dataset) == IterableDataset:
+            self.dataset = self.dataset.shuffle(seed=seed, buffer_size=buffer_size)
+        else:
+            self.dataset = self.dataset.shuffle(seed=seed)
+        self.iterable_dataset = iter(self.dataset)
+
+    def reset_input_dataset(self):
+        """
+        Resets the input dataset iterator to the beginning.
+        """
+        self.iterable_dataset = iter(self.dataset)
+
     @property
     def storage_buffer(self) -> torch.Tensor:
         if self._storage_buffer is None:
-            self._storage_buffer = self.get_buffer(self.n_batches_in_buffer // 2)
+            self._storage_buffer = self.get_buffer(self.half_buffer_size)
 
         return self._storage_buffer
 
@@ -253,77 +383,33 @@ class ActivationsStore:
             self._dataloader = self.get_data_loader()
         return self._dataloader
 
-    def get_batch_tokens(self, batch_size: int | None = None):
+    def get_batch_tokens(
+        self, batch_size: int | None = None, raise_at_epoch_end: bool = False
+    ):
         """
         Streams a batch of tokens from a dataset.
+
+        If raise_at_epoch_end is true we will reset the dataset at the end of each epoch and raise a StopIteration. Otherwise we will reset silently.
         """
         if not batch_size:
             batch_size = self.store_batch_size_prompts
-        context_size = self.context_size
-        device = self.device
-
-        batch_tokens = torch.zeros(
-            size=(0, context_size), device=device, dtype=torch.long, requires_grad=False
-        )
-
-        current_batch = []
-        current_length = 0
-
-        while batch_tokens.shape[0] < batch_size:
-            tokens = self._get_next_dataset_tokens()
-            token_len = tokens.shape[0]
-
-            # TODO: Fix this so that we are limiting how many tokens we get from the same context.
-            assert self.model.tokenizer is not None  # keep pyright happy
-            while token_len > 0 and batch_tokens.shape[0] < batch_size:
-                # Space left in the current batch
-                space_left = context_size - current_length
-
-                # If the current tokens fit entirely into the remaining space
-                if token_len <= space_left:
-                    current_batch.append(tokens[:token_len])
-                    current_length += token_len
-                    break
-
-                else:
-                    # Take as much as will fit
-                    current_batch.append(tokens[:space_left])
-
-                    # Remove used part, add BOS
-                    tokens = tokens[space_left:]
-                    token_len -= space_left
-
-                    # only add BOS if it's not already the first token
-                    if self.prepend_bos:
-                        bos_token_id_tensor = torch.tensor(
-                            [self.model.tokenizer.bos_token_id],
-                            device=tokens.device,
-                            dtype=torch.long,
-                        )
-                        if tokens[0] != bos_token_id_tensor:
-                            tokens = torch.cat(
-                                (
-                                    bos_token_id_tensor,
-                                    tokens,
-                                ),
-                                dim=0,
-                            )
-                            token_len += 1
-                    current_length = context_size
-
-                # If a batch is full, concatenate and move to next batch
-                if current_length == context_size:
-                    full_batch = torch.cat(current_batch, dim=0)
-                    batch_tokens = torch.cat(
-                        (batch_tokens, full_batch.unsqueeze(0)), dim=0
+        sequences = []
+        # the sequences iterator yields fully formed tokens of size context_size, so we just need to cat these into a batch
+        for _ in range(batch_size):
+            try:
+                sequences.append(next(self.iterable_sequences))
+            except StopIteration:
+                self.iterable_sequences = self._iterate_tokenized_sequences()
+                if raise_at_epoch_end:
+                    raise StopIteration(
+                        f"Ran out of tokens in dataset after {self.n_dataset_processed} samples, beginning the next epoch."
                     )
-                    current_batch = []
-                    current_length = 0
+                else:
+                    sequences.append(next(self.iterable_sequences))
 
-            # pbar.n = batch_tokens.shape[0]
-            # pbar.refresh()
-        return batch_tokens[:batch_size]
+        return torch.stack(sequences, dim=0).to(self.model.W_E.device)
 
+    @torch.no_grad()
     def get_activations(self, batch_tokens: torch.Tensor):
         """
         Returns activations of shape (batches, context, num_layers, d_in)
@@ -346,7 +432,7 @@ class ActivationsStore:
                 batch_tokens,
                 names_filter=[self.hook_name],
                 stop_at_layer=self.hook_layer + 1,
-                prepend_bos=self.prepend_bos,
+                prepend_bos=False,
                 **self.model_kwargs,
             )[1]
 
@@ -361,15 +447,32 @@ class ActivationsStore:
         elif (
             layerwise_activations[self.hook_name].ndim > 3
         ):  # if we have a head dimension
-            stacked_activations[:, :, 0] = layerwise_activations[self.hook_name].view(
-                n_batches, n_context, -1
-            )
+            try:
+                stacked_activations[:, :, 0] = layerwise_activations[
+                    self.hook_name
+                ].view(n_batches, n_context, -1)
+            except RuntimeError as e:
+                print(f"Error during view operation: {e}")
+                print("Attempting to use reshape instead...")
+                stacked_activations[:, :, 0] = layerwise_activations[
+                    self.hook_name
+                ].reshape(n_batches, n_context, -1)
         else:
             stacked_activations[:, :, 0] = layerwise_activations[self.hook_name]
 
         return stacked_activations
 
-    def get_buffer(self, n_batches_in_buffer: int) -> torch.Tensor:
+    @torch.no_grad()
+    def get_buffer(
+        self, n_batches_in_buffer: int, raise_on_epoch_end: bool = False
+    ) -> torch.Tensor:
+        """
+        Loads the next n_batches_in_buffer batches of activations into a tensor and returns half of it.
+
+        The primary purpose here is maintaining a shuffling buffer.
+
+        If raise_on_epoch_end is True, when the dataset it exhausted it will automatically refill the dataset and then raise a StopIteration so that the caller has a chance to react.
+        """
         context_size = self.context_size
         batch_size = self.store_batch_size_prompts
         d_in = self.d_in
@@ -439,7 +542,9 @@ class ActivationsStore:
 
         for refill_batch_idx_start in refill_iterator:
             # move batch toks to gpu for model
-            refill_batch_tokens = self.get_batch_tokens().to(self.model.cfg.device)
+            refill_batch_tokens = self.get_batch_tokens(
+                raise_at_epoch_end=raise_on_epoch_end
+            ).to(self.model.cfg.device)
             refill_activations = self.get_activations(refill_batch_tokens)
             # move acts back to cpu
             refill_activations.to(self.device)
@@ -453,7 +558,7 @@ class ActivationsStore:
         new_buffer = new_buffer[torch.randperm(new_buffer.shape[0])]
 
         # every buffer should be normalized:
-        if self.normalize_activations:
+        if self.normalize_activations == "expected_average_only_in":
             new_buffer = self.apply_norm_scaling_factor(new_buffer)
 
         return new_buffer
@@ -484,9 +589,27 @@ class ActivationsStore:
 
         batch_size = self.train_batch_size_tokens
 
+        try:
+            new_samples = self.get_buffer(
+                self.half_buffer_size, raise_on_epoch_end=True
+            )
+        except StopIteration:
+            print(
+                "Warning: All samples in the training dataset have been exhausted, we are now beginning a new epoch with the same samples."
+            )
+            self._storage_buffer = (
+                None  # dump the current buffer so samples do not leak between epochs
+            )
+            try:
+                new_samples = self.get_buffer(self.half_buffer_size)
+            except StopIteration:
+                raise ValueError(
+                    "We were unable to fill up the buffer directly after starting a new epoch. This could indicate that there are less samples in the dataset than are required to fill up the buffer. Consider reducing batch_size or n_batches_in_buffer. "
+                )
+
         # 1. # create new buffer by mixing stored and new buffer
         mixing_buffer = torch.cat(
-            [self.get_buffer(self.n_batches_in_buffer // 2), self.storage_buffer],
+            [new_samples, self.storage_buffer],
             dim=0,
         )
 
@@ -531,34 +654,30 @@ class ActivationsStore:
     def save(self, file_path: str):
         save_file(self.state_dict(), file_path)
 
-    def _get_next_dataset_tokens(self) -> torch.Tensor:
-        device = self.device
-        if not self.is_dataset_tokenized:
-            s = next(self.iterable_dataset)[self.tokens_column]
-            tokens = (
-                self.model.to_tokens(
-                    s,
-                    truncate=False,
-                    move_to_device=True,
-                    prepend_bos=self.prepend_bos,
-                )
-                .squeeze(0)
-                .to(device)
-            )
-            assert (
-                len(tokens.shape) == 1
-            ), f"tokens.shape should be 1D but was {tokens.shape}"
-        else:
-            tokens = torch.tensor(
-                next(self.iterable_dataset)[self.tokens_column],
-                dtype=torch.long,
-                device=device,
-                requires_grad=False,
-            )
-            if (
-                not self.prepend_bos
-                and tokens[0] == self.model.tokenizer.bos_token_id  # type: ignore
-            ):
-                tokens = tokens[1:]
-        self.n_dataset_processed += 1
-        return tokens
+
+def validate_pretokenized_dataset_tokenizer(
+    dataset_path: str, model_tokenizer: PreTrainedTokenizerBase
+) -> None:
+    """
+    Helper to validate that the tokenizer used to pretokenize the dataset matches the model tokenizer.
+    """
+    try:
+        tokenization_cfg_path = hf_hub_download(
+            dataset_path, "sae_lens.json", repo_type="dataset"
+        )
+    except HfHubHTTPError:
+        return
+    if tokenization_cfg_path is None:
+        return
+    with open(tokenization_cfg_path, "r") as f:
+        tokenization_cfg = json.load(f)
+    tokenizer_name = tokenization_cfg["tokenizer_name"]
+    try:
+        ds_tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
+    # if we can't download the specified tokenizer to verify, just continue
+    except HTTPError:
+        return
+    if ds_tokenizer.get_vocab() != model_tokenizer.get_vocab():
+        raise ValueError(
+            f"Dataset tokenizer {tokenizer_name} does not match model tokenizer {model_tokenizer}."
+        )

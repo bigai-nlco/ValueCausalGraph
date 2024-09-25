@@ -45,9 +45,11 @@ def test_sae_training_runner_config_get_sae_base_parameters():
     cfg = LanguageModelSAERunnerConfig()
 
     expected_config = {
+        "architecture": "standard",
         "d_in": 512,
         "d_sae": 2048,
         "activation_fn_str": "relu",
+        "activation_fn_kwargs": {},
         "apply_b_dec_to_input": True,
         "dtype": "float32",
         "model_name": "gelu-2l",
@@ -58,9 +60,13 @@ def test_sae_training_runner_config_get_sae_base_parameters():
         "context_size": 128,
         "prepend_bos": True,
         "finetuning_scaling_factor": False,
-        "dataset_path": "NeelNanda/c4-tokenized-2b",
+        "dataset_path": "",
+        "dataset_trust_remote_code": True,
         "sae_lens_training_version": str(__version__),
-        "normalize_activations": False,
+        "normalize_activations": "none",
+        "model_from_pretrained_kwargs": {
+            "center_writing_weights": False,
+        },
     }
     assert expected_config == cfg.get_base_sae_cfg_dict()
 

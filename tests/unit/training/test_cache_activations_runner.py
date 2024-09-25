@@ -1,10 +1,10 @@
 import os
-
-# import pytest
-# import shutil
 from pathlib import Path
+from typing import Any, Tuple
 
+import pytest
 import torch
+from datasets import Dataset
 from safetensors import safe_open
 from transformer_lens import HookedTransformer
 
@@ -24,7 +24,7 @@ def test_cache_activations_runner(tmp_path: Path):
         device = "cpu"
 
     # total_training_steps = 20_000
-    context_size = 32
+    context_size = 1024
     print(f"n tokens per context: {context_size}")
     n_batches_in_buffer = 32
     print(f"n batches in buffer: {n_batches_in_buffer}")
@@ -62,7 +62,7 @@ def test_cache_activations_runner(tmp_path: Path):
         # Buffer details won't matter in we cache / shuffle our activations ahead of time.
         n_batches_in_buffer=n_batches_in_buffer,
         store_batch_size_prompts=store_batch_size,
-        normalize_activations=False,
+        normalize_activations="none",
         #
         shuffle_every_n_buffers=2,
         n_shuffles_with_last_section=1,
@@ -129,7 +129,7 @@ def test_load_cached_activations():
         hook_name="blocks.0.hook_mlp_out",
         hook_layer=0,
         d_in=512,
-        dataset_path="NeelNanda/c4-tokenized-2b",
+        dataset_path="NeelNanda/c4-10k",
         context_size=context_size,
         is_dataset_tokenized=True,
         prepend_bos=True,  # I used to train GPT2 SAEs with a prepended-bos but no longer think we should do this.
@@ -140,7 +140,7 @@ def test_load_cached_activations():
         # Buffer details won't matter in we cache / shuffle our activations ahead of time.
         n_batches_in_buffer=n_batches_in_buffer,
         store_batch_size_prompts=store_batch_size,
-        normalize_activations=False,
+        normalize_activations="none",
         # shuffle_every_n_buffers=2,
         # n_shuffles_with_last_section=1,
         # n_shuffles_in_entire_dir=1,
@@ -160,3 +160,68 @@ def test_load_cached_activations():
 
     # assert sparse_autoencoder_dictionary is not None
     # know whether or not this works by looking at the dashboard!
+
+
+def test_activations_store_refreshes_dataset_when_it_runs_out():
+    cached_activations_fixture_path = os.path.join(
+        os.path.dirname(__file__), "fixtures", "cached_activations"
+    )
+
+    total_training_steps = 200
+    batch_size = 4
+    total_training_tokens = total_training_steps * batch_size
+
+    context_size = 256
+    cfg = LanguageModelSAERunnerConfig(
+        cached_activations_path=cached_activations_fixture_path,
+        use_cached_activations=True,
+        model_name="gelu-1l",
+        hook_name="blocks.0.hook_mlp_out",
+        hook_layer=0,
+        d_in=512,
+        dataset_path="",
+        context_size=context_size,
+        is_dataset_tokenized=True,
+        prepend_bos=True,
+        training_tokens=total_training_tokens,
+        train_batch_size_tokens=4096,
+        n_batches_in_buffer=2,
+        store_batch_size_prompts=batch_size,
+        normalize_activations="none",
+        device="cpu",
+        seed=42,
+        dtype="float16",
+    )
+
+    class MockModel:
+        def to_tokens(self, *args: Tuple[Any, ...], **kwargs: Any) -> torch.Tensor:
+            return torch.ones(context_size)
+
+        @property
+        def W_E(self) -> torch.Tensor:
+            return torch.ones(16, 16)
+
+    dataset = Dataset.from_list(
+        [
+            {"text": "hello world1"},
+        ]
+        * 64
+    )
+
+    model = MockModel()
+    activations_store = ActivationsStore.from_config(model, cfg, override_dataset=dataset)  # type: ignore
+    for _ in range(16):
+        _ = activations_store.get_batch_tokens(batch_size, raise_at_epoch_end=True)
+
+    # assert a stop iteration is raised when we do one more get_batch_tokens
+
+    pytest.raises(
+        StopIteration,
+        activations_store.get_batch_tokens,
+        batch_size,
+        raise_at_epoch_end=True,
+    )
+
+    # no errors are ever raised if we do not ask for raise_at_epoch_end
+    for _ in range(32):
+        _ = activations_store.get_batch_tokens(batch_size, raise_at_epoch_end=False)

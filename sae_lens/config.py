@@ -5,6 +5,7 @@ from typing import Any, Literal, Optional, cast
 
 import torch
 import wandb
+from datasets import Dataset, DatasetDict, IterableDataset, IterableDatasetDict
 
 from sae_lens import __version__
 
@@ -20,6 +21,8 @@ DTYPE_MAP = {
 }
 
 LOCAL_SAE_MODEL_PATH = current_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../model_data")
+HfDataset = DatasetDict | Dataset | IterableDatasetDict | IterableDataset
+
 
 @dataclass
 class LanguageModelSAERunnerConfig:
@@ -34,6 +37,7 @@ class LanguageModelSAERunnerConfig:
         hook_layer (int): The index of the layer to hook. Used to stop forward passes early and speed up processing.
         hook_head_index (int, optional): When the hook if for an activatio with a head index, we can specify a specific head to use here.
         dataset_path (str): A Hugging Face dataset path.
+        dataset_trust_remote_code (bool): Whether to trust remote code when loading datasets from Huggingface.
         streaming (bool): Whether to stream the dataset. Streaming large datasets is usually practical.
         is_dataset_tokenized (bool): NOT IN USE. We used to use this but now automatically detect if the dataset is tokenized.
         context_size (int): The context size to use when generating activations on which to train the SAE.
@@ -56,7 +60,7 @@ class LanguageModelSAERunnerConfig:
         finetuning_tokens (int): The number of finetuning tokens. See [here](https://www.lesswrong.com/posts/3JuSjTZyMzaSeTxKk/addressing-feature-suppression-in-saes)
         store_batch_size_prompts (int): The batch size for storing activations. This controls how many prompts are in the batch of the language model when generating actiations.
         train_batch_size_tokens (int): The batch size for training. This controls the batch size of the SAE Training loop.
-        normalize_activations (bool): Whether to normalize activations. See Anthropic April update.
+        normalize_activations (str): Activation Normalization Strategy. Either none, expected_average_only_in (estimate the average activation norm and divide activations by it -> this can be folded post training and set to None), or constant_norm_rescale (at runtime set activation norm to sqrt(d_in) and then scale up the SAE output).
         device (str): The device to use. Usually cuda.
         act_store_device (str): The device to use for the activation store. CPU is advised in order to save vram.
         seed (int): The seed to use.
@@ -113,7 +117,8 @@ class LanguageModelSAERunnerConfig:
     hook_eval: str = "NOT_IN_USE"
     hook_layer: int = 0
     hook_head_index: Optional[int] = None
-    dataset_path: str = "NeelNanda/c4-tokenized-2b"
+    dataset_path: str = ""
+    dataset_trust_remote_code: bool = True
     streaming: bool = True
     is_dataset_tokenized: bool = True
     context_size: int = 128
@@ -123,11 +128,13 @@ class LanguageModelSAERunnerConfig:
     )
 
     # SAE Parameters
+    architecture: Literal["standard", "gated"] = "standard"
     d_in: int = 512
     d_sae: Optional[int] = None
     b_dec_init_method: str = "geometric_median"
     expansion_factor: int = 4
-    activation_fn: str = "relu"  # relu, tanh-relu
+    activation_fn: str = "relu"  # relu, tanh-relu, topk
+    activation_fn_kwargs: dict[str, Any] = field(default_factory=dict)  # for topk
     normalize_sae_decoder: bool = True
     noise_scale: float = 0.0
     from_pretrained_path: Optional[str] = None
@@ -142,7 +149,9 @@ class LanguageModelSAERunnerConfig:
     finetuning_tokens: int = 0
     store_batch_size_prompts: int = 32
     train_batch_size_tokens: int = 4096
-    normalize_activations: bool = False
+    normalize_activations: str = (
+        "none"  # none, expected_average_only_in (Anthropic April Update), constant_norm_rescale (Anthropic Feb Update)
+    )
 
     # Misc
     device: str = "cpu"
@@ -216,7 +225,9 @@ class LanguageModelSAERunnerConfig:
     checkpoint_path: str = "checkpoints"
     verbose: bool = True
     model_kwargs: dict[str, Any] = field(default_factory=dict)
-    model_from_pretrained_kwargs: dict[str, Any] = field(default_factory=dict)
+    model_from_pretrained_kwargs: dict[str, Any] = field(
+        default_factory=lambda: {"center_writing_weights": False}
+    )
     sae_lens_version: str = field(default_factory=lambda: __version__)
     sae_lens_training_version: str = field(default_factory=lambda: __version__)
 
@@ -264,6 +275,16 @@ class LanguageModelSAERunnerConfig:
         if (self.finetuning_method == "decoder") and (self.apply_b_dec_to_input):
             raise ValueError(
                 "If we are fine tuning the decoder, we can't be applying b_dec to the input.\nSet apply_b_dec_to_input to False."
+            )
+
+        if self.normalize_activations not in [
+            "none",
+            "expected_average_only_in",
+            "constant_norm_rescale",
+            "layer_norm",
+        ]:
+            raise ValueError(
+                f"normalize_activations must be none, expected_average_only_in, or constant_norm_rescale. Got {self.normalize_activations}"
             )
 
         if self.act_store_device == "with_model":
@@ -337,6 +358,8 @@ class LanguageModelSAERunnerConfig:
 
     def get_base_sae_cfg_dict(self) -> dict[str, Any]:
         return {
+            # TEMP
+            "architecture": self.architecture,
             "d_in": self.d_in,
             "d_sae": self.d_sae,
             "dtype": self.dtype,
@@ -350,9 +373,12 @@ class LanguageModelSAERunnerConfig:
             "context_size": self.context_size,
             "prepend_bos": self.prepend_bos,
             "dataset_path": self.dataset_path,
+            "dataset_trust_remote_code": self.dataset_trust_remote_code,
             "finetuning_scaling_factor": self.finetuning_method is not None,
             "sae_lens_training_version": self.sae_lens_training_version,
             "normalize_activations": self.normalize_activations,
+            "activation_fn_kwargs": self.activation_fn_kwargs,
+            "model_from_pretrained_kwargs": self.model_from_pretrained_kwargs,
         }
 
     def get_training_sae_cfg_dict(self) -> dict[str, Any]:
@@ -409,7 +435,8 @@ class CacheActivationsRunnerConfig:
     hook_name: str = "blocks.{layer}.hook_mlp_out"
     hook_layer: int = 0
     hook_head_index: Optional[int] = None
-    dataset_path: str = "NeelNanda/c4-tokenized-2b"
+    dataset_path: str = ""
+    dataset_trust_remote_code: bool | None = None
     streaming: bool = True
     is_dataset_tokenized: bool = True
     context_size: int = 128
@@ -426,7 +453,7 @@ class CacheActivationsRunnerConfig:
     training_tokens: int = 2_000_000
     store_batch_size_prompts: int = 32
     train_batch_size_tokens: int = 4096
-    normalize_activations: bool = False
+    normalize_activations: str = "none"  # should always be none for activation caching
 
     # Misc
     device: str = "cpu"
@@ -460,6 +487,9 @@ class CacheActivationsRunnerConfig:
 
 @dataclass
 class ToyModelSAERunnerConfig:
+
+    architecture: Literal["standard", "gated"] = "standard"
+
     # ReLu Model Parameters
     n_features: int = 5
     n_hidden: int = 2
@@ -513,6 +543,7 @@ class ToyModelSAERunnerConfig:
     def get_base_sae_cfg_dict(self) -> dict[str, Any]:
         # TO DO: Have the same hyperparameters as in the main sae runner.
         return {
+            "architecture": self.architecture,
             "d_in": self.d_in,
             "d_sae": self.d_sae,
             "dtype": self.dtype,
@@ -541,7 +572,8 @@ def _default_cached_activations_path(
 @dataclass
 class PretokenizeRunnerConfig:
     tokenizer_name: str = "gpt2"
-    dataset_path: str = "NeelNanda/c4-10k"
+    dataset_path: str = ""
+    dataset_trust_remote_code: bool | None = None
     split: str | None = "train"
     data_files: list[str] | None = None
     data_dir: str | None = None
@@ -551,11 +583,12 @@ class PretokenizeRunnerConfig:
     shuffle: bool = True
     seed: int | None = None
     streaming: bool = False
+    pretokenize_batch_size: int | None = 1000
 
     # special tokens
     begin_batch_token: int | Literal["bos", "eos", "sep"] | None = "bos"
     begin_sequence_token: int | Literal["bos", "eos", "sep"] | None = None
-    sequence_separator_token: int | Literal["bos", "eos", "sep"] | None = "eos"
+    sequence_separator_token: int | Literal["bos", "eos", "sep"] | None = "bos"
 
     # if saving locally, set save_path
     save_path: str | None = None

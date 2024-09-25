@@ -10,7 +10,7 @@ from transformer_lens.hook_points import HookedRootModule
 
 from sae_lens import __version__
 from sae_lens.config import LanguageModelSAERunnerConfig
-from sae_lens.evals import run_evals
+from sae_lens.evals import EvalConfig, run_evals
 from sae_lens.training.activations_store import ActivationsStore
 from sae_lens.training.optim import L1Scheduler, get_lr_scheduler
 from sae_lens.training.training_sae import TrainingSAE, TrainStepOutput
@@ -44,6 +44,9 @@ class TrainSAEOutput:
 
 
 class SAETrainer:
+    """
+    Core SAE class used for inference. For training, see TrainingSAE.
+    """
 
     def __init__(
         self,
@@ -95,8 +98,8 @@ class SAETrainer:
             sae.parameters(),
             lr=cfg.lr,
             betas=(
-                cfg.adam_beta1,  # type: ignore
-                cfg.adam_beta2,  # type: ignore
+                cfg.adam_beta1,
+                cfg.adam_beta2,
             ),
         )
         assert cfg.lr_end is not None  # this is set in config post-init
@@ -128,6 +131,16 @@ class SAETrainer:
         else:
             self.autocast_if_enabled = contextlib.nullcontext()
 
+        # Set up eval config
+
+        self.trainer_eval_config = EvalConfig(
+            batch_size_prompts=self.cfg.eval_batch_size_prompts,
+            n_eval_reconstruction_batches=self.cfg.n_eval_batches,
+            compute_ce_loss=True,
+            n_eval_sparsity_variance_batches=1,
+            compute_l2_norms=True,
+        )
+
     @property
     def feature_sparsity(self) -> torch.Tensor:
         return self.act_freq_scores / self.n_frac_active_tokens
@@ -153,7 +166,7 @@ class SAETrainer:
         # Train loop
         while self.n_training_tokens < self.cfg.total_training_tokens:
             # Do a training step.
-            layer_acts = self.activation_store.next_batch()[:, 0, :]
+            layer_acts = self.activation_store.next_batch()[:, 0, :].to(self.sae.device)
             self.n_training_tokens += self.cfg.train_batch_size_tokens
 
             step_output = self._train_step(sae=self.sae, sae_in=layer_acts)
@@ -169,6 +182,12 @@ class SAETrainer:
             ### If n_training_tokens > sae_group.cfg.training_tokens, then we should switch to fine-tuning (if we haven't already)
             self._begin_finetuning_if_needed()
 
+        # fold the estimated norm scaling factor into the sae weights
+        if self.activation_store.estimated_norm_scaling_factor is not None:
+            self.sae.fold_activation_norm_scaling_factor(
+                self.activation_store.estimated_norm_scaling_factor
+            )
+
         # save final sae group to checkpoints folder
         self.save_checkpoint(
             trainer=self,
@@ -181,7 +200,7 @@ class SAETrainer:
 
     @torch.no_grad()
     def _estimate_norm_scaling_factor_if_needed(self) -> None:
-        if self.cfg.normalize_activations:
+        if self.cfg.normalize_activations == "expected_average_only_in":
             self.activation_store.estimated_norm_scaling_factor = (
                 self.activation_store.estimate_norm_scaling_factor()
             )
@@ -277,14 +296,12 @@ class SAETrainer:
         total_variance = (sae_in - sae_in.mean(0)).pow(2).sum(-1)
         explained_variance = 1 - per_token_l2_loss / total_variance
 
-        if isinstance(ghost_grad_loss, torch.Tensor):
-            ghost_grad_loss = ghost_grad_loss.item()
-        return {
+        log_dict = {
             # losses
             "losses/mse_loss": mse_loss,
             "losses/l1_loss": l1_loss
             / self.current_l1_coefficient,  # normalize by l1 coefficient
-            "losses/ghost_grad_loss": ghost_grad_loss,
+            "losses/auxiliary_reconstruction_loss": output.auxiliary_reconstruction_loss,
             "losses/overall_loss": loss,
             # variance explained
             "metrics/explained_variance": explained_variance.mean().item(),
@@ -297,6 +314,14 @@ class SAETrainer:
             "details/current_l1_coefficient": self.current_l1_coefficient,
             "details/n_training_tokens": n_training_tokens,
         }
+        # Log ghost grad if we're using them
+        if self.cfg.use_ghost_grads:
+            if isinstance(ghost_grad_loss, torch.Tensor):
+                ghost_grad_loss = ghost_grad_loss.item()
+
+            log_dict["losses/ghost_grad_loss"] = ghost_grad_loss
+
+        return log_dict
 
     @torch.no_grad()
     def _run_and_log_evals(self):
@@ -309,24 +334,31 @@ class SAETrainer:
                 sae=self.sae,
                 activation_store=self.activation_store,
                 model=self.model,
-                n_eval_batches=self.cfg.n_eval_batches,
-                eval_batch_size_prompts=self.cfg.eval_batch_size_prompts,
+                eval_config=self.trainer_eval_config,
                 model_kwargs=self.cfg.model_kwargs,
             )
 
-            W_dec_norm_dist = self.sae.W_dec.norm(dim=1).detach().cpu().numpy()
-            b_e_dist = self.sae.b_enc.detach().cpu().numpy()
+            # Remove eval metrics that are already logged during training
+            eval_metrics.pop("metrics/explained_variance", None)
+            eval_metrics.pop("metrics/explained_variance_std", None)
+            eval_metrics.pop("metrics/l0", None)
+            eval_metrics.pop("metrics/l1", None)
+            eval_metrics.pop("metrics/mse", None)
 
-            # More detail on loss.
+            # Remove metrics that are not useful for wandb logging
+            eval_metrics.pop("metrics/total_tokens_evaluated", None)
 
-            # add weight histograms
-            eval_metrics = {
-                **eval_metrics,
-                **{
-                    "weights/W_dec_norms": wandb.Histogram(W_dec_norm_dist),
-                    "weights/b_e": wandb.Histogram(b_e_dist),
-                },
-            }
+            W_dec_norm_dist = self.sae.W_dec.detach().float().norm(dim=1).cpu().numpy()
+            eval_metrics["weights/W_dec_norms"] = wandb.Histogram(W_dec_norm_dist)  # type: ignore
+
+            if self.sae.cfg.architecture == "standard":
+                b_e_dist = self.sae.b_enc.detach().float().cpu().numpy()
+                eval_metrics["weights/b_e"] = wandb.Histogram(b_e_dist)  # type: ignore
+            elif self.sae.cfg.architecture == "gated":
+                b_gate_dist = self.sae.b_gate.detach().float().cpu().numpy()
+                eval_metrics["weights/b_gate"] = wandb.Histogram(b_gate_dist)  # type: ignore
+                b_mag_dist = self.sae.b_mag.detach().float().cpu().numpy()
+                eval_metrics["weights/b_mag"] = wandb.Histogram(b_mag_dist)  # type: ignore
 
             wandb.log(
                 eval_metrics,
@@ -338,7 +370,7 @@ class SAETrainer:
     def _build_sparsity_log_dict(self) -> dict[str, Any]:
 
         log_feature_sparsity = _log_feature_sparsity(self.feature_sparsity)
-        wandb_histogram = wandb.Histogram(log_feature_sparsity.numpy())
+        wandb_histogram = wandb.Histogram(log_feature_sparsity.numpy())  # type: ignore
         return {
             "metrics/mean_log10_feature_sparsity": log_feature_sparsity.mean().item(),
             "plots/feature_density_line_chart": wandb_histogram,
@@ -368,13 +400,13 @@ class SAETrainer:
             self.checkpoint_thresholds.pop(0)
 
     @torch.no_grad()
-    def _update_pbar(self, step_output: TrainStepOutput, pbar: tqdm):  # type: ignore
+    def _update_pbar(self, step_output: TrainStepOutput, pbar: tqdm, update_interval: int = 100):  # type: ignore
 
-        if self.n_training_steps % 100 == 0:
+        if self.n_training_steps % update_interval == 0:
             pbar.set_description(
                 f"{self.n_training_steps}| MSE Loss {step_output.mse_loss:.3f} | L1 {step_output.l1_loss:.3f}"
             )
-            pbar.update(self.cfg.train_batch_size_tokens)
+            pbar.update(update_interval * self.cfg.train_batch_size_tokens)
 
     def _begin_finetuning_if_needed(self):
         if (not self.started_fine_tuning) and (

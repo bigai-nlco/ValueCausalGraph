@@ -21,7 +21,7 @@ class Counter:
 
 @pytest.fixture(scope="module")
 def model():
-    model = HookedSAETransformer.from_pretrained(MODEL, device="cpu")
+    model = HookedSAETransformer.from_pretrained_no_processing(MODEL, device="cpu")
     yield model
     model.reset_saes()
 
@@ -42,6 +42,7 @@ def get_hooked_sae(model: HookedTransformer, act_name: str) -> SAE:
     d_in = site_to_size[site]
 
     sae_cfg = SAEConfig(
+        architecture="standard",
         d_in=d_in,
         d_sae=d_in * 2,
         dtype="float32",
@@ -54,10 +55,12 @@ def get_hooked_sae(model: HookedTransformer, act_name: str) -> SAE:
         prepend_bos=True,
         context_size=128,
         dataset_path="test",
+        dataset_trust_remote_code=True,
         apply_b_dec_to_input=False,
         finetuning_scaling_factor=False,
         sae_lens_training_version=None,
-        normalize_activations=False,
+        normalize_activations="none",
+        model_from_pretrained_kwargs={},
     )
 
     return SAE(sae_cfg)
@@ -168,8 +171,8 @@ def test_error_term(model: HookedTransformer, hooked_sae: SAE):
     def backward_cache_hook(act: torch.Tensor, hook: HookPoint):
         grad_cache[hook.name] = act.detach()
 
-    hooked_sae.add_hook("hook_sae_acts_post", backward_cache_hook, "bwd")
-    hooked_sae.add_hook("hook_sae_output", backward_cache_hook, "bwd")
+    hooked_sae.add_hook("hook_sae_acts_post", backward_cache_hook, "bwd")  # type: ignore
+    hooked_sae.add_hook("hook_sae_output", backward_cache_hook, "bwd")  # type: ignore
 
     sae_output = hooked_sae(x)
     assert torch.allclose(sae_output, x, atol=1e-6)

@@ -31,6 +31,8 @@ from neuron_explainer.explanations.simulator import (
 )
 from tenacity import retry, stop_after_attempt, wait_random_exponential
 
+from sae_lens import SAE
+
 NEURONPEDIA_DOMAIN = "https://neuronpedia.org"
 
 # Constants for replacing NaNs and Infs in outputs
@@ -57,30 +59,37 @@ def NanAndInfReplacer(value: str):
         return NAN_REPLACEMENT
 
 
-def get_neuronpedia_feature(
-    feature: int, layer: int, model: str = "gpt2-small", dataset: str = "res-jb"
-) -> dict[str, Any]:
-    """Fetch a feature from Neuronpedia API."""
-    url = f"{NEURONPEDIA_DOMAIN}/api/feature/{model}/{layer}-{dataset}/{feature}"
-    result = requests.get(url).json()
-    result["index"] = int(result["index"])
-    return result
+def open_neuronpedia_feature_dashboard(sae: SAE, index: int):
+    sae_id = sae.cfg.neuronpedia_id
+    if sae_id is None:
+        print(
+            "SAE does not have a Neuronpedia ID. Either dashboards for this SAE do not exist (yet) on Neuronpedia, or the SAE was not loaded via the from_pretrained method"
+        )
+    else:
+        url = f"{NEURONPEDIA_DOMAIN}/{sae_id}/{index}"
+        webbrowser.open(url)
 
 
 def get_neuronpedia_quick_list(
+    sae: SAE,
     features: list[int],
-    layer: int,
-    model: str = "gpt2-small",
-    dataset: str = "res-jb",
     name: str = "temporary_list",
 ):
+
+    sae_id = sae.cfg.neuronpedia_id
+    if sae_id is None:
+        print(
+            "SAE does not have a Neuronpedia ID. Either dashboards for this SAE do not exist (yet) on Neuronpedia, or the SAE was not loaded via the from_pretrained method"
+        )
+    assert sae_id is not None
+
     url = NEURONPEDIA_DOMAIN + "/quick-list/"
     name = urllib.parse.quote(name)
     url = url + "?name=" + name
     list_feature = [
         {
-            "modelId": model,
-            "layer": f"{layer}-{dataset}",
+            "modelId": sae.cfg.model_name,
+            "layer": sae_id.split("/")[1],
             "index": str(feature),
         }
         for feature in features
@@ -89,6 +98,16 @@ def get_neuronpedia_quick_list(
     webbrowser.open(url)
 
     return url
+
+
+def get_neuronpedia_feature(
+    feature: int, layer: int, model: str = "gpt2-small", dataset: str = "res-jb"
+) -> dict[str, Any]:
+    """Fetch a feature from Neuronpedia API."""
+    url = f"{NEURONPEDIA_DOMAIN}/api/feature/{model}/{layer}-{dataset}/{feature}"
+    result = requests.get(url).json()
+    result["index"] = int(result["index"])
+    return result
 
 
 class NeuronpediaActivation:
@@ -172,7 +191,6 @@ def make_neuronpedia_list_with_features(
 
     # make POST json request with body
     body = {
-        "apiKey": api_key,
         "name": list_name,
         "description": list_description,
         "features": [
@@ -185,7 +203,7 @@ def make_neuronpedia_list_with_features(
             for feature in features
         ],
     }
-    response = requests.post(url, json=body)
+    response = requests.post(url, json=body, headers={"x-api-key": api_key})
     result = response.json()
 
     if "url" in result and open_browser:
@@ -204,19 +222,21 @@ def test_key(api_key: str):
         raise Exception("Neuronpedia API key is not valid.")
 
 
-async def autointerp_neuronpedia_features(
+async def autointerp_neuronpedia_features(  # noqa: C901
     features: list[NeuronpediaFeature],
     openai_api_key: str | None = None,
     autointerp_retry_attempts: int = 3,
     autointerp_score_max_concurrent: int = 20,
     neuronpedia_api_key: str | None = None,
+    skip_neuronpedia_api_key_test: bool = False,
     do_score: bool = True,
     output_dir: str = "neuronpedia_outputs/autointerp",
     num_activations_to_use: int = 20,
     max_explanation_activation_records: int = 20,
     upload_to_neuronpedia: bool = True,
     autointerp_explainer_model_name: str = "gpt-4-1106-preview",
-    autointerp_scorer_model_name: str = "gpt-3.5-turbo",
+    autointerp_scorer_model_name: str | None = "gpt-3.5-turbo",
+    save_to_disk: bool = True,
 ):
     """
     Autointerp Neuronpedia features.
@@ -253,7 +273,7 @@ async def autointerp_neuronpedia_features(
             f"Invalid explainer model name: {autointerp_explainer_model_name}. Must be one of: {HARMONY_V4_MODELS}"
         )
 
-    if autointerp_scorer_model_name not in HARMONY_V4_MODELS:
+    if do_score and autointerp_scorer_model_name not in HARMONY_V4_MODELS:
         raise Exception(
             f"Invalid scorer model name: {autointerp_scorer_model_name}. Must be one of: {HARMONY_V4_MODELS}"
         )
@@ -263,7 +283,7 @@ async def autointerp_neuronpedia_features(
             raise Exception(
                 "You need to provide a Neuronpedia API key to upload the results to Neuronpedia."
             )
-        else:
+        if not skip_neuronpedia_api_key_test:
             test_key(neuronpedia_api_key)
 
     print("\n\n=== Step 1) Fetching features from Neuronpedia")
@@ -357,7 +377,8 @@ async def autointerp_neuronpedia_features(
         print(f"===== {autointerp_explainer_model_name}'s explanation: {explanation}")
         feature.autointerp_explanation = explanation
 
-        if do_score:
+        scored_simulation = None
+        if do_score and autointerp_scorer_model_name:
             print(
                 f"\n=== Step 3) Scoring feature {feature.modelId}@{feature.layer}-{feature.dataset}:{feature.feature}"
             )
@@ -413,49 +434,55 @@ async def autointerp_neuronpedia_features(
             feature.autointerp_explanation_score = score
             print(f"===== {autointerp_scorer_model_name}'s score: {(score * 100):.0f}")
 
-            output_file = (
-                f"{output_dir}/{feature.layer}-{feature.dataset}_feature-{feature.feature}_score-"
-                f"{feature.autointerp_explanation_score}_time-{datetime.now().strftime('%Y%m%d-%H%M%S')}.jsonl"
-            )
-            os.makedirs(output_dir, exist_ok=True)
-            print(f"===== Your results will be saved to: {output_file} =====")
+        else:
+            print("=== Step 3) Skipping scoring as instructed.")
 
-            output_data = json.dumps(
+        feature_data = {
+            "modelId": feature.modelId,
+            "layer": f"{feature.layer}-{feature.dataset}",
+            "index": feature.feature,
+            "explanation": feature.autointerp_explanation,
+            "explanationScore": feature.autointerp_explanation_score,
+            "explanationModel": autointerp_explainer_model_name,
+        }
+        if do_score and autointerp_scorer_model_name and scored_simulation:
+            feature_data["activations"] = feature.activations
+            feature_data["simulationModel"] = autointerp_scorer_model_name
+            feature_data["simulationActivations"] = scored_simulation.scored_sequence_simulations  # type: ignore
+            feature_data["simulationScore"] = feature.autointerp_explanation_score
+        feature_data_str = json.dumps(feature_data, default=vars)
+
+        if save_to_disk:
+            output_file = f"{output_dir}/{feature.modelId}-{feature.layer}-{feature.dataset}_feature-{feature.feature}_time-{datetime.now().strftime('%Y%m%d-%H%M%S')}.jsonl"
+            os.makedirs(output_dir, exist_ok=True)
+            print(f"\n=== Step 4) Saving feature to {output_file}")
+            with open(output_file, "a") as f:
+                f.write(feature_data_str)
+                f.write("\n")
+        else:
+            print("\n=== Step 4) Skipping saving to disk.")
+
+        if upload_to_neuronpedia:
+            print("\n=== Step 5) Uploading feature to Neuronpedia")
+            upload_data = json.dumps(
                 {
-                    "apiKey": neuronpedia_api_key,
-                    "feature": {
-                        "modelId": feature.modelId,
-                        "layer": f"{feature.layer}-{feature.dataset}",
-                        "index": feature.feature,
-                        "activations": feature.activations,
-                        "explanation": feature.autointerp_explanation,
-                        "explanationScore": feature.autointerp_explanation_score,
-                        "explanationModel": autointerp_explainer_model_name,
-                        "autointerpModel": autointerp_scorer_model_name,
-                        "simulatedActivations": scored_simulation.scored_sequence_simulations,
-                    },
+                    "feature": feature_data,
                 },
                 default=vars,
             )
-            output_data_json = json.loads(output_data, parse_constant=NanAndInfReplacer)
-            output_data_str = json.dumps(output_data)
-
-            print(f"\n=== Step 4) Saving feature to {output_file}")
-            with open(output_file, "a") as f:
-                f.write(output_data_str)
-                f.write("\n")
-
-            if upload_to_neuronpedia:
+            upload_data_json = json.loads(upload_data, parse_constant=NanAndInfReplacer)
+            url = f"{NEURONPEDIA_DOMAIN}/api/explanation/new"
+            response = requests.post(
+                url, json=upload_data_json, headers={"x-api-key": neuronpedia_api_key}
+            )
+            if response.status_code != 200:
                 print(
-                    f"\n=== Step 5) Uploading feature to Neuronpedia: {feature.modelId}@{feature.layer}-{feature.dataset}:{feature.feature}"
+                    f"ERROR: Couldn't upload explanation to Neuronpedia: {response.text}"
                 )
-                url = f"{NEURONPEDIA_DOMAIN}/api/upload-explanation"
-                body = output_data_json
-                response = requests.post(url, json=body)
-                if response.status_code != 200:
-                    print(
-                        f"ERROR: Couldn't upload explanation to Neuronpedia: {response.text}"
-                    )
+            else:
+                print(
+                    f"===== Uploaded to Neuronpedia: {NEURONPEDIA_DOMAIN}/{feature.modelId}/{feature.layer}-{feature.dataset}/{feature.feature}"
+                )
 
         end_time = datetime.now()
         print(f"\n========== Time Spent for Feature: {end_time - start_time}\n")

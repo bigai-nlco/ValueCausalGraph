@@ -37,9 +37,7 @@ sae, cfg_dict, sparsity = SAE.from_pretrained(
 )
 ```
 
-You can see other importable SAEs in   `sae_lens/pretrained_saes.yaml`.
-
-(We'd accept a PR that converts this yaml to a nice table in the docs!)
+You can see other importable SAEs on [this page](https://jbloomaus.github.io/SAELens/sae_table/).
 
 ### Background and further Readings
 
@@ -67,8 +65,8 @@ WandB Dashboards provide lots of useful insights while training SAE's. Here's a 
 ```
 @misc{bloom2024saetrainingcodebase,
    title = {SAELens Training
-   author = {Joseph Bloom, David Channin},
+   author = {Joseph Bloom, David Chanin},
    year = {2024},
-   howpublished = {\url{}},
+   howpublished = {\url{https://github.com/jbloomAus/SAELens}},
 }}
 ```
