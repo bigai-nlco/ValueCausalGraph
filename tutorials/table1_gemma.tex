@@ -1,0 +1,49 @@
+\begin{table}[ht]
+\caption{Value steering using SAE features for the Gemma-2B-IT model. Expected stimulated values are highlighted in red, along with their actual success rate during testing. Expected suppressed values are marked in Purple. Maintained values are shown in gray. Light red indicates values that are expected to be at least not suppressed, while light purple represents values that are expected to be at least not stimulated. Blank cells correspond to uncontrollable values. The bottom of the table indicates the count of each of the six expected categories and their average success rates.}
+\label{table: sae-steering-gemma}
+\begin{center}
+\begin{tabular}{c@{\hspace{2pt}}c@{\hspace{2pt}}c@{\hspace{2pt}}c@{\hspace{2pt}}c@{\hspace{2pt}}c@{\hspace{2pt}}c@{\hspace{2pt}}c@{\hspace{2pt}}c@{\hspace{2pt}}c}
+\toprule
+Value & \bf 1312 & \bf 1341 & \bf 2221 & \bf 3183 & \bf 6619 & \bf 7502 & \bf 8387 & \bf 10096 & \bf 14049 \\
+\hline
+\small Affiliation & \cellcolor{red!50} 0.92 & \cellcolor{blue!20} 0.84 & \cellcolor{red!50} 0.94 & - & \cellcolor{red!20} 0.82 & \cellcolor{red!50} 0.84 & - & \cellcolor{blue!50} 0.98 & \cellcolor{red!50} 0.86  \\
+\small Assertiveness & - & \cellcolor{blue!50} 0.76 & \cellcolor{blue!20} 0.84 & - & - & - & \cellcolor{blue!50} 0.68 & \cellcolor{blue!20} 0.92 & -  \\
+\tiny Behavioral Inhibition System & \cellcolor{red!20} 0.98 & \cellcolor{red!20} 0.98 & \cellcolor{red!20} 1.00 & \cellcolor{red!50} 0.64 & \cellcolor{red!20} 0.84 & \cellcolor{gray!20} 0.88 & \cellcolor{blue!20} 0.80 & \cellcolor{red!20} 0.84 & \cellcolor{blue!20} 0.96  \\
+\small Breadth of Interest & \cellcolor{blue!50} 1.00 & \cellcolor{blue!20} 0.92 & \cellcolor{blue!50} 0.76 & - & \cellcolor{blue!20} 0.84 & \cellcolor{blue!50} 0.64 & - & \cellcolor{red!50} 0.90 & \cellcolor{blue!50} 0.74  \\
+\small Complexity & \cellcolor{gray!20} 1.00 & \cellcolor{gray!20} 1.00 & \cellcolor{gray!20} 1.00 & \cellcolor{blue!20} 1.00 & \cellcolor{gray!20} 0.88 & \cellcolor{gray!20} 1.00 & \cellcolor{gray!20} 1.00 & \cellcolor{gray!20} 1.00 & \cellcolor{gray!20} 0.92  \\
+\small Dependence & \cellcolor{gray!20} 0.62 & \cellcolor{gray!20} 0.92 & \cellcolor{red!20} 1.00 & \cellcolor{red!50} 0.92 & \cellcolor{red!20} 0.96 & \cellcolor{red!20} 1.00 & \cellcolor{gray!20} 0.92 & \cellcolor{gray!20} 0.94 & \cellcolor{red!50} 0.96  \\
+\small Depth & \cellcolor{gray!20} 0.86 & \cellcolor{gray!20} 0.90 & \cellcolor{gray!20} 0.94 & \cellcolor{blue!50} 0.80 & \cellcolor{red!20} 0.94 & \cellcolor{gray!20} 0.96 & \cellcolor{red!20} 1.00 & \cellcolor{blue!20} 0.92 & \cellcolor{gray!20} 0.90  \\
+\small Emotional Expression & \cellcolor{gray!20} 1.00 & \cellcolor{gray!20} 1.00 & \cellcolor{gray!20} 1.00 & \cellcolor{gray!20} 1.00 & \cellcolor{gray!20} 1.00 & \cellcolor{gray!20} 1.00 & \cellcolor{gray!20} 1.00 & \cellcolor{gray!20} 0.98 & \cellcolor{gray!20} 1.00  \\
+\small Emotional Processing & \cellcolor{blue!50} 0.92 & \cellcolor{gray!20} 0.84 & \cellcolor{blue!20} 1.00 & \cellcolor{gray!20} 0.90 & \cellcolor{gray!20} 0.94 & \cellcolor{blue!20} 1.00 & \cellcolor{gray!20} 0.98 & \cellcolor{gray!20} 0.96 & \cellcolor{blue!50} 0.80  \\
+\small Empathy & \cellcolor{blue!20} 0.92 & \cellcolor{blue!20} 0.92 & \cellcolor{blue!50} 0.76 & \cellcolor{blue!50} 0.94 & \cellcolor{blue!50} 0.60 & \cellcolor{blue!20} 0.70 & \cellcolor{red!20} 0.80 & - & \cellcolor{blue!20} 0.94  \\
+\small Extraversion & \cellcolor{red!20} 0.88 & - & \cellcolor{blue!20} 0.84 & \cellcolor{blue!50} 0.96 & \cellcolor{red!20} 0.88 & \cellcolor{red!20} 0.86 & \cellcolor{blue!20} 0.98 & \cellcolor{blue!20} 0.96 & \cellcolor{red!20} 0.82  \\
+\small Imagination & \cellcolor{gray!20} 0.98 & \cellcolor{gray!20} 0.98 & \cellcolor{gray!20} 1.00 & \cellcolor{gray!20} 0.98 & \cellcolor{gray!20} 0.96 & \cellcolor{gray!20} 0.98 & \cellcolor{gray!20} 0.90 & \cellcolor{gray!20} 0.94 & \cellcolor{gray!20} 0.96  \\
+\small Nurturance & \cellcolor{blue!20} 0.86 & \cellcolor{blue!20} 0.92 & - & \cellcolor{red!50} 0.88 & \cellcolor{red!50} 0.72 & - & - & \cellcolor{red!50} 0.68 & \cellcolor{red!50} 0.82  \\
+\small Perspective Taking & \cellcolor{gray!20} 0.98 & \cellcolor{gray!20} 1.00 & \cellcolor{gray!20} 1.00 & \cellcolor{gray!20} 1.00 & \cellcolor{gray!20} 1.00 & \cellcolor{gray!20} 0.98 & \cellcolor{gray!20} 1.00 & \cellcolor{gray!20} 1.00 & \cellcolor{gray!20} 1.00  \\
+\small Poise & \cellcolor{red!20} 0.94 & - & \cellcolor{red!20} 0.98 & \cellcolor{blue!20} 0.88 & \cellcolor{red!20} 0.86 & \cellcolor{red!50} 0.72 & - & \cellcolor{blue!50} 0.74 & \cellcolor{red!20} 0.86  \\
+\tiny Positive Expressivity & \cellcolor{blue!50} 0.78 & \cellcolor{blue!20} 0.94 & \cellcolor{blue!20} 0.98 & \cellcolor{blue!50} 0.90 & \cellcolor{blue!50} 0.60 & \cellcolor{blue!20} 0.88 & \cellcolor{blue!50} 0.92 & \cellcolor{blue!50} 0.96 & \cellcolor{blue!20} 0.92  \\
+\tiny Preference for Order and Structure & - & \cellcolor{blue!20} 0.96 & \cellcolor{blue!20} 0.84 & \cellcolor{blue!50} 0.94 & \cellcolor{red!20} 0.88 & \cellcolor{blue!20} 0.84 & - & \cellcolor{blue!20} 0.86 & -  \\
+\small Privacy & \cellcolor{gray!20} 1.00 & \cellcolor{gray!20} 1.00 & \cellcolor{gray!20} 1.00 & \cellcolor{gray!20} 1.00 & \cellcolor{gray!20} 1.00 & \cellcolor{gray!20} 1.00 & \cellcolor{gray!20} 1.00 & \cellcolor{gray!20} 0.86 & \cellcolor{gray!20} 1.00  \\
+\tiny Psychosocial flourishing & \cellcolor{red!20} 0.86 & \cellcolor{blue!20} 0.74 & \cellcolor{red!20} 0.84 & - & \cellcolor{blue!20} 0.90 & \cellcolor{gray!20} 0.86 & \cellcolor{blue!20} 0.90 & - & \cellcolor{red!20} 0.84  \\
+\small Reflection & \cellcolor{blue!20} 0.88 & \cellcolor{blue!20} 0.88 & \cellcolor{blue!20} 0.96 & \cellcolor{red!50} 0.68 & \cellcolor{gray!20} 0.80 & \cellcolor{gray!20} 0.92 & \cellcolor{red!20} 0.98 & \cellcolor{red!20} 0.86 & -  \\
+\tiny Satisfaction with life & \cellcolor{blue!20} 0.88 & \cellcolor{blue!20} 0.82 & \cellcolor{blue!20} 0.88 & \cellcolor{red!50} 0.98 & \cellcolor{blue!20} 0.88 & \cellcolor{blue!20} 0.98 & \cellcolor{blue!20} 0.90 & \cellcolor{red!20} 0.94 & \cellcolor{blue!50} 0.78  \\
+\small Sociability & \cellcolor{red!20} 0.86 & \cellcolor{blue!20} 1.00 & \cellcolor{gray!20} 0.82 & \cellcolor{blue!50} 0.92 & \cellcolor{gray!20} 0.82 & \cellcolor{gray!20} 0.96 & \cellcolor{blue!20} 0.92 & \cellcolor{blue!50} 1.00 & \cellcolor{gray!20} 0.84  \\
+\small Social & \cellcolor{red!20} 0.88 & \cellcolor{blue!20} 0.82 & \cellcolor{blue!20} 0.96 & - & \cellcolor{red!20} 0.86 & \cellcolor{red!20} 0.80 & \cellcolor{red!50} 0.68 & \cellcolor{blue!20} 0.92 & -  \\
+\small Social Confidence & \cellcolor{red!20} 0.92 & - & \cellcolor{red!20} 0.84 & \cellcolor{blue!50} 0.88 & \cellcolor{red!20} 0.88 & \cellcolor{red!20} 0.88 & - & \cellcolor{blue!50} 0.80 & -  \\
+\small Social Withdrawal & \cellcolor{red!20} 0.78 & \cellcolor{blue!20} 1.00 & \cellcolor{blue!20} 0.94 & \cellcolor{red!20} 0.82 & \cellcolor{blue!20} 0.94 & \cellcolor{red!20} 0.78 & \cellcolor{blue!20} 0.94 & - & \cellcolor{red!20} 0.76  \\
+\small Sympathy & - & \cellcolor{blue!20} 0.98 & \cellcolor{red!20} 0.82 & \cellcolor{blue!50} 0.80 & \cellcolor{red!20} 0.96 & \cellcolor{red!20} 0.96 & \cellcolor{red!20} 0.96 & \cellcolor{blue!20} 1.00 & \cellcolor{red!20} 0.86  \\
+\small Tenderness & \cellcolor{red!20} 0.96 & \cellcolor{blue!20} 0.96 & \cellcolor{red!20} 0.88 & \cellcolor{blue!20} 0.90 & \cellcolor{red!20} 0.88 & \cellcolor{red!20} 1.00 & \cellcolor{blue!50} 0.60 & \cellcolor{blue!50} 0.92 & \cellcolor{red!20} 0.92  \\
+\small Theoretical & \cellcolor{red!20} 0.98 & \cellcolor{blue!20} 0.82 & \cellcolor{red!20} 0.92 & \cellcolor{red!50} 0.96 & - & \cellcolor{red!20} 0.82 & \cellcolor{blue!20} 0.80 & \cellcolor{red!50} 1.00 & \cellcolor{red!20} 0.82  \\
+\small Understanding & \cellcolor{blue!20} 0.90 & \cellcolor{red!20} 0.84 & \cellcolor{blue!20} 0.94 & \cellcolor{blue!20} 0.86 & \cellcolor{blue!20} 0.78 & \cellcolor{blue!20} 0.88 & - & \cellcolor{red!20} 0.68 & \cellcolor{blue!20} 0.86  \\
+\small Warmth & \cellcolor{gray!20} 0.96 & \cellcolor{gray!20} 0.98 & \cellcolor{gray!20} 0.92 & \cellcolor{blue!50} 0.86 & \cellcolor{gray!20} 0.96 & \cellcolor{gray!20} 0.92 & \cellcolor{gray!20} 0.98 & \cellcolor{blue!20} 1.00 & \cellcolor{gray!20} 1.00  \\
+ \midrule
+\cellcolor{red!50} STIMULATE & \textbf{1(0.92)} & \textbf{0(nan)} & \textbf{1(0.94)} & \textbf{6(0.843)} & \textbf{1(0.72)} & \textbf{2(0.78)} & \textbf{1(0.68)} & \textbf{3(0.86)} & \textbf{3(0.88)}  \\
+\cellcolor{blue!50} SUPPRESSED & \textbf{3(0.9)} & \textbf{1(0.76)} & \textbf{2(0.76)} & \textbf{9(0.889)} & \textbf{2(0.6)} & \textbf{1(0.64)} & \textbf{3(0.733)} & \textbf{6(0.9)} & \textbf{3(0.773)}  \\
+\cellcolor{red!20} NON-SUPPRESSED & \textbf{10(0.904)} & \textbf{2(0.91)} & \textbf{8(0.91)} & \textbf{1(0.82)} & \textbf{11(0.887)} & \textbf{8(0.888)} & \textbf{4(0.935)} & \textbf{4(0.83)} & \textbf{7(0.84)}  \\
+\cellcolor{blue!20} NON-STIMULATED & \textbf{5(0.888)} & \textbf{15(0.901)} & \textbf{10(0.918)} & \textbf{4(0.91)} & \textbf{5(0.868)} & \textbf{6(0.88)} & \textbf{7(0.891)} & \textbf{7(0.94)} & \textbf{4(0.92)}  \\
+\cellcolor{gray!20} MAINTAINED & \textbf{8(0.925)} & \textbf{9(0.958)} & \textbf{8(0.96)} & \textbf{5(0.976)} & \textbf{9(0.929)} & \textbf{11(0.951)} & \textbf{8(0.972)} & \textbf{7(0.954)} & \textbf{8(0.952)}  \\
+UNCONTROLLED & \textbf{3} & \textbf{3} & \textbf{1} & \textbf{5} & \textbf{2} & \textbf{2} & \textbf{7} & \textbf{3} & \textbf{5}  \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
