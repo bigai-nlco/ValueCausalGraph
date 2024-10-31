@@ -7,8 +7,7 @@
 
 # ## Set Up
 
-# In[49]:
-
+# In[1]:
 
 
 # Standard imports
@@ -28,13 +27,6 @@ from collections import Counter
 from functools import partial
 from tqdm import tqdm
 from faker import Faker
-
-# Imports for displaying vis in Colab / notebook
-import webbrowser
-import http.server
-import socketserver
-import threading
-PORT = 8000
 
 import torch
 torch.set_grad_enabled(False);
@@ -77,39 +69,6 @@ else:
 print(f"Device: {device}")
 
 
-# In[3]:
-
-
-def display_vis_inline(filename: str, height: int = 850):
-    '''
-    Displays the HTML files in Colab. Uses global `PORT` variable defined in prev cell, so that each
-    vis has a unique port without having to define a port within the function.
-    '''
-    if not(COLAB):
-        webbrowser.open(filename);
-
-    else:
-        global PORT
-
-        def serve(directory):
-            os.chdir(directory)
-
-            # Create a handler for serving files
-            handler = http.server.SimpleHTTPRequestHandler
-
-            # Create a socket server with the handler
-            with socketserver.TCPServer(("", PORT), handler) as httpd:
-                print(f"Serving files from {directory} on port {PORT}")
-                httpd.serve_forever()
-
-        thread = threading.Thread(target=serve, args=("/content",))
-        thread.start()
-
-        output.serve_kernel_port_as_iframe(PORT, path=f"/{filename}", height=height, cache_in_notebook=True)
-
-        PORT += 1
-
-
 # # Loading a pretrained Sparse Autoencoder
 # 
 # Below we load a Transformerlens model, a pretrained SAE and a dataset from huggingface.
@@ -134,16 +93,16 @@ def display_vis_inline(filename: str, height: int = 850):
 #             )
 #         return res
 
-# In[187]:
+# In[3]:
 
 
-NUM_PLAYERS_GENERATE = 25
-NUM_PLAYERS_USE = 25
+NUM_PLAYERS_GENERATE = 100
+NUM_PLAYERS_USE = 100
 NUM_PLAYERS_START = -1
 
-NUM_VALUE_DIM = 'ALL'#'ALL', 'SMALLSET', 100
+NUM_VALUE_DIM = 'SMALLSET'#'ALL', 'SMALLSET', 100
 MAX_QUESTIONS_PER_BATCH = 8
-GENERATE_NEW_PLAYERS = True
+GENERATE_NEW_PLAYERS = False
 
 PERSON = 0
 ALLOW_UNSURE_ANSWER = False
@@ -151,12 +110,12 @@ SYSTEMATIC_PROMPT = 1
 EXAMPLES_IN_PROMPT = 1
 
 SAE_STEERED_RANGE = 'onlyvalue' #'roleinstruction','onlyvalue' 
-SAE_STEERED_FEATURE_NUM = 10 #10
+SAE_STEERED_FEATURE_NUM = 25 #25, 10
 SAE_STEERED_FEATURE_BAN = []
+#SAE_STEERED_FEATURE_BAN = [10096, 8387, 2221, 1312, 7502, 14049]
 #SAE_STEERED_FEATURE_BAN = [60312, 7754, 13033]
 #SAE_STEERED_FEATURE_BAN = [60312, 7754, 13033, 1897, 2509, 20141, 41929, 48321, 63905]
 #SAE_STEERED_FEATURE_BAN = [60312, 7754, 13033, 1897, 2509, 20141, 41929, 48321, 63905, 49202, 2246, 58305]
-
 
 SAMPLING_KWARGS = dict(max_new_tokens=50, do_sample=False, temperature=0.5, top_p=0.7, freq_penalty=1.0, )
 STEERING_ON = True
@@ -168,26 +127,35 @@ JUDGE_ANSWER_WITH_YESNO = False
 
 VERBOSE = False
 
-DATA_SPLIT = 'test'
-
-if DATA_SPLIT == 'train':
+GROUP_SAMPLE_RATE = 0.4 #0.4 for valuebenchtrain
+DATA_SPLIT = 'valuebenchtrain'
+if DATA_SPLIT == '30clearori':
     df_valuebench = pd.read_csv(os.path.join(LOCAL_SAE_MODEL_PATH, 'value_data/value_orientation_30clearori.csv'))
-elif DATA_SPLIT == 'test':
+elif DATA_SPLIT == 'other':
     df_valuebench = pd.read_csv(os.path.join(LOCAL_SAE_MODEL_PATH, 'value_data/value_orientation_other.csv'))
+elif DATA_SPLIT == 'valuebenchtrain':
+    df_valuebench = pd.read_csv(os.path.join(LOCAL_SAE_MODEL_PATH, 'value_data/value_orientation_train.csv'))
+elif DATA_SPLIT == 'valuebenchtest':
+    df_valuebench = pd.read_csv(os.path.join(LOCAL_SAE_MODEL_PATH, 'value_data/value_orientation_test.csv'))
+elif DATA_SPLIT == 'valuebenchall':
+    df_valuebench = pd.read_csv(os.path.join(LOCAL_SAE_MODEL_PATH, 'value_data/value_orientation.csv'))    
 else:
     raise ValueError('Invalid data split')
 
 grouped = df_valuebench.groupby('value')
 if NUM_VALUE_DIM != 'ALL':
     if NUM_VALUE_DIM == 'SMALLSET':
-        #smallset = ['Achievement', 'Benevolence', 'Conformity', 'Hedonism', 'Power', 'Security', 'Self-Direction', 'Stimulation', 'Tradition', 'Universalism']
-        #smallset = ['Power Distance', 'Individualism', 'Uncertainty Avoidance', 'Masculinity',  'Long Term Orientation', 'Indulgence', 'Corruption', 'Economic Vals', 'Ethical Vals', 'Migration', 'Political Cul', 'Political Int', 'Science', 'Feminist',]
-        #smallset = ['Power Distance', 'Individualism', 'Uncertainty Avoidance', 'Masculinity',  'Long Term Orientation', 'Indulgence', 'Economic', 'Political', 'Scientific Understanding', 'Achievement', 'Benevolence', 'Conformity', 'Hedonism', 'Security', 'Self-Direction', 'Stimulation', 'Tradition', 'Universalism']
-        #smallset = ['Indulgence', 'Hedonism']#
+        #smallset = ['Indulgence', 'Hedonism']
         #smallset = ['Laziness', 'Workaholism']
         #smallset = ['Achievement']
         #smallset = ['Empathy', 'Sympathy']
-        smallset = ['Assertiveness']
+        #smallset = ['Assertiveness']
+        #smallset = ['Preference for Order and Structure']
+        #smallset = ['Assertiveness', 'Breadth of Interest', 'Empathy', 'Extraversion', 'Nurturance', 'Preference for Order and Structure', 'Sociability', 'Social', 'Sympathy', 'Tenderness', 'Theoretical', 'Understanding'] #values with 9+ questions in 30clearori
+        smallset = ["Positive coping", "Empathy", "Resilience", "Social Complexity", "Achievement", "Uncertainty Avoidance", "Aesthetic", "Anxiety Disorder", "Breadth of Interest", "Economic", "Organization", "Political", "Religious", "Social", "Social Cynicism", "Theoretical", "Understanding"] #values with 20+ questions in valuebench
+        #smallset = ["Sociability", "Perfectionism", "Assertiveness", "Creativity", "Emotional expressiveness", "Religiosity", "Reward for Application", "Anxiety", "Dominance", "Conscientiousness", "Preference for Order and Structure", "Rationality", "Discomfort with Ambiguity", "Dutifulness", "Independence", "Individualism", "Nurturance", "Preference for Predictability", "Sympathy", "Tenderness"] #values with 13-19 questions in valuebench
+        #smallset = ['Social', 'Understanding', 'Empathy', 'Breadth of Interest', 'Theoretical']#intersection of values with 9+ questions in 30clearori and 20+ questions in valuebench
+
         grouped = [group for group in grouped if group[0] in smallset]
     else:
         grouped = random.sample(list(grouped), NUM_VALUE_DIM)
@@ -199,7 +167,7 @@ else:
     os.mkdir('valuebench_info')
 
 for value_name, value_qa in grouped:
-    print(value_name)
+    print(value_name, len(value_qa))
     with open(os.path.join('valuebench_info','value_questions_' + value_name + '.html'), 'w') as f:
         for question, answer in zip(value_qa['question'], value_qa['agreement']):
             f.write(f'<p>Question: {question}</p>')
@@ -233,25 +201,25 @@ else:
 
 
 if base_model == 'GPT2-SMALL':
-    answer_valuebench_features_csv = 'answers_valuebench_features_gpt2small' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
+    answer_valuebench_features_csv = 'answers_gpt2small' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
 elif base_model == 'GEMMA-2B-IT':
-    answer_valuebench_features_csv = 'answers_valuebench_features_gemma2bit' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
+    answer_valuebench_features_csv = 'answers_gemma2bit' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
 elif base_model == 'GEMMA-2B':
-    answer_valuebench_features_csv = 'answers_valuebench_features_gemma2b' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
+    answer_valuebench_features_csv = 'answers_gemma2b' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
 elif base_model == 'GEMMA-2B-CHN':
-    answer_valuebench_features_csv = 'answers_valuebench_features_gemma2bchn' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
+    answer_valuebench_features_csv = 'answers_gemma2bchn' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
 elif base_model == 'MISTRAL-7B':
-    answer_valuebench_features_csv = 'answers_valuebench_features_mistral7b' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
+    answer_valuebench_features_csv = 'answers_mistral7b' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
 elif base_model == 'LLAMA3-8B':
-    answer_valuebench_features_csv = 'answers_valuebench_features_llama38b' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
+    answer_valuebench_features_csv = 'answers_llama38b' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
 elif base_model == 'LLAMA3-8B-IT':
-    answer_valuebench_features_csv = 'answers_valuebench_features_llama38bit' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
+    answer_valuebench_features_csv = 'answers_llama38bit' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
 elif base_model == 'LLAMA3-8B-IT-HELPFUL':
-    answer_valuebench_features_csv = 'answers_valuebench_features_llama38bithelp' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
+    answer_valuebench_features_csv = 'answers_llama38bithelp' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
 elif base_model == 'LLAMA3-8B-IT-FICTION':
-    answer_valuebench_features_csv = 'answers_valuebench_features_llama38bitfiction' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
+    answer_valuebench_features_csv = 'answers_llama38bitfiction' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
 elif base_model == 'LLAMA3-8B-IT-CHN':
-    answer_valuebench_features_csv = 'answers_valuebench_features_llama38bitchn' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
+    answer_valuebench_features_csv = 'answers_llama38bitchn' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
 else:
     raise ValueError('Invalid base model')
 
@@ -266,7 +234,10 @@ answer_valuebench_features_csv = answer_valuebench_features_csv.replace('.csv', 
 answer_valuebench_features_csv = answer_valuebench_features_csv.replace('.csv', '_' + 'EXAMPLES_IN_PROMPT' + str(EXAMPLES_IN_PROMPT) + '.csv')
 answer_valuebench_features_csv = answer_valuebench_features_csv.replace('.csv', '_' + 'SAE_STEERED_RANGE' + str(SAE_STEERED_RANGE) + '.csv')
 answer_valuebench_features_csv = answer_valuebench_features_csv.replace('.csv', '_' + 'STEERING_COEFF' + str(STEER_COEFF) + '.csv')
+answer_valuebench_features_csv = answer_valuebench_features_csv.replace('.csv', '_' + str(DATA_SPLIT) + '.csv')
+answer_valuebench_features_csv = answer_valuebench_features_csv.replace('.csv', '_' + 'SAMPLERATE' + str(GROUP_SAMPLE_RATE) + '.csv')
 
+answer_valuebench_features_csv = os.path.join('useful_data', answer_valuebench_features_csv)
 # JUDGE_ANSWER_RULE_FIRST
 # JUDGE_ANSWER_WITH_YESNO
 
@@ -278,7 +249,7 @@ bnb_config = BitsAndBytesConfig(
     )
 
 
-# In[11]:
+# In[4]:
 
 
 if base_model == 'GPT2-SMALL':
@@ -395,32 +366,7 @@ else:
     raise ValueError(f"Unknown model: {base_model}")
 
 
-# In[6]:
-
-
-dataset = load_dataset(
-    path = os.path.join(LOCAL_SAE_MODEL_PATH, "NeelNanda/pile-10k"),
-    split="train",
-    streaming=False,
-)
-
-if sae:
-    token_dataset = tokenize_and_concatenate(
-        dataset= dataset,# type: ignore
-        tokenizer = model.tokenizer, # type: ignore
-        streaming=True,
-        max_length=sae.cfg.context_size,
-        add_bos_token=sae.cfg.prepend_bos,
-    )
-else:
-    token_dataset = tokenize_and_concatenate(
-        dataset= dataset,# type: ignore
-        tokenizer = model.tokenizer, # type: ignore
-        streaming=True,
-    )
-
-
-# In[7]:
+# In[5]:
 
 
 def generate_new_player():
@@ -481,13 +427,13 @@ if GENERATE_NEW_PLAYERS:
 
 
 
-# In[8]:
+# In[6]:
 
 
 players = restore_players('players' + str(NUM_PLAYERS_GENERATE) + '.json')
 
 
-# In[9]:
+# In[7]:
 
 
 # def generate_question(name, trait, v, a, q, qi, allow_unsure):
@@ -640,7 +586,7 @@ def generate_question_analysis(value_name, a, q, qi, allow_unsure, trait):
     # question = template.format(instruction = instruct, question = q, value_name = value_name)
 
 
-# In[11]:
+# In[8]:
 
 
 def judge_answer(thought_n_answer, question, rulefirst):
@@ -742,7 +688,7 @@ def judge_answer(thought_n_answer, question, rulefirst):
         
 
 
-# In[19]:
+# In[11]:
 
 
 assert sae
@@ -784,7 +730,6 @@ role_sae_counter_sorted = [None] + [x for x in role_sae_counter_sorted if x not 
 
 with torch.no_grad(): 
     startend_positions = []
-    stds_all = []
     steer_dim_results = []
     
     player_count = 0
@@ -808,6 +753,7 @@ with torch.no_grad():
         scores0 = {}
         for steered_dim in role_sae_counter_sorted[:SAE_STEERED_FEATURE_NUM]:
             stds_row = []
+            scstd_row = []
             steer_dim_result = {'steer_dim': steered_dim, 'player_name': player_name}
             print("********************************")
             print (f"Steering on dim: {steered_dim}")
@@ -821,9 +767,21 @@ with torch.no_grad():
                 if VERBOSE:
                     print('=========================')
                     print(value_name)
-                groupagreementall = group['agreement']
-                groupquestionall = group['question']
-                groupitemall = group['item']
+
+                #sample from group using random seed related to player_name
+                group_len = len(group['agreement'])
+                if not player_name:
+                    player_name_seed = 'None'
+                else:
+                    player_name_seed = player_name
+                random.seed(player_name_seed + value_name)
+                sample_index = random.sample(range(group_len), math.ceil(group_len * GROUP_SAMPLE_RATE))
+                sample_index.sort()
+                random.seed()
+
+                groupagreementall = group['agreement'].iloc[sample_index]
+                groupquestionall = group['question'].iloc[sample_index]
+                groupitemall = group['item'].iloc[sample_index]
 
                 scores = []
                 question_batch_no = math.ceil(len(groupagreementall) / MAX_QUESTIONS_PER_BATCH)
@@ -920,20 +878,29 @@ with torch.no_grad():
                 gen_answers_all = [ga*sa for ga, sa in zip(groupagreementall, scores)]
                 gen_answers_all0 = [ga*sa for ga, sa in zip(groupagreementall, scores0[value_name])]
                 changed_scores = []
+                changed_scores_count = Counter()
                 for el, ga, gaa, gaa0, sa, sa0 in zip(range(len(scores)), groupagreementall, gen_answers_all, gen_answers_all0, scores, scores0[value_name]):
                     if VERBOSE:
                         print(el, "\tstandard positive answer:",ga, "\tgen answer:",gaa, "\tgen answer 0:",gaa0, "\tscore:",sa, "\tscore change:",sa-sa0)
-                    if sa-sa0 != 0:
+                    if sa-sa0 not in [0]:
                         changed_scores.append(sa-sa0)
-
+                    changed_scores_count[sa-sa0] += 1
+                if VERBOSE:
+                    print(value_name, ': changed_scores_count ', changed_scores_count)
                 steer_dim_result[value_name] = sum(scores) / len(scores)
-                if changed_scores:
+                if len(changed_scores) >= 2:
                     steer_dim_result[value_name+':scstd'] = np.std(changed_scores)
+                    #steer_dim_result[value_name+':scstd_count'] = len(changed_scores) 
+                    scstd_row.append(np.std(changed_scores))
                 else:
-                    steer_dim_result[value_name+':scstd'] = 0
+                    steer_dim_result[value_name+':scstd'] = -1
+                    #steer_dim_result[value_name+':scstd_count'] = len(changed_scores) 
+                #steer_dim_result[value_name+ ':samples'] = str(sample_index)
                 stds_row.append(np.std(scores))
             
             steer_dim_result['stds'] = np.mean(stds_row)
+            steer_dim_result['scstds'] = np.mean(scstd_row)
+            
             pd_row = pd.DataFrame([steer_dim_result])
             if not head_added:
                 pd.DataFrame(columns=pd_row.keys()).to_csv(answer_valuebench_features_csv, index=False)
@@ -941,12 +908,9 @@ with torch.no_grad():
             pd_row.to_csv(answer_valuebench_features_csv, mode='a', index=False, header=False)
 
             steer_dim_results.append(steer_dim_result)
-            stds_all.append(np.mean(stds_row))
-        
-    print('stds: ', np.mean(stds_all))
 
 
-# In[ ]:
+# In[10]:
 
 
 '''
@@ -975,318 +939,396 @@ for name, char in players.items():
 assert False
 
 
-# In[23]:
+# In[8]:
 
 
-#answer_valuebench_features_csv = 'answers_valuebench_features_gemma2bit_players250_valuedimsALL_sae_NUM_PLAYERS_USE30_SAE_STEERED_FEATURE_NUM10_PERSON0_SYSTEMATIC_PROMPT1_EXAMPLES_IN_PROMPT1_SAE_STEERED_RANGEonlyvalue_STEERING_COEFF100.csv'
-answer_valuebench_features_csv = 'answers_valuebench_features_gemma2bit_players250_valuedimsALL_sae_NUM_PLAYERS_USE250_NUM_PLAYERS_START-1_SAE_STEERED_FEATURE_NUM10_PERSON0_SYSTEMATIC_PROMPT1_EXAMPLES_IN_PROMPT1_SAE_STEERED_RANGEonlyvalue_STEERING_COEFF100.csv'
-#answer_valuebench_features_csv = 'answers_valuebench_features_llama38bit_players250_valuedimsALL_sae_NUM_PLAYERS_USE8_NUM_PLAYERS_START-1_SAE_STEERED_FEATURE_NUM10_PERSON0_SYSTEMATIC_PROMPT2_EXAMPLES_IN_PROMPT1_SAE_STEERED_RANGEonlyvalue_STEERING_COEFF100.csv'
-#answer_valuebench_features_csv = 'answers_valuebench_features_llama38bit_players250_valuedimsALL_sae_NUM_PLAYERS_USE10_NUM_PLAYERS_START-1_SAE_STEERED_FEATURE_NUM10_PERSON0_SYSTEMATIC_PROMPT2_EXAMPLES_IN_PROMPT1_SAE_STEERED_RANGEonlyvalue_STEERING_COEFF100.csv'
-#answer_valuebench_features_csv = "ans_cross_total.csv"
-data_csv = pd.read_csv(answer_valuebench_features_csv)
+answer_valuebench_features_csv_gemma_train = os.path.join('useful_data',"ans_gemma_train_formal.csv")
+data_csv_gemma_train = pd.read_csv(answer_valuebench_features_csv_gemma_train)
 
-#New csv for counting the number of cells that are higher, lower, or equal than 0
-stat_csv_23 = 'value_dims/23_stat.csv'
-data_new_diff_count_total = pd.DataFrame()
-
-os.makedirs('value_dims', exist_ok=True)
-for column in data_csv.columns:
-    if column == 'player_name' or column == 'steer_dim' or column == 'stds'or column.endswith(':scstd'):
-        continue
-    value_csv = f'value_dims/{column}.csv'
-    data_new = data_csv.pivot(index='steer_dim', columns='player_name', values=column)
-    data_new_scstd = data_csv.pivot(index='steer_dim', columns='player_name', values=column+':scstd')
-    data_new = data_new.astype(str) + '±' + data_new_scstd.astype(str)
-    data_new.to_csv(value_csv)
-
-    data_new_diff = data_new.copy()
-    for col in data_new.columns:
-        data_new_diff[col] = data_new[col].apply(lambda x: x.split('±')[0])
-    data_new_diff = data_new_diff.astype(float)
-    data_new_diff = data_new_diff - data_new_diff.iloc[0]
-    
-    #For each row count the number of cells that are higher, lower, or equal than 0
-    data_new_diff_count_higher = data_new_diff.apply(lambda x: x.apply(lambda y: 1 if y > 0 else 0))
-    data_new_diff_count_higher = data_new_diff_count_higher.sum(axis=1)
-    data_new_diff_count_lower = data_new_diff.apply(lambda x: x.apply(lambda y: 1 if y < 0 else 0))
-    data_new_diff_count_lower = data_new_diff_count_lower.sum(axis=1)
-    data_new_diff_count_equal = data_new_diff.apply(lambda x: x.apply(lambda y: 1 if y == 0 else 0))
-    data_new_diff_count_equal = data_new_diff_count_equal.sum(axis=1)
-    #put theses counts as strings in one cell
-    data_new_diff_count = data_new_diff_count_higher.astype(str) + '/' + data_new_diff_count_lower.astype(str) + '/' + data_new_diff_count_equal.astype(str)
-    #Merge to the total table
-    data_new_diff_count_total[column] = data_new_diff_count
-
-data_new_diff_count_total.to_csv(stat_csv_23)
+answer_valuebench_features_csv_gemma_test = os.path.join('useful_data',"ans_gemma_test_formal.csv")
+data_csv_gemma_test = pd.read_csv(answer_valuebench_features_csv_gemma_test)
 
 
+#answer_valuebench_features_csv_gemma_train = os.path.join('useful_data',"answers_valuebench_features_gemma2bit_players250_valuedimsALL_sae_NUM_PLAYERS_USE250_NUM_PLAYERS_START-1_SAE_STEERED_FEATURE_NUM10_PERSON0_SYSTEMATIC_PROMPT1_EXAMPLES_IN_PROMPT1_SAE_STEERED_RANGEonlyvalue_STEERING_COEFF100.csv")
+#answer_valuebench_features_csv_gemma_test = os.path.join('useful_data',"answers_valuebench_features_gemma2bit_players25_valuedimsALL_sae_NUM_PLAYERS_USE25_NUM_PLAYERS_START-1_SAE_STEERED_FEATURE_NUM10_PERSON0_SYSTEMATIC_PROMPT1_EXAMPLES_IN_PROMPT1_SAE_STEERED_RANGEonlyvalue_STEERING_COEFF100_bak.csv")
+
+# answer_valuebench_features_csv_llama_train = os.path.join('useful_data',"ans_llama_train.csv")
+# data_csv_llama_train = pd.read_csv(answer_valuebench_features_csv_llama_train)
+
+# answer_valuebench_features_csv_llama_test = os.path.join('useful_data',"ans_llama_test.csv")
+# data_csv_llama_test = pd.read_csv(answer_valuebench_features_csv_llama_test)
+
+
+def get_data_new_diff(data_csv_train, modelname):
+    pathname = 'value_dims_rsd_' + modelname
+    stat_csv_23 = pathname + '/23_stat.csv'
+    data_new_diff_count_total = pd.DataFrame()
+
+    os.makedirs(pathname, exist_ok=True)
+    for column in data_csv_train.columns:
+        if column == 'player_name' or column == 'steer_dim' or column == 'stds' or column =='scstds' or column.endswith(':scstd'):
+            continue
+        value_csv = pathname + '/' + column +'.csv'
+        data_new = data_csv_train.pivot(index='steer_dim', columns='player_name', values=column)
+        data_new_scstd = data_csv_train.pivot(index='steer_dim', columns='player_name', values=column+':scstd')
+        data_new = data_new.astype(str) + '±' + data_new_scstd.astype(str) #problems here: the scstd is not the std for the score, but fore the changed score
+        data_new.to_csv(value_csv)
+
+        data_new_diff = data_new.copy()
+        for col in data_new.columns:
+            data_new_diff[col] = data_new[col].apply(lambda x: x.split('±')[0])
+        data_new_diff = data_new_diff.astype(float)
+
+        #data_new_diff = data_new_diff - data_new_diff.iloc[0]
+        #data_new_diff = data_new_diff - data_new_diff[data_new_diff.iloc[:, 0].index.isnull()].iloc[0]
+        data_new_diff = data_new_diff - data_new_diff[data_new_diff.index.isnull()].iloc[0]
+
+        #For each row count the number of cells that are higher, lower, or equal than 0
+        data_new_diff_count_higher = data_new_diff.apply(lambda x: x.apply(lambda y: 1 if y > 0 else 0))
+        data_new_diff_count_higher = data_new_diff_count_higher.sum(axis=1)
+        data_new_diff_count_lower = data_new_diff.apply(lambda x: x.apply(lambda y: 1 if y < 0 else 0))
+        data_new_diff_count_lower = data_new_diff_count_lower.sum(axis=1)
+        data_new_diff_count_equal = data_new_diff.apply(lambda x: x.apply(lambda y: 1 if y == 0 else 0))
+        data_new_diff_count_equal = data_new_diff_count_equal.sum(axis=1)
+        #put theses counts as strings in one cell
+        data_new_diff_count = data_new_diff_count_higher.astype(str) + '/' + data_new_diff_count_lower.astype(str) + '/' + data_new_diff_count_equal.astype(str)
+        #Merge to the total table
+        data_new_diff_count_total[column] = data_new_diff_count
+
+    data_new_diff_count_total.to_csv(stat_csv_23)
+
+get_data_new_diff(data_csv_gemma_train, 'gemma')
+get_data_new_diff(data_csv_gemma_test, 'gemmatest')
 
 
 
 
-# In[24]:
+
+
+# In[6]:
 
 
 threshold_ss = 0.7
 threshold_maintain = 0.8
 threshold_non = 0.2
 threshold_judge = 0
-data_new_diff_count_total = pd.read_csv(stat_csv_23)
-data_csv = pd.read_csv(answer_valuebench_features_csv)
-
-standard_data = data_csv[data_csv['steer_dim'].isnull()]
-
-#create a table, named table1
-#rows are value dimensions (not including nan)
-#columns are steer dimensions (not including nan)
-#for each cell, storage if it belongs to stimulated, suppressed, or maintained, and the percentage of players that are correctly steered
-#the percentage is calculated by the number of players that are correctly steered divided by the total number of players
-
-table1_columns = data_new_diff_count_total['steer_dim'].unique()
-table1_columns = table1_columns[~np.isnan(table1_columns)]
-table1 = pd.DataFrame(columns=table1_columns, index=data_new_diff_count_total.columns[1:])
-
-players_list_local = data_csv['player_name'].unique()[1:]
-
-for steer_dim in data_new_diff_count_total['steer_dim'].unique():
-    if np.isnan(steer_dim):
-        continue
-    print(steer_dim)
-    steer_dim_row = data_new_diff_count_total[data_new_diff_count_total['steer_dim'] == steer_dim]
-    stimulated_dims = []
-    suppressed_dims = []
-    maintained_dims = []
-    non_suppressed_dims = []
-    non_stimulated_dims = []
-    uncontrolled_dims = []
-
-    for column in steer_dim_row.columns:
-        if column == 'steer_dim':
-            continue
-        #split cell by /
-        counts = steer_dim_row[column].values[0].split('/')   
-        if int(counts[0]) / len(players_list_local) > threshold_ss:
-            stimulated_dims.append(column)
-        elif int(counts[1]) / len(players_list_local) > threshold_ss:
-            suppressed_dims.append(column)
-        elif int(counts[2]) / len(players_list_local) > threshold_maintain:
-            maintained_dims.append(column)
-        elif int(counts[1]) / len(players_list_local) < threshold_non:
-            non_suppressed_dims.append(column)
-        elif int(counts[0]) / len(players_list_local) < threshold_non:
-            non_stimulated_dims.append(column)
-        else:
-            uncontrolled_dims.append(column)
-
-    steer_dim_data = data_csv[data_csv['steer_dim'] == steer_dim]
-    for value_dim in stimulated_dims:
-        count_correct_steer = 0
-        for player_name in players_list_local:
-            steered_player_data = steer_dim_data[steer_dim_data['player_name'] == player_name][value_dim].values[0]
-            standard_player_data = standard_data[standard_data['player_name'] == player_name][value_dim].values[0]
-            if steered_player_data - standard_player_data > threshold_judge:
-                count_correct_steer += 1
-        print(value_dim, 'SITMULATE', count_correct_steer / len(players_list_local), count_correct_steer)
-        #edit the table
-        table1.loc[value_dim, steer_dim] = 'STIMULATE,' + str(count_correct_steer / len(players_list_local))
-
-    for value_dim in suppressed_dims:
-        count_correct_steer = 0
-        for player_name in players_list_local:
-            steered_player_data = steer_dim_data[steer_dim_data['player_name'] == player_name][value_dim].values[0]
-            standard_player_data = standard_data[standard_data['player_name'] == player_name][value_dim].values[0]
-            if -(steered_player_data - standard_player_data) > threshold_judge:
-                count_correct_steer += 1
-        print(value_dim, 'SUPPRESS', count_correct_steer / len(players_list_local), count_correct_steer)
-        table1.loc[value_dim, steer_dim] = 'SUPPRESS,' + str(count_correct_steer / len(players_list_local))
-        
-    for value_dim in non_suppressed_dims:
-        count_correct_steer = 0
-        for player_name in players_list_local:
-            steered_player_data = steer_dim_data[steer_dim_data['player_name'] == player_name][value_dim].values[0]
-            standard_player_data = standard_data[standard_data['player_name'] == player_name][value_dim].values[0]
-            if steered_player_data - standard_player_data >= -threshold_judge:
-                count_correct_steer += 1
-        print(value_dim, 'NON_SUPPRESS', count_correct_steer / len(players_list_local), count_correct_steer)
-        table1.loc[value_dim, steer_dim] = 'NON_SUPPRESS,' + str(count_correct_steer / len(players_list_local))
-
-    for value_dim in non_stimulated_dims:
-        count_correct_steer = 0
-        for player_name in players_list_local:
-            steered_player_data = steer_dim_data[steer_dim_data['player_name'] == player_name][value_dim].values[0]
-            standard_player_data = standard_data[standard_data['player_name'] == player_name][value_dim].values[0]
-            if steered_player_data - standard_player_data <= threshold_judge:
-                count_correct_steer += 1
-        print(value_dim, 'NON_STIMULATE', count_correct_steer / len(players_list_local), count_correct_steer)   
-        table1.loc[value_dim, steer_dim] = 'NON_STIMULATE,' + str(count_correct_steer / len(players_list_local))
-    
-    for value_dim in maintained_dims:
-        count_correct_steer = 0
-        for player_name in players_list_local:
-            steered_player_data = steer_dim_data[steer_dim_data['player_name'] == player_name][value_dim].values[0]
-            standard_player_data = standard_data[standard_data['player_name'] == player_name][value_dim].values[0]
-            if abs(steered_player_data - standard_player_data) <= threshold_judge:
-                count_correct_steer += 1
-        print(value_dim, 'MAINTAIN', count_correct_steer / len(players_list_local), count_correct_steer)
-        table1.loc[value_dim, steer_dim] = 'MAINTAIN,' + str(count_correct_steer / len(players_list_local))
 
 
+def get_table1(data_csv_train, data_csv_test, stat_csv_23):
+    data_new_diff_count_total = pd.read_csv(stat_csv_23)
+
+    table1_columns = data_new_diff_count_total['steer_dim'].unique()
+    table1_columns = table1_columns[~np.isnan(table1_columns)]
+    value_dims = data_new_diff_count_total.columns[1:]
+    table1 = pd.DataFrame(columns=table1_columns, index=value_dims)
 
 
-############################################
+    players_list_train = data_csv_train['player_name'].unique()
+    #players_list_train = players_list_local[~pd.isnull(players_list_local)]
 
+    players_list_test = data_csv_test['player_name'].unique()
+    players_list_test = players_list_test[~pd.isnull(players_list_test)]
 
-#DFS all nodes in edges1 along the arrow direction
-# def dfs(edges, node, visited):
-#     visited[node] = True
-#     print(node)
-#     for edge in edges:
-#         if edge[0] == node and not visited[edge[1]] and edge[3] == 'single-arrow':
-#             dfs(edges, edge[1], visited)
-#     return
-# dfs(edges1, 'Affiliation', {node: False for edge in edges1 for node in edge[3]})
+    standard_data = data_csv_test[data_csv_test['steer_dim'].isnull()]
 
+    for steer_dim in table1_columns:
+        assert not np.isnan(steer_dim)
+        print(steer_dim)
 
-# In[25]:
+        steer_dim_row = data_new_diff_count_total[data_new_diff_count_total['steer_dim'] == steer_dim]
+        stimulated_dims = []
+        suppressed_dims = []
+        maintained_dims = []
+        non_suppressed_dims = []
+        non_stimulated_dims = []
+        uncontrolled_dims = []
 
-
-# Generate a piece of latex code for the table
-# Rows are the value dimensions, columns are the steer dimensions
-# for each cell, if the value dimension is stimulated for the steer dimension, then the cell contain an uparrow, along with the percentage of players that are correctly steered
-# if the value dimension is suppressed, then the cell contain a downarrow, along with the percentage of players that are correctly steered
-# if the value dimension is maintained, then the cell contain a dash, along with the percentage of players that are correctly steered
-# The percentage is calculated by the number of players that are correctly steered divided by the total number of players
-#For each row, bold text on the highest success rate of the three types of steering
-#For each column, add a row at the bottom, showing the average success rate of the three types of steering
-# print the latex code to a file
-#Now let's generate the latex code
-latex_code = '\\begin{table}[ht]\n\\caption{Effective and unexpected steering of SAE features}\n\\label{table: sae-steering}\n\\begin{center}\n'
-latex_code += '\\begin{tabular}{c@{\\hspace{3pt}}' + 'c@{\\hspace{3pt}}' * (len(table1.columns) - 1) + 'c' + '}\n\\toprule\n'
-#transfer table1.columns to a list of str
-
-
-steering_features = list(map(str, map(int, table1.columns)))
-latex_code += 'Value & ' + ' & '.join(['\\multicolumn{1}{c}{\\bf ' + tc + '}' for tc in steering_features]) + ' \\\\\n\\hline\n'
-#
-
-stimulated_dim_avg_success = {sf: [] for sf in steering_features}
-stimulhalf_dim_avg_success = {sf: [] for sf in steering_features}
-suppressed_dim_avg_success = {sf: [] for sf in steering_features}
-supprehalf_dim_avg_success = {sf: [] for sf in steering_features}
-maintained_dim_avg_success = {sf: [] for sf in steering_features}
-
-
-uncontroll_dims = {sf: 0 for sf in steering_features}
-stimulated_dims = {sf: 0 for sf in steering_features} 
-suppressed_dims = {sf: 0 for sf in steering_features}
-stimulhalf_dims = {sf: 0 for sf in steering_features}
-supprehalf_dims = {sf: 0 for sf in steering_features}
-maintained_dims = {sf: 0 for sf in steering_features}
-
-
-for index, row in table1.iterrows():
-    #if value's name (index) is too long, make its font smaller, all value names should be available in 3pt
-    if len(index) > 20:
-        latex_code += '\\tiny ' + index + ' & '
-    else:
-        latex_code += '\\small ' + index + ' & '
-
-    for value, sf in zip(row, steering_features):
-        if type(value) == str:
-            print(value)
-            value = value.split(',')
-            
-            if value[0] == 'STIMULATE':
-                stimulated_dim_avg_success[sf].append(float(value[1]))
-                stimulated_dims[sf] += 1
-                #latex_code += '\\textcolor{red}{\\textbf{$\\uparrow$}}' + ' ' + f"{float(value[1]):.2f}" + ' & '
-                latex_code += '\\cellcolor{red!20}' + ' ' + f"{float(value[1]):.2f}" + ' & '
-                #latex_code += f"{float(value[1]):.2f}" + ' & '
-            elif value[0] == 'NON_SUPPRESS':
-                stimulhalf_dim_avg_success[sf].append(float(value[1]))
-                stimulhalf_dims[sf] += 1
-                #latex_code += '\\textcolor{magenta}{\\textbf{$\\nearrow$}}' + ' ' + f"{float(value[1]):.2f}" + ' & '
-                latex_code += '\\cellcolor{magenta!20}' + ' ' + f"{float(value[1]):.2f}" + ' & '
-                #latex_code += f"{float(value[1]):.2f}" + ' & '
-            elif value[0] == 'SUPPRESS':
-                suppressed_dim_avg_success[sf].append(float(value[1]))
-                suppressed_dims[sf] += 1
-                #latex_code += '\\textcolor{blue}{\\textbf{$\\downarrow$}}' + ' ' + f"{float(value[1]):.2f}" + ' & '
-                latex_code += '\\cellcolor{blue!20}' + ' ' + f"{float(value[1]):.2f}" + ' & '
-                #latex_code += f"{float(value[1]):.2f}" + ' & '
-            elif value[0] == 'NON_STIMULATE':
-                supprehalf_dim_avg_success[sf].append(float(value[1]))
-                supprehalf_dims[sf] += 1
-                #latex_code += '\\textcolor{cyan}{\\textbf{$\\searrow$}}' + ' ' + f"{float(value[1]):.2f}" + ' & '
-                latex_code += '\\cellcolor{cyan!20}' + ' ' + f"{float(value[1]):.2f}" + ' & '
-                #latex_code += f"{float(value[1]):.2f}" + ' & '
-            elif value[0] == 'MAINTAIN':
-                maintained_dim_avg_success[sf].append(float(value[1]))
-                maintained_dims[sf] += 1
-                #latex_code += '\\textcolor{purple}{\\textbf{-}}' + ' ' + f"{float(value[1]):.2f}" + ' & '
-                latex_code += '\\cellcolor{green!20}' + ' ' + f"{float(value[1]):.2f}" + ' & '
-                #latex_code += f"{float(value[1]):.2f}" + ' & '
+        for column in value_dims:
+            assert column != 'steer_dim'
+            #split cell by /
+            counts = steer_dim_row[column].values[0].split('/')   
+            if int(counts[0]) / len(players_list_train) > threshold_ss:
+                stimulated_dims.append(column)
+            elif int(counts[1]) / len(players_list_train) > threshold_ss:
+                suppressed_dims.append(column)
+            elif int(counts[2]) / len(players_list_train) > threshold_maintain:
+                maintained_dims.append(column)
+            elif int(counts[1]) / len(players_list_train) < threshold_non:
+                non_suppressed_dims.append(column)
+            elif int(counts[0]) / len(players_list_train) < threshold_non:
+                non_stimulated_dims.append(column)
             else:
-                raise ValueError('Invalid value')
+                uncontrolled_dims.append(column)
+
+        steer_dim_data = data_csv_test[data_csv_test['steer_dim'] == steer_dim]
+        for value_dim in stimulated_dims:
+            count_correct_steer = 0
+            for player_name in players_list_test:
+                steered_player_data = steer_dim_data[steer_dim_data['player_name'] == player_name][value_dim].values[0]
+                standard_player_data = standard_data[standard_data['player_name'] == player_name][value_dim].values[0]
+                if steered_player_data - standard_player_data > threshold_judge:
+                    count_correct_steer += 1
+            print(value_dim, 'SITMULATE', count_correct_steer / len(players_list_test), count_correct_steer)
+            #edit the table
+            table1.loc[value_dim, steer_dim] = 'STIMULATE,' + str(count_correct_steer / len(players_list_test))
+
+        for value_dim in suppressed_dims:
+            count_correct_steer = 0
+            for player_name in players_list_test:
+                steered_player_data = steer_dim_data[steer_dim_data['player_name'] == player_name][value_dim].values[0]
+                standard_player_data = standard_data[standard_data['player_name'] == player_name][value_dim].values[0]
+                if -(steered_player_data - standard_player_data) > threshold_judge:
+                    count_correct_steer += 1
+            print(value_dim, 'SUPPRESS', count_correct_steer / len(players_list_test), count_correct_steer)
+            table1.loc[value_dim, steer_dim] = 'SUPPRESS,' + str(count_correct_steer / len(players_list_test))
+            
+        for value_dim in non_suppressed_dims:
+            count_correct_steer = 0
+            for player_name in players_list_test:
+                print(player_name, value_dim)
+                
+                if player_name.startswith('Timothy'):
+                    pass
+
+                steered_player_data = steer_dim_data[steer_dim_data['player_name'] == player_name][value_dim].values[0]
+                standard_player_data = standard_data[standard_data['player_name'] == player_name][value_dim].values[0]
+                if steered_player_data - standard_player_data >= -threshold_judge:
+                    count_correct_steer += 1
+            print(value_dim, 'NON_SUPPRESS', count_correct_steer / len(players_list_test), count_correct_steer)
+            table1.loc[value_dim, steer_dim] = 'NON_SUPPRESS,' + str(count_correct_steer / len(players_list_test))
+
+        for value_dim in non_stimulated_dims:
+            count_correct_steer = 0
+            for player_name in players_list_test:
+                steered_player_data = steer_dim_data[steer_dim_data['player_name'] == player_name][value_dim].values[0]
+                standard_player_data = standard_data[standard_data['player_name'] == player_name][value_dim].values[0]
+                if steered_player_data - standard_player_data <= threshold_judge:
+                    count_correct_steer += 1
+            print(value_dim, 'NON_STIMULATE', count_correct_steer / len(players_list_test), count_correct_steer)   
+            table1.loc[value_dim, steer_dim] = 'NON_STIMULATE,' + str(count_correct_steer / len(players_list_test))
+        
+        for value_dim in maintained_dims:
+            count_correct_steer = 0
+            for player_name in players_list_test:
+                steered_player_data = steer_dim_data[steer_dim_data['player_name'] == player_name][value_dim].values[0]
+                standard_player_data = standard_data[standard_data['player_name'] == player_name][value_dim].values[0]
+                if abs(steered_player_data - standard_player_data) <= threshold_judge:
+                    count_correct_steer += 1
+            print(value_dim, 'MAINTAIN', count_correct_steer / len(players_list_test), count_correct_steer)
+            table1.loc[value_dim, steer_dim] = 'MAINTAIN,' + str(count_correct_steer / len(players_list_test))
+    return table1
+
+table1_gemma = get_table1(data_csv_gemma_train, data_csv_gemma_test, 'value_dims_rsd_gemma/23_stat.csv')
+
+
+# In[7]:
+
+
+def get_latex_table(table1, table1_name):
+    latex_code = '\\begin{table*}[ht]\n\\caption{Value steering using SAE features for the Gemma-2B-IT model. Expected stimulated values are highlighted in red, along with their actual success rate during testing. Expected suppressed values are marked in Purple. Maintained values are shown in gray. Light red indicates values that are expected to be at least not suppressed, while light purple represents values that are expected to be at least not stimulated. Blank cells correspond to uncontrollable values. The bottom of the table indicates the count of each of the six expected categories and their average success rates.}\n\\label{table: sae-steering-gemma}\n\\begin{center}\n\\scalebox{0.85}{'
+    #latex_code = '\\begin{table}[ht]\n\\caption{Value steering using SAE features for the Llama3-8B-IT model.}\n\\label{table: sae-steering-llama}\n\\begin{center}\n'
+
+    latex_code += '\\begin{tabular}{c@{\\hspace{2pt}}' + 'c@{\\hspace{2pt}}' * (len(table1.columns) - 1) + 'c' + '}\n\\toprule\n'
+    #transfer table1.columns to a list of str
+
+
+    steering_features = list(map(str, map(int, table1.columns)))
+    latex_code += 'Value & ' + ' & '.join(['\\bf ' + tc for tc in steering_features]) + ' \\\\\n\\hline\n'
+    #
+
+    stimulated_dim_avg_success = {sf: [] for sf in steering_features}
+    stimulhalf_dim_avg_success = {sf: [] for sf in steering_features}
+    suppressed_dim_avg_success = {sf: [] for sf in steering_features}
+    supprehalf_dim_avg_success = {sf: [] for sf in steering_features}
+    maintained_dim_avg_success = {sf: [] for sf in steering_features}
+
+
+    uncontroll_dims = {sf: 0 for sf in steering_features}
+    stimulated_dims = {sf: 0 for sf in steering_features} 
+    suppressed_dims = {sf: 0 for sf in steering_features}
+    stimulhalf_dims = {sf: 0 for sf in steering_features}
+    supprehalf_dims = {sf: 0 for sf in steering_features}
+    maintained_dims = {sf: 0 for sf in steering_features}
+
+
+    for index, row in table1.iterrows():
+        #if value's name (index) is too long, make its font smaller, all value names should be available in 3pt
+        if len(index) > 20:
+            latex_code += '\\tiny ' + index + ' & '
         else:
-            assert np.isnan(value)
-            uncontroll_dims[sf] += 1
-            #latex_code += '\\textcolor{gray}{-} & '
-            latex_code += '\\cellcolor{gray!20}' + ' ' + f"-" + ' & '
-            #latex_code += '- & '
+            latex_code += '\\small ' + index + ' & '
+
+        for value, sf in zip(row, steering_features):
+            if type(value) == str:
+                print(value)
+                value = value.split(',')
+                
+                if value[0] == 'STIMULATE':
+                    stimulated_dim_avg_success[sf].append(float(value[1]))
+                    stimulated_dims[sf] += 1
+                    #latex_code += '\\textcolor{red}{\\textbf{$\\uparrow$}}' + ' ' + f"{float(value[1]):.2f}" + ' & '
+                    latex_code += '\\colorbox{red!50}' + ' ' + f"{float(value[1]):.2f}" + ' & '
+                    #latex_code += f"{float(value[1]):.2f}" + ' & '
+                elif value[0] == 'NON_SUPPRESS':
+                    stimulhalf_dim_avg_success[sf].append(float(value[1]))
+                    stimulhalf_dims[sf] += 1
+                    #latex_code += '\\textcolor{magenta}{\\textbf{$\\nearrow$}}' + ' ' + f"{float(value[1]):.2f}" + ' & '
+                    latex_code += '\\colorbox{red!20}' + ' ' + f"{float(value[1]):.2f}" + ' & '
+                    #latex_code += f"{float(value[1]):.2f}" + ' & '
+                elif value[0] == 'SUPPRESS':
+                    suppressed_dim_avg_success[sf].append(float(value[1]))
+                    suppressed_dims[sf] += 1
+                    #latex_code += '\\textcolor{blue}{\\textbf{$\\downarrow$}}' + ' ' + f"{float(value[1]):.2f}" + ' & '
+                    latex_code += '\\colorbox{blue!50}' + ' ' + f"{float(value[1]):.2f}" + ' & '
+                    #latex_code += f"{float(value[1]):.2f}" + ' & '
+                elif value[0] == 'NON_STIMULATE':
+                    supprehalf_dim_avg_success[sf].append(float(value[1]))
+                    supprehalf_dims[sf] += 1
+                    #latex_code += '\\textcolor{cyan}{\\textbf{$\\searrow$}}' + ' ' + f"{float(value[1]):.2f}" + ' & '
+                    latex_code += '\\colorbox{blue!20}' + ' ' + f"{float(value[1]):.2f}" + ' & '
+                    #latex_code += f"{float(value[1]):.2f}" + ' & '
+                elif value[0] == 'MAINTAIN':
+                    maintained_dim_avg_success[sf].append(float(value[1]))
+                    maintained_dims[sf] += 1
+                    #latex_code += '\\textcolor{purple}{\\textbf{-}}' + ' ' + f"{float(value[1]):.2f}" + ' & '
+                    latex_code += '\\colorbox{gray!20}' + ' ' + f"{float(value[1]):.2f}" + ' & '
+                    #latex_code += f"{float(value[1]):.2f}" + ' & '
+                else:
+                    raise ValueError('Invalid value')
+            else:
+                assert np.isnan(value)
+                uncontroll_dims[sf] += 1
+                #latex_code += '\\textcolor{gray}{-} & '
+                latex_code += f"-" + ' & '
+                #latex_code += '- & '
+        latex_code = latex_code[:-2] + ' \\\\\n'
+    latex_code = latex_code + ' \\midrule\n'
+
+    for sf in steering_features:
+        stimulated_dim_avg_success[sf] = np.mean(stimulated_dim_avg_success[sf])
+        stimulhalf_dim_avg_success[sf] = np.mean(stimulhalf_dim_avg_success[sf])
+        suppressed_dim_avg_success[sf] = np.mean(suppressed_dim_avg_success[sf])
+        supprehalf_dim_avg_success[sf] = np.mean(supprehalf_dim_avg_success[sf])
+        maintained_dim_avg_success[sf] = np.mean(maintained_dim_avg_success[sf])
+        
+    latex_code += '\\colorbox{red!50} STIMULATE & '
+    for sf in steering_features:
+        cellcontent = round(stimulated_dim_avg_success[sf],3)
+        latex_code += '\\textbf{' + str(stimulated_dims[sf]) + f'({cellcontent})' +'} & '
     latex_code = latex_code[:-2] + ' \\\\\n'
-latex_code = latex_code + ' \\midrule\n'
 
-for sf in steering_features:
-    stimulated_dim_avg_success[sf] = np.mean(stimulated_dim_avg_success[sf])
-    stimulhalf_dim_avg_success[sf] = np.mean(stimulhalf_dim_avg_success[sf])
-    suppressed_dim_avg_success[sf] = np.mean(suppressed_dim_avg_success[sf])
-    supprehalf_dim_avg_success[sf] = np.mean(supprehalf_dim_avg_success[sf])
-    maintained_dim_avg_success[sf] = np.mean(maintained_dim_avg_success[sf])
+    latex_code += '\\colorbox{blue!50} SUPPRESSED & '
+    for sf in steering_features:
+        cellcontent = round(suppressed_dim_avg_success[sf],3)
+        latex_code += '\\textbf{' + str(suppressed_dims[sf]) + f'({cellcontent})' +'} & '
+    latex_code = latex_code[:-2] + ' \\\\\n'
+
+    latex_code += '\\colorbox{red!20} NON-SUPPRESSED & '
+    for sf in steering_features:
+        cellcontent = round(stimulhalf_dim_avg_success[sf],3)
+        latex_code += '\\textbf{' + str(stimulhalf_dims[sf]) + f'({cellcontent})' +'} & '
+    latex_code = latex_code[:-2] + ' \\\\\n'
+
+    latex_code +='\\colorbox{blue!20} NON-STIMULATED & '
+    for sf in steering_features:
+        cellcontent = round(supprehalf_dim_avg_success[sf],3)
+        latex_code += '\\textbf{' + str(supprehalf_dims[sf]) + f'({cellcontent})' +'} & '
+    latex_code = latex_code[:-2] + ' \\\\\n'
+
+    latex_code += '\\colorbox{gray!20} MAINTAINED & '
+    for sf in steering_features:
+        cellcontent = round(maintained_dim_avg_success[sf],3)
+        latex_code += '\\textbf{' + str(maintained_dims[sf]) + f'({cellcontent})' +'} & '
+    latex_code = latex_code[:-2] + ' \\\\\n'
+
+    latex_code += 'UNCONTROLLED & '
+    for sf in steering_features:
+        latex_code += '\\textbf{' + str(uncontroll_dims[sf]) +'} & '
+
+    latex_code = latex_code[:-2] + ' \\\\\n\\bottomrule\n'
+    latex_code += '\\end{tabular}\n}\n\\end{center}\n\\end{table*}'
+    print(latex_code)
+    #write the latex code to a file
+    with open(table1_name+'.tex', 'w') as f:
+        f.write(latex_code)
+
+get_latex_table(table1_gemma, 'table1_gemma')
+
+#OK, nice job. Now let's make another form of the latex table. This time, the rows will be the steering features and the columns will be the value dimensions. 
+#The cells will contain the success rate of steering the value dimension using the steering feature.
+#To avoid making the table too wide, the string of value dimensions will be rotated 90 degrees.
+#Let's begin
+def get_latex_table_rotate(table1, table1_name):
+    latex_code = '\\begin{table*}[ht]\n\\caption{Value steering using SAE features for the Gemma-2B-IT model. Expected stimulated values are highlighted in red, along with their actual success rate during testing. Expected suppressed values are marked in Purple. Maintained values are shown in gray. Light red indicates values that are expected to be at least not suppressed, while light purple represents values that are expected to be at least not stimulated. Blank cells correspond to uncontrollable values. The bottom of the table indicates the count of each of the six expected categories and their average success rates.}\n\\label{table: sae-steering-gemma}\n\\begin{center}\n\\scalebox{0.85}{'
+
+    latex_code += '\\begin{tabular}{' + 'c@{\\hspace{1.5pt}}|' * len(table1.index) + 'c' + '}\n\\toprule\n'
+    #latex_code += '\\begin{tabular}{' + 'c|' * len(table1.index) + 'c' + '}\n\\toprule\n'
+    #transfer table1.columns to a list of str
+
+    value_dims = list(map(str, table1.index))
+    steering_features = table1.columns
+    latex_code += 'Value & ' + ' & '.join(['\\rotatebox{90}{\\bf ' + tc +'}' for tc in value_dims]) + ' \\\\\n\\hline\n'
     
-latex_code += 'STIMULATED & '
-for sf in steering_features:
-    cellcontent = round(stimulated_dim_avg_success[sf],3)
-    latex_code += '\\textbf{' + str(stimulated_dims[sf]) + f'({cellcontent})' +'} & '
-latex_code = latex_code[:-2] + ' \\\\\n'
-
-latex_code += 'SUPPRESSED & '
-for sf in steering_features:
-    cellcontent = round(suppressed_dim_avg_success[sf],3)
-    latex_code += '\\textbf{' + str(suppressed_dims[sf]) + f'({cellcontent})' +'} & '
-latex_code = latex_code[:-2] + ' \\\\\n'
-
-latex_code += 'HALF-STIMULATED & '
-for sf in steering_features:
-    cellcontent = round(stimulhalf_dim_avg_success[sf],3)
-    latex_code += '\\textbf{' + str(stimulhalf_dims[sf]) + f'({cellcontent})' +'} & '
-latex_code = latex_code[:-2] + ' \\\\\n'
-
-latex_code += 'HALF-SUPPRESSED & '
-for sf in steering_features:
-    cellcontent = round(supprehalf_dim_avg_success[sf],3)
-    latex_code += '\\textbf{' + str(supprehalf_dims[sf]) + f'({cellcontent})' +'} & '
-latex_code = latex_code[:-2] + ' \\\\\n'
-
-latex_code += 'MAINTAINED & '
-for sf in steering_features:
-    cellcontent = round(maintained_dim_avg_success[sf],3)
-    latex_code += '\\textbf{' + str(maintained_dims[sf]) + f'({cellcontent})' +'} & '
-latex_code = latex_code[:-2] + ' \\\\\n'
-
-latex_code += 'UNCONTROLLED & '
-for sf in steering_features:
-    latex_code += '\\textbf{' + str(uncontroll_dims[sf]) +'} & '
-
-latex_code = latex_code[:-2] + ' \\\\\n\\bottomrule\n'
-latex_code += '\\end{tabular}\n\\end{center}\n\\end{table}'
-print(latex_code)
-#write the latex code to a file
-with open('table1.tex', 'w') as f:
-    f.write(latex_code)
+    stimulated_dim_avg_success = {sf: [] for sf in steering_features}
+    stimulhalf_dim_avg_success = {sf: [] for sf in steering_features}
+    suppressed_dim_avg_success = {sf: [] for sf in steering_features}
+    supprehalf_dim_avg_success = {sf: [] for sf in steering_features}
+    maintained_dim_avg_success = {sf: [] for sf in steering_features}
 
 
-# In[181]:
+    uncontroll_dims = {sf: 0 for sf in steering_features}
+    stimulated_dims = {sf: 0 for sf in steering_features} 
+    suppressed_dims = {sf: 0 for sf in steering_features}
+    stimulhalf_dims = {sf: 0 for sf in steering_features}
+    supprehalf_dims = {sf: 0 for sf in steering_features}
+    maintained_dims = {sf: 0 for sf in steering_features}
+
+    for sf in steering_features:
+        latex_code += '\\small ' + str(sf) + ' & '
+        for vd in value_dims:
+            value = table1.loc[vd, sf]
+            if type(value) == str:
+                value = value.split(',')
+                if value[0] == 'STIMULATE':
+                    stimulated_dim_avg_success[sf].append(float(value[1]))
+                    stimulated_dims[sf] += 1
+                    latex_code += '\\colorbox{red!50}' + '{' + f"{float(value[1]):.2f}" + '} & '
+                elif value[0] == 'NON_SUPPRESS':
+                    stimulhalf_dim_avg_success[sf].append(float(value[1]))
+                    stimulhalf_dims[sf] += 1
+                    latex_code += '\\colorbox{red!20}' + '{' + f"{float(value[1]):.2f}" + '} & '
+                elif value[0] == 'SUPPRESS':
+                    suppressed_dim_avg_success[sf].append(float(value[1]))
+                    suppressed_dims[sf] += 1
+                    latex_code += '\\colorbox{blue!50}' + '{' + f"{float(value[1]):.2f}" + '} & '
+                elif value[0] == 'NON_STIMULATE':
+                    supprehalf_dim_avg_success[sf].append(float(value[1]))
+                    supprehalf_dims[sf] += 1
+                    latex_code += '\\colorbox{blue!20}' + '{' + f"{float(value[1]):.2f}" + '} & '
+                elif value[0] == 'MAINTAIN':
+                    maintained_dim_avg_success[sf].append(float(value[1]))
+                    maintained_dims[sf] += 1
+                    latex_code += '\\colorbox{gray!20}' + '{' + f"{float(value[1]):.2f}" + '} & '
+                else:
+                    raise ValueError('Invalid value')
+            else:
+                assert np.isnan(value)
+                uncontroll_dims[sf] += 1
+                latex_code += f"-" + ' & '
+        latex_code = latex_code[:-2] + ' \\\\\n'
+    latex_code = latex_code + ' \\midrule\n'
+    
+    latex_code = latex_code + ' \\\\\n\\bottomrule\n'
+    latex_code += '\\end{tabular}\n}\n\\end{center}\n\\end{table*}'
+    print(latex_code)
+    #write the latex code to a file
+    with open(table1_name+'.tex', 'w') as f:
+        f.write(latex_code)
+    
+get_latex_table_rotate(table1_gemma, 'table1_gemma_rotate')
+
+
+# In[ ]:
 
 
 def get_valid_d_columns_abondoned(answer_valuebench_features_csv):
@@ -1343,7 +1385,7 @@ def deal_with_csv(data_csv, pdy_name, v_inference, v_showongraph, row_num, metho
     if dummy_steered_dim:
         edges_total = causal_inference(data, v_columns_inference_total, pdy_name, method, noise_augument=None, prior_source_set=list(steer_dim_dummies.columns))
     else:
-        edges_total = causal_inference(data, v_columns_inference_total, pdy_name, method, noise_augument=None)
+        edges_total = causal_inference(data, v_columns_inference_total, pdy_name, method, noise_augument=10)
     
     edges_sfs = []
     steer_dims = data_csv['steer_dim'].unique()
@@ -1411,35 +1453,26 @@ def causal_inference(data, ci_dimensions, pdy_name, method, noise_augument=None,
     return edges
 
 
-answer_valuebench_features_csv = "ans_cross_total.csv"
-#answer_valuebench_features_csv = 'answers_valuebench_features_gemma2bit_players250_valuedimsALL_sae_NUM_PLAYERS_USE250_NUM_PLAYERS_START-1_SAE_STEERED_FEATURE_NUM10_PERSON0_SYSTEMATIC_PROMPT1_EXAMPLES_IN_PROMPT1_SAE_STEERED_RANGEonlyvalue_STEERING_COEFF100.csv'
-data_csv = pd.read_csv(answer_valuebench_features_csv)
-
 #data_csv = data_csv[data_csv['player_name'].notnull()]
 
-v_inference = [v for v in data_csv.columns if (v not in ['player_name', 'steer_dim', 'stds']) and (not v.endswith(':scstd'))]
+v_inference_gemma = [v for v in data_csv_gemma_train.columns if (v not in ['player_name', 'steer_dim', 'stds', 'scstds']) and (not v.endswith(':scstd'))]
+v_inference_llama = [v for v in data_csv_llama_train.columns if (v not in ['player_name', 'steer_dim', 'stds', 'scstds']) and (not v.endswith(':scstd'))]
+assert v_inference_gemma == v_inference_llama
+v_inference = v_inference_gemma
+
 #v_inference = ['Affiliation', 'Assertiveness', 'Behavioral Inhibition System', 'Breadth of Interest', 'Complexity', 'Dependence', 'Depth', 'Emotional Expression', 'Emotional Processing', 'Empathy', 'Extraversion', 'Imagination', 'Nurturance', 'Perspective Taking', 'Social Withdrawal', 'Positive Expressivity', 'Preference for Order and Structure', 'Privacy', 'Psychosocial flourishing', 'Reflection']
 #v_inference = ['Affiliation', 'Assertiveness', 'Behavioral Inhibition System', 'Breadth of Interest', 'Complexity', 'Dependence', 'Depth', 'Emotional Expression', 'Emotional Processing', 'Empathy', 'Extraversion', ]
 
-if os.path.exists('value_causal_graph'):
-    shutil.rmtree('value_causal_graph')
-os.makedirs('value_causal_graph', exist_ok=True)
+if os.path.exists('value_causal_graph_gemma'):
+    shutil.rmtree('value_causal_graph_gemma')
+os.makedirs('value_causal_graph_gemma', exist_ok=True)
+edges_gemma_total, edges_gemma_sfs = deal_with_csv(data_csv_gemma_train, "value_causal_graph_gemma/total.png", v_inference, 'ALL', 'ALL', 'pc', False)
 
-edges_total, edges_sfs = deal_with_csv(data_csv, "value_causal_graph/total.png", v_inference, 'ALL', 'ALL', 'pc', False)
+if os.path.exists('value_causal_graph_llama'):
+    shutil.rmtree('value_causal_graph_llama')
+os.makedirs('value_causal_graph_llama', exist_ok=True)
+edges_llama_total, edges_llama_sfs = deal_with_csv(data_csv_llama_train, "value_causal_graph_llama/total.png", v_inference, 'ALL', 'ALL', 'pc', False)
 
-#get standard edges from value_graph_with_questions_triplets.json
-#which is a list of edges like
-    # [
-    #     "Perspective Taking",
-    #     "-->",
-    #     "Sympathy"
-    # ]
-#or
-    # [
-    #     "Perspective Taking",
-    #     "o--o",
-    #     "Empathy"
-    # ]
 edges_standard_json = json.load(open('value_graph_with_questions_triplets.json'))
 edges_standard = []
 for edge in edges_standard_json:
@@ -1450,36 +1483,8 @@ for edge in edges_standard_json:
     else:
         raise ValueError('Invalid edge')
 
-#steer_dims = ['nan', 1312, 1341, 2221, 3183, 6619, 7502, 8387, 10096, 14049]
 
-# nodes = {}
-# for entity in v_inference:
-#     nodes[entity] = os.path.join('valuebench','value_questions_' + entity + '.html'),
-# for feature in data_csv.['steer_dim'].unique()[1:]:
-#     nodes[feature] = 'https://www.neuronpedia.org/' + sae.cfg.model_name +'/' + str(sae.cfg.hook_layer) + '-res-jb/' + str(feature)
-
-# edges = {
-#     'gemma2bit-smallset-collect': edges1,
-#     # 'human_annotated': edges0,
-#     # 'gemma2bit-unsure-smallset-30': edges1
-#     #'llama38bit_cismall_30_trial1': edges1,
-#     #'llama38bit_cismall_30_trial2': edges11,
-#     #'llama38bit_cismall_250_trial1': edges2,
-#     #'llama38bit_cismall_250_trial2': edges21,
-#     #'llama38bit_ciall4small_250': edges3,
-#     #'llama38bit_cismall_250_lessqa': edges4,
-#     #'llama38bit_cismall_250_chn': edges5,
-# }
-
-# json_object = {
-#     'nodes': nodes,
-#     'edges': edges
-#     }
-
-#json.dump(json_object, open('data1.json', 'w'))
-
-
-# In[185]:
+# In[ ]:
 
 
 def check_zero_double_arrow(edges):
@@ -1490,7 +1495,7 @@ def check_zero_double_arrow(edges):
     if zero_arrow_edges:
         raise ValueError('Zero arrow:', zero_arrow_edges)
 
-def dealwith_zero_double_arrow(edges):
+def dealwith_zero_double_duplicated_arrow(edges):
     double_arrow_edges = [edge for edge in edges if edge[3] == 'double-arrow']
     zero_arrow_edges = [edge for edge in edges if edge[3] == 'no-arrow']
     print('Double arrow:', double_arrow_edges)
@@ -1501,11 +1506,16 @@ def dealwith_zero_double_arrow(edges):
     new_edges = []
     for edge in edges:
         if edge[3] == 'double-arrow' or edge[3] == 'no-arrow':
-            edges.append([edge[0], edge[1], edge[2], 'single-arrow'])
-            edges.append([edge[1], edge[0], edge[2], 'single-arrow'])
+            if [edge[0], edge[1], edge[2], 'single-arrow'] not in new_edges:
+                new_edges.append([edge[0], edge[1], edge[2], 'single-arrow'])
+            if [edge[1], edge[0], edge[2], 'single-arrow'] not in new_edges:
+                new_edges.append([edge[1], edge[0], edge[2], 'single-arrow'])
         else:
-            new_edges.append(edge)
+            if edge not in new_edges:
+                new_edges.append(edge)
     return new_edges
+
+
 
 def check_dag(edges):
     nxg = nx.DiGraph()
@@ -1516,9 +1526,8 @@ def check_dag(edges):
         cycles = list(nx.simple_cycles(nxg))
         raise ValueError('Cycle:', cycles)
 
-
 def get_all_subsequent_nodes(edges, node):
-    check_zero_double_arrow(edges)
+    #check_zero_double_arrow(edges)
 
     subsequent_nodes = set()
     subsequent_nodes.add(node)
@@ -1532,10 +1541,7 @@ def get_all_subsequent_nodes(edges, node):
     subsequent_nodes.remove(node)
     return subsequent_nodes
 
-
-
-
-def write_table2(edges, mean_scorechange_related, num_related, mean_scorechange_unrelated, num_unrelated):
+def write_table2(edges, data_scorechange, mean_scorechange_related, num_related, mean_scorechange_unrelated, num_unrelated):
     for column in data_scorechange.columns:
         print(column)
         #related_columns_real1 = data_scorechange[data_scorechange[column] > 0].mean().abs().sort_values()
@@ -1566,34 +1572,132 @@ def write_table2(edges, mean_scorechange_related, num_related, mean_scorechange_
 
 
 
-pd_result_table2 = pd.DataFrame(columns=data_scorechange.columns, index=['mean_scorechange_related_ours', 'num_related_ours', 'mean_scorechange_unrelated_ours', 'num_unrelated_ours', 'mean_scorechange_related_standard', 'num_related_standard', 'mean_scorechange_unrelated_standard', 'num_unrelated_standard'])
+pd_result_table2 = pd.DataFrame(columns=v_inference)
 
-data_nosteer = data_csv[data_csv['steer_dim'].isnull()][data_csv['player_name'].notnull()]
-data_nosteer = data_nosteer[v_inference+['player_name']]
-data_nosteer = data_nosteer.set_index('player_name')
-data_nosteer = data_nosteer.astype(float)
+# edges_standard = dealwith_zero_double_arrow(edges_standard)
+edges_standard = [
+    ['Emotional Processing', 'Emotional Expression', 1, 'single-arrow'],
+    ['Emotional Processing', 'Psychosocial Flourishing', 1, 'single-arrow'],
+    ['Perspective Taking', 'Sympathy', 1, 'single-arrow'],
+    ['Perspective Taking', 'Empathy', 1, 'double-arrow'],
+    ['Perspective Taking', 'Nurturance', 1, 'double-arrow'],
+    ['Sociability', 'Extraversion', 1, 'double-arrow'],
+    ['Sociability', 'Warmth', 1, 'double-arrow'],
+    ['Sociability', 'Positive Expressivity', 1, 'double-arrow'],
+    ['Dependence', 'Nurturance', 1, 'single-arrow'],
+    ['Psychosocial Flourishing', 'Satisfaction with life', 1, 'single-arrow'],
+    ['Psychosocial Flourishing', 'Nurturance', 1, 'single-arrow'],
+    ['Extraversion', 'Positive Expressivity', 1, 'single-arrow'],
+    ['Extraversion', 'Social Confidence', 1, 'single-arrow'],
+    ['Extraversion', 'Social', 1, 'double-arrow'],
+    ['Affiliation', 'Empathy', 1, 'double-arrow'],
+    ['Affiliation', 'Social', 1, 'double-arrow'],
+    ['Understanding', 'Empathy', 1, 'double-arrow'],
+    ['Understanding', 'Reflection', 1, 'double-arrow'],
+    ['Understanding', 'Depth', 1, 'single-arrow'],
+    ['Understanding', 'Theoretical', 1, 'double-arrow'],
+    ['Sympathy', 'Nurturance', 1, 'single-arrow'],
+    ['Warmth', 'Empathy', 1, 'single-arrow'], 
+    ['Warmth', 'Nurturance', 1, 'double-arrow'],
+    ['Warmth', 'Positive Expressivity', 1, 'single-arrow'],
+    ['Warmth', 'Social', 1, 'single-arrow'], 
+    ['Empathy', 'Tenderness', 1, 'double-arrow'],
+    ['Empathy', 'Nurturance', 1, 'double-arrow'], 
+    ['Positive Expressivity', 'Social', 1, 'double-arrow'],
+]
 
-data_scorechange = data_nosteer - data_nosteer.iloc[0]
-#data_scorechange = data_scorechange.abs()
+data_gemma_nosteer = data_csv_gemma_test[data_csv_gemma_test['steer_dim'].isnull()][data_csv_gemma_test['player_name'].notnull()]
+data_gemma_nosteer = data_gemma_nosteer[v_inference + ['player_name']]
+data_gemma_nosteer = data_gemma_nosteer.set_index('player_name')
+data_gemma_nosteer = data_gemma_nosteer.astype(float)
+data_gemma_scorechange = data_gemma_nosteer - data_gemma_nosteer.iloc[0]
 
-#Build a pandas dataframe
-#Each column corresponds to a value dimension
-#then add rows to the dataframe
-#the rows are mean_scorechange_related_ours, num_related_ours, mean_scorechange_unrelated_ours, num_unrelated_ours, mean_scorechange_related_standard, num_related_standard, mean_scorechange_unrelated_standard, num_unrelated_standard
-#init the dataframe's columns and index
+edges_gemma_sfs0 = edges_gemma_sfs[0]
+#edges_gemma_sfs0 = dealwith_zero_double_arrow(edges_gemma_sfs[0])
+# for end_node in ['Affiliation', 'Breadth of Interest', 'Dependence']:#  'Behavioral Inhibition System'  'Nurturance'
+#     for start_node in ['Poise', 'Social Confidence', 'Preference for Order and Structure']:#[,  , 'Assertiveness']:
+#         edges_gemma_sfs0.append([end_node, start_node, 1, 'single-arrow'])
+
+write_table2(edges_gemma_sfs0, data_gemma_scorechange,  'mean_scorechange_related_ours_gemma', 'num_related_ours_gemma', 'mean_scorechange_unrelated_ours_gemma', 'num_unrelated_ours_gemma')
+write_table2(edges_standard, data_gemma_scorechange, 'mean_scorechange_related_standard_gemma', 'num_related_standard_gemma', 'mean_scorechange_unrelated_standard_gemma', 'num_unrelated_standard_gemma')
 
 
-edges_sfs0 = dealwith_zero_double_arrow(edges_sfs[0])
-for end_node in ['Affiliation', 'Breadth of Interest', 'Dependence']:#  'Behavioral Inhibition System'  'Nurturance'
-    for start_node in ['Poise', 'Social Confidence', 'Preference for Order and Structure']:#[,  , 'Assertiveness']:
-        edges_sfs0.append([end_node, start_node, 1, 'single-arrow'])
+data_llama_nosteer = data_csv_llama_test[data_csv_llama_test['steer_dim'].isnull()][data_csv_llama_test['player_name'].notnull()]
+data_llama_nosteer = data_llama_nosteer[v_inference + ['player_name']]
+data_llama_nosteer = data_llama_nosteer.set_index('player_name')
+data_llama_nosteer = data_llama_nosteer.astype(float)
+data_llama_scorechange = data_llama_nosteer - data_llama_nosteer.iloc[0]
 
-edges_standard = dealwith_zero_double_arrow(edges_standard)
-write_table2(edges_sfs0, 'mean_scorechange_related_ours', 'num_related_ours', 'mean_scorechange_unrelated_ours', 'num_unrelated_ours')
-write_table2(edges_standard, 'mean_scorechange_related_standard', 'num_related_standard', 'mean_scorechange_unrelated_standard', 'num_unrelated_standard')
+#edges_llama_sfs0 = dealwith_zero_double_arrow(edges_llama_sfs[0])
+edges_llama_sfs0 = edges_llama_sfs[0]
+write_table2(edges_llama_sfs0, data_llama_scorechange,  'mean_scorechange_related_ours_llama', 'num_related_ours_llama', 'mean_scorechange_unrelated_ours_llama', 'num_unrelated_ours_llama')
+write_table2(edges_standard, data_llama_scorechange, 'mean_scorechange_related_standard_llama', 'num_related_standard_llama', 'mean_scorechange_unrelated_standard_llama', 'num_unrelated_standard_llama')
 
 pd_result_table2.to_csv('table2.csv')
 
 
 #
+
+
+# In[ ]:
+
+
+#print the table2 in latex
+#rows are for each values dimensions
+#columns are in form num_related_ours(mean_scorechange_related_ours), num_unrelated_ours(mean_scorechange_unrelated_ours), num_related_standard(mean_scorechange_related_standard), num_unrelated_standard(mean_scorechange_unrelated_standard)
+#the values are the number of related values, the mean of the score change of related values, the number of unrelated values, the mean of the score change of unrelated values
+#the values are rounded to 3 decimal places
+#the values are in the form number(mean)
+#the values are in the form of number(mean)
+pd_result_table2 = pd.read_csv('table2.csv', index_col=0)
+latex_code = '\\begin{table}[ht]\n\\caption{The mean of the score change of related values, the number of related values, the mean of the score change of unrelated values, and the number of unrelated values.}\n\\label{table: scorechange}\n\\begin{center}\n'
+#latex_code += '\\begin{tabular}{c@{\\hspace{2pt}}' + 'c@{\\hspace{2pt}}' * (len(pd_result_table2.columns) - 1) + 'c' + '}\n\\toprule\n'
+latex_code += '\\begin{tabular}{c@{\\hspace{2pt}}|' + 'c@{\\hspace{2pt}}' * 4 +'|' + 'c@{\\hspace{2pt}}' * 4 + '}\n\\toprule\n'
+latex_code += 'Value & \\multicolumn{4}{c|}{\\bf \\small Gemma-2B-IT} & \\multicolumn{4}{c}{\\bf \\small Llama3-8B-IT}\\\\\n\\hline\n'
+latex_code += 'Dimensions & \\multicolumn{2}{c|}{\\bf \\tiny Our causal graph} & \\multicolumn{2}{c|}{\\bf \\tiny Our causal graph} & \\multicolumn{2}{c|}{\\bf \\tiny Our causal graph} & \\multicolumn{2}{c}{\\bf \\tiny Our causal graph}  \\\\\n\\hline\n'
+latex_code += 'Score change & \\multicolumn{1}{c}{\\bf \\tiny Expected} & \\multicolumn{1}{c|}{\\bf \\tiny Unexpected} & \\multicolumn{1}{c}{\\bf \\tiny Expected} & \\multicolumn{1}{c|}{\\bf \\tiny Unexpected} & \\multicolumn{1}{c}{\\bf \\tiny Expected} & \\multicolumn{1}{c|}{\\bf \\tiny Unexpected} & \\multicolumn{1}{c}{\\bf \\tiny Expected} & \\multicolumn{1}{c}{\\bf \\tiny Unexpected}\\\\\n\\hline\n'
+#each row in latex is a column in the dataframe
+for column in pd_result_table2.columns:
+    latex_code += '\\small ' + column + ' & '
+    for index in pd_result_table2.index:
+        if index.startswith('mean'):
+            latex_code += str(round(pd_result_table2.loc[index, column], 2)) + ' & '
+
+    latex_code = latex_code[:-2] + ' \\\\\n'
+latex_code += '\\bottomrule\n\\end{tabular}\n\\end{center}\n\\end{table}'
+print(latex_code)
+#write the latex code to a file
+with open('table2.tex', 'w') as f:
+    f.write(latex_code)
+
+
+# In[332]:
+
+
+#steer_dims = ['nan', 1312, 1341, 2221, 3183, 6619, 7502, 8387, 10096, 14049]
+
+nodes = {}
+for entity in v_inference:
+    nodes[entity] = os.path.join('valuebench','value_questions_' + entity + '.html'),
+# for feature in data_csv.['steer_dim'].unique()[1:]:
+#     nodes[feature] = 'https://www.neuronpedia.org/' + sae.cfg.model_name +'/' + str(sae.cfg.hook_layer) + '-res-jb/' + str(feature)
+
+edges = {
+    'gemma': edges_gemma_sfs0,
+    'llama': edges_llama_sfs0,
+    'standard': edges_standard
+}
+
+json_object = {
+    'nodes': nodes,
+    'edges': edges
+    }
+
+json.dump(json_object, open('data1.json', 'w'))
+
+
+# In[1]:
+
+
+import ipywidgets as widgets
 
