@@ -1,0 +1,37 @@
+
+\newcommand{\cellbar}[5]{%
+    \raisebox{\height}{%
+        \begin{tikzpicture}[baseline=(current bounding box.center)]
+            \draw[draw=black] (0,0) rectangle (1cm,0.4cm);
+            \path[fill=CustomBlue, opacity=#5] (0,0) rectangle (#1cm,0.4cm);
+            \path[fill=white] (#1cm,0) rectangle ({#1cm + #3cm},0.4cm);
+            \path[fill=CustomYellow, opacity=#5] ({#1cm + #3cm},0) rectangle (1cm,0.4cm);
+            \node[anchor=center, font=\scriptsize] at (0.5cm,0.2cm) {#2};
+        \end{tikzpicture}%
+    }%
+}
+\begin{table*}[ht]
+\centering
+\caption{Value steering using SAE features for the {Gemma-2B-IT} model. For each pair of steering feature and value dimension, the cell shows the stimulation ratio in blue, the suppression ratio in yellow, and the maintenance ratio in blank, which are estimated from the training data. The numbers in the cell represent the distance between the actual ratios in the testing data and expected ratios.}
+
+\label{table: sae-steering-gemma}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{>{\centering\arraybackslash}m{1.5cm} *{12}{>{\centering\arraybackslash}m{1cm}}>{\centering\arraybackslash}m{1cm}}
+\toprule
+\rotatebox{90}{\textbf{Value}} & \rotatebox{90}{\textbf{Achievement}} & \rotatebox{90}{\textbf{Aesthetic}} & \rotatebox{90}{\textbf{Anxiety Disorder}} & \rotatebox{90}{\textbf{Breadth of Interest}} & \rotatebox{90}{\textbf{Empathy}} & \rotatebox{90}{\textbf{Organization}} & \rotatebox{90}{\textbf{Political}} & \rotatebox{90}{\textbf{Positive coping}} & \rotatebox{90}{\textbf{Religious}} & \rotatebox{90}{\textbf{Resilience}} & \rotatebox{90}{\textbf{Social Complexity}} & \rotatebox{90}{\textbf{Uncertainty Avoidance}} & \textbf{AVG} \\
+\midrule
+\textbf{428} & \cellbar{0.19}{0.90}{0.58}{0.23}{0.42} & \cellbar{0.15}{0.96}{0.62}{0.23}{0.38} & \cellbar{0.46}{0.90}{0.36}{0.19}{0.64} & \cellbar{0.03}{0.94}{0.65}{0.32}{0.35} & \cellbar{0.23}{0.60}{0.49}{0.29}{0.51} & \cellbar{0.57}{0.57}{0.36}{0.07}{0.64} & \cellbar{0.49}{0.65}{0.40}{0.12}{0.60} & \cellbar{0.30}{0.98}{0.62}{0.08}{0.38} & \cellbar{0.20}{0.92}{0.58}{0.22}{0.42} & \cellbar{0.22}{0.97}{0.59}{0.19}{0.41} & \cellbar{0.17}{0.87}{0.52}{0.31}{0.48} & \cellbar{0.45}{0.89}{0.49}{0.07}{0.51} & 0.85 \\
+\textbf{1312} & \cellbar{0.14}{0.96}{0.60}{0.26}{0.40} & \cellbar{0.21}{0.96}{0.65}{0.14}{0.35} & \cellbar{0.77}{0.99}{0.08}{0.15}{0.92} & \cellbar{0.00}{0.41}{0.29}{0.71}{0.71} & \cellbar{0.16}{0.78}{0.38}{0.47}{0.62} & \cellbar{0.09}{0.94}{0.64}{0.27}{0.36} & \cellbar{0.23}{0.91}{0.58}{0.19}{0.42} & \cellbar{0.26}{0.65}{0.68}{0.06}{0.32} & \cellbar{0.55}{0.66}{0.41}{0.04}{0.59} & \cellbar{0.15}{0.88}{0.52}{0.33}{0.48} & \cellbar{0.07}{0.47}{0.18}{0.75}{0.82} & \cellbar{0.71}{0.93}{0.29}{0.00}{0.71} & 0.79 \\
+\textbf{1975} & \cellbar{0.11}{0.88}{0.66}{0.23}{0.34} & \cellbar{0.18}{0.81}{0.42}{0.41}{0.58} & \cellbar{0.25}{0.84}{0.41}{0.35}{0.59} & \cellbar{0.05}{0.96}{0.71}{0.24}{0.29} & \cellbar{0.02}{0.65}{0.35}{0.63}{0.65} & \cellbar{0.47}{0.68}{0.39}{0.15}{0.61} & \cellbar{0.12}{0.78}{0.50}{0.39}{0.50} & \cellbar{0.66}{0.92}{0.23}{0.11}{0.77} & \cellbar{0.18}{0.66}{0.48}{0.35}{0.52} & \cellbar{0.12}{0.68}{0.70}{0.18}{0.30} & \cellbar{0.21}{0.74}{0.69}{0.10}{0.31} & \cellbar{0.25}{0.99}{0.64}{0.11}{0.36} & 0.80 \\
+\textbf{3183} & \cellbar{0.19}{0.95}{0.22}{0.59}{0.78} & \cellbar{0.58}{0.67}{0.16}{0.26}{0.84} & \cellbar{0.68}{0.97}{0.18}{0.14}{0.82} & \cellbar{0.16}{0.80}{0.35}{0.50}{0.65} & \cellbar{0.20}{0.97}{0.20}{0.60}{0.80} & \cellbar{0.22}{0.75}{0.36}{0.43}{0.64} & \cellbar{0.40}{0.74}{0.24}{0.37}{0.76} & \cellbar{0.33}{0.88}{0.35}{0.33}{0.65} & \cellbar{0.76}{0.16}{0.16}{0.08}{0.84} & \cellbar{0.46}{0.53}{0.48}{0.07}{0.52} & \cellbar{0.13}{0.56}{0.36}{0.51}{0.64} & \cellbar{0.67}{0.94}{0.21}{0.12}{0.79} & 0.74 \\
+\textbf{4752} & \cellbar{0.16}{0.97}{0.35}{0.50}{0.65} & \cellbar{0.08}{0.62}{0.41}{0.51}{0.59} & \cellbar{0.64}{0.39}{0.28}{0.08}{0.72} & \cellbar{0.20}{1.00}{0.53}{0.27}{0.47} & \cellbar{0.43}{0.67}{0.27}{0.31}{0.73} & \cellbar{0.29}{0.73}{0.42}{0.30}{0.58} & \cellbar{0.21}{0.73}{0.43}{0.37}{0.57} & \cellbar{0.44}{0.88}{0.45}{0.12}{0.55} & \cellbar{0.07}{0.86}{0.58}{0.35}{0.42} & \cellbar{0.08}{1.00}{0.25}{0.67}{0.75} & \cellbar{0.09}{0.98}{0.14}{0.77}{0.86} & \cellbar{0.25}{0.91}{0.47}{0.29}{0.53} & 0.81 \\
+\textbf{6216} & \cellbar{0.22}{0.98}{0.61}{0.17}{0.39} & \cellbar{0.06}{0.81}{0.50}{0.45}{0.50} & \cellbar{0.64}{0.86}{0.15}{0.21}{0.85} & \cellbar{0.00}{0.50}{0.32}{0.68}{0.68} & \cellbar{0.16}{0.96}{0.50}{0.35}{0.50} & \cellbar{0.29}{0.92}{0.62}{0.09}{0.38} & \cellbar{0.14}{0.94}{0.65}{0.21}{0.35} & \cellbar{0.27}{0.77}{0.65}{0.08}{0.35} & \cellbar{0.06}{0.99}{0.79}{0.15}{0.21} & \cellbar{0.18}{0.83}{0.50}{0.32}{0.50} & \cellbar{0.20}{0.93}{0.51}{0.29}{0.49} & \cellbar{0.29}{0.88}{0.60}{0.11}{0.40} & 0.87 \\
+\textbf{6619} & \cellbar{0.25}{0.91}{0.52}{0.23}{0.48} & \cellbar{0.18}{0.80}{0.58}{0.24}{0.42} & \cellbar{0.21}{0.55}{0.27}{0.52}{0.73} & \cellbar{0.02}{0.92}{0.68}{0.30}{0.32} & \cellbar{0.10}{0.73}{0.33}{0.57}{0.67} & \cellbar{0.39}{0.80}{0.46}{0.16}{0.54} & \cellbar{0.10}{0.58}{0.38}{0.52}{0.62} & \cellbar{0.62}{0.99}{0.32}{0.06}{0.68} & \cellbar{0.22}{0.87}{0.40}{0.39}{0.60} & \cellbar{0.26}{0.63}{0.63}{0.11}{0.37} & \cellbar{0.46}{0.77}{0.41}{0.14}{0.59} & \cellbar{0.57}{0.77}{0.40}{0.03}{0.60} & 0.78 \\
+\textbf{8387} & \cellbar{0.25}{0.85}{0.49}{0.27}{0.51} & \cellbar{0.30}{1.00}{0.49}{0.22}{0.51} & \cellbar{0.15}{0.63}{0.50}{0.35}{0.50} & \cellbar{0.11}{0.98}{0.62}{0.27}{0.38} & \cellbar{0.60}{0.89}{0.33}{0.07}{0.67} & \cellbar{0.37}{0.76}{0.45}{0.19}{0.55} & \cellbar{0.40}{0.71}{0.35}{0.26}{0.65} & \cellbar{0.38}{0.99}{0.43}{0.20}{0.57} & \cellbar{0.14}{0.91}{0.34}{0.52}{0.66} & \cellbar{0.27}{0.88}{0.51}{0.22}{0.49} & \cellbar{0.13}{0.65}{0.50}{0.37}{0.50} & \cellbar{0.34}{1.00}{0.63}{0.03}{0.37} & 0.85 \\
+\textbf{10096} & \cellbar{0.30}{0.65}{0.44}{0.27}{0.56} & \cellbar{0.27}{0.73}{0.36}{0.38}{0.64} & \cellbar{0.34}{0.90}{0.30}{0.37}{0.70} & \cellbar{0.41}{0.96}{0.45}{0.15}{0.55} & \cellbar{0.60}{1.00}{0.26}{0.14}{0.74} & \cellbar{0.34}{0.85}{0.47}{0.20}{0.53} & \cellbar{0.49}{0.51}{0.26}{0.26}{0.74} & \cellbar{0.07}{0.78}{0.65}{0.28}{0.35} & \cellbar{0.27}{0.60}{0.44}{0.30}{0.56} & \cellbar{0.25}{0.53}{0.51}{0.24}{0.49} & \cellbar{0.06}{0.95}{0.58}{0.36}{0.42} & \cellbar{0.27}{0.83}{0.44}{0.30}{0.56} & 0.77 \\
+\textbf{10605} & \cellbar{0.20}{0.88}{0.35}{0.46}{0.65} & \cellbar{0.13}{1.00}{0.35}{0.52}{0.65} & \cellbar{0.47}{0.89}{0.27}{0.27}{0.73} & \cellbar{0.02}{0.83}{0.56}{0.42}{0.44} & \cellbar{0.56}{0.47}{0.30}{0.14}{0.70} & \cellbar{0.07}{0.65}{0.39}{0.54}{0.61} & \cellbar{0.04}{0.85}{0.35}{0.61}{0.65} & \cellbar{0.32}{0.76}{0.66}{0.02}{0.34} & \cellbar{0.20}{0.72}{0.43}{0.38}{0.57} & \cellbar{0.11}{0.97}{0.36}{0.53}{0.64} & \cellbar{0.17}{0.72}{0.40}{0.44}{0.60} & \cellbar{0.42}{0.96}{0.42}{0.17}{0.58} & 0.81 \\
+\textbf{14049} & \cellbar{0.22}{0.98}{0.44}{0.35}{0.56} & \cellbar{0.10}{0.59}{0.34}{0.56}{0.66} & \cellbar{0.28}{0.83}{0.41}{0.32}{0.59} & \cellbar{0.02}{0.99}{0.57}{0.41}{0.43} & \cellbar{0.40}{0.51}{0.34}{0.27}{0.66} & \cellbar{0.06}{0.95}{0.18}{0.76}{0.82} & \cellbar{0.47}{0.65}{0.38}{0.16}{0.62} & \cellbar{0.32}{0.75}{0.56}{0.12}{0.44} & \cellbar{0.21}{0.89}{0.50}{0.29}{0.50} & \cellbar{0.12}{0.66}{0.36}{0.52}{0.64} & \cellbar{0.28}{0.67}{0.38}{0.35}{0.62} & \cellbar{0.54}{1.00}{0.38}{0.08}{0.62} & 0.79 \\
+\bottomrule
+\end{tabular}
+}
+\end{table*}
