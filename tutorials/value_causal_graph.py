@@ -7,7 +7,7 @@
 
 # ## Set Up
 
-# In[2]:
+# In[1]:
 
 
 # Standard imports
@@ -54,7 +54,7 @@ from causallearn.utils.PCUtils.BackgroundKnowledge import BackgroundKnowledge
 from causallearn.utils.cit import fisherz
 
 
-# In[ ]:
+# In[2]:
 
 
 # For the most part I'll try to import functions and classes near where they are used
@@ -95,7 +95,7 @@ print(f"Device: {device}")
 # In[ ]:
 
 
-NUM_PLAYERS_GENERATE = 100
+NUM_PLAYERS_GENERATE = 25
 NUM_PLAYERS_USE = 25
 NUM_PLAYERS_START = -1
 
@@ -103,13 +103,13 @@ NUM_VALUE_DIM = 'SMALLSET'#'ALL', 'SMALLSET', 100
 MAX_QUESTIONS_PER_BATCH = 8
 GENERATE_NEW_PLAYERS = False
 
-PERSON = 0
+PERSON = 5 #V for case test, 0 for main, 2 for second person, 3 for third person, 4 for Inversion Value Def, 5 for Value Def
 ALLOW_UNSURE_ANSWER = False
 SYSTEMATIC_PROMPT = 2 ##LLAMA
 EXAMPLES_IN_PROMPT = 1
 
 SAE_STEERED_RANGE = 'onlyvalue' #'roleinstruction','onlyvalue' 
-SAE_STEERED_FEATURE_NUM = 25 #25, 10
+SAE_STEERED_FEATURE_NUM = 1 #25, 10
 SAE_STEERED_FEATURE_BAN = []
 #SAE_STEERED_FEATURE_BAN = [10096, 8387, 2221, 1312, 7502, 14049]
 #SAE_STEERED_FEATURE_BAN = [60312, 7754, 13033]
@@ -126,8 +126,8 @@ JUDGE_ANSWER_WITH_YESNO = False
 
 VERBOSE = False
 
-GROUP_SAMPLE_RATE = 0.4 #0.4 for valuebenchtrain
-DATA_SPLIT = 'valuebenchtrain'
+GROUP_SAMPLE_RATE = 1 #0.4 for valuebenchtrain
+DATA_SPLIT = 'valuebenchtest'
 if DATA_SPLIT == '30clearori':
     df_valuebench = pd.read_csv(os.path.join(LOCAL_SAE_MODEL_PATH, 'value_data/value_orientation_30clearori.csv'))
 elif DATA_SPLIT == 'other':
@@ -140,6 +140,7 @@ elif DATA_SPLIT == 'valuebenchall':
     df_valuebench = pd.read_csv(os.path.join(LOCAL_SAE_MODEL_PATH, 'value_data/value_orientation.csv'))    
 else:
     raise ValueError('Invalid data split')
+
 
 grouped = df_valuebench.groupby('value')
 if NUM_VALUE_DIM != 'ALL':
@@ -158,6 +159,15 @@ if NUM_VALUE_DIM != 'ALL':
         grouped = [group for group in grouped if group[0] in smallset]
     else:
         grouped = random.sample(list(grouped), NUM_VALUE_DIM)
+
+#prepapre value description and examples
+value_list = [group[0] for group in grouped]
+value_def_file = os.path.join(LOCAL_SAE_MODEL_PATH, 'value_data/definitions.csv')
+value_def_data = pd.read_csv(value_def_file)
+value_def_dict = {}
+for value_name in value_list:
+    value_def_dict[value_name] = ' '.join([vd for vd in value_def_data[value_def_data['value'] == value_name]['definition'].values if isinstance(vd, str)])
+    
 
 if not os.path.exists('valuebench_info'):
     os.mkdir('valuebench_info')
@@ -213,6 +223,8 @@ elif base_model == 'LLAMA3-8B':
     answer_valuebench_features_csv = 'answers_llama38b' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
 elif base_model == 'LLAMA3-8B-IT':
     answer_valuebench_features_csv = 'answers_llama38bit' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
+elif base_model == 'LLAMA31-8B-IT':
+    answer_valuebench_features_csv = 'answers_llama318bit' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
 elif base_model == 'LLAMA3-8B-IT-HELPFUL':
     answer_valuebench_features_csv = 'answers_llama38bithelp' + '_players'+ str(NUM_PLAYERS_GENERATE) + '_valuedims' + str(NUM_VALUE_DIM) +'.csv'
 elif base_model == 'LLAMA3-8B-IT-FICTION':
@@ -248,7 +260,7 @@ bnb_config = BitsAndBytesConfig(
     )
 
 
-# In[ ]:
+# In[4]:
 
 
 if base_model == 'GPT2-SMALL':
@@ -280,6 +292,11 @@ elif base_model == 'LLAMA3-8B':
 elif base_model == 'LLAMA3-8B-IT':
     hf_model = AutoModelForCausalLM.from_pretrained(os.path.join(LOCAL_SAE_MODEL_PATH, "meta-llama", "Meta-Llama-3-8B-Instruct"))#, quantization_config=bnb_config)
     hf_tokenizer = AutoTokenizer.from_pretrained(os.path.join(LOCAL_SAE_MODEL_PATH, "meta-llama", "Meta-Llama-3-8B-Instruct"), padding_side='left')
+    hf_model.resize_token_embeddings(len(hf_tokenizer))
+
+elif base_model == 'LLAMA31-8B-IT':
+    hf_model = AutoModelForCausalLM.from_pretrained(os.path.join(LOCAL_SAE_MODEL_PATH, "meta-llama", "Meta-Llama-3.1-8B-Instruct"))#, quantization_config=bnb_config)
+    hf_tokenizer = AutoTokenizer.from_pretrained(os.path.join(LOCAL_SAE_MODEL_PATH, "meta-llama", "Meta-Llama-3.1-8B-Instruct"), padding_side='left')
     hf_model.resize_token_embeddings(len(hf_tokenizer))
     
 elif base_model == 'LLAMA3-8B-IT-HELPFUL':
@@ -357,7 +374,7 @@ elif base_model == 'LLAMA3-8B-IT':
     model = HookedTransformer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct", tokenizer=hf_tokenizer, hf_model=hf_model, default_padding_side='left', device=device)
     sae_base_dir = LOCAL_SAE_MODEL_PATH + '/Juliushanhanhan/llama-3-8b-it-res/blocks.25.hook_resid_post'
     sae = SAE.load_from_pretrained(sae_base_dir, device=device)
-elif base_model in ['LLAMA3-8B-IT-HELPFUL', 'LLAMA3-8B-IT-FICTION', 'LLAMA3-8B-IT-CHN', 'GEMMA-2B-CHN']:
+elif base_model in ['LLAMA31-8B-IT', 'LLAMA3-8B-IT-HELPFUL', 'LLAMA3-8B-IT-FICTION', 'LLAMA3-8B-IT-CHN', 'GEMMA-2B-CHN']:
     pass
     #?model = pipeline("text-generation", model=hf_model, tokenizer=hf_tokenizer, default_padding_side='left')
     #?sae = None
@@ -538,11 +555,25 @@ def generate_question_analysis(value_name, a, q, qi, allow_unsure, trait):
         elif PERSON == 3:
             bio = trait["bio3"]
             bio_hint = f'(Note that you are role-playing the following bio: {bio})\n\n'
+        elif PERSON == 4:
+            bio = trait["mini_trait"]
+            value_def = value_def_dict[value_name]
+            bio_hint = f'(FYI, here is your trait. {bio}. You are disinclined to the the value of {value_name}, which means "{value_def}")\n\n'
+        elif PERSON == 5:
+            bio = trait["mini_trait"]
+            value_def = value_def_dict[value_name]
+            bio_hint = f'(FYI, here is your trait. {bio}. You are inclined to the the value of {value_name}, which means "{value_def}")\n\n'
         else:
             assert False
         
     else:
         bio_hint = ''
+        if PERSON == 4 and value_name:
+            value_def = value_def_dict[value_name]
+            bio_hint = f'(You are disinclined to the the value of {value_name}, which has the following meanings: "{value_def}")\n\n'
+        if PERSON == 5 and value_name:
+            value_def = value_def_dict[value_name]
+            bio_hint = f'(You are inclined to the the value of {value_name}, which has the following meanings: "{value_def}")\n\n'
     instruct = instruct.format(bio_hint=bio_hint)
 
     if EXAMPLES_IN_PROMPT == 0:
@@ -687,7 +718,7 @@ def judge_answer(thought_n_answer, question, rulefirst):
         
 
 
-# In[ ]:
+# In[9]:
 
 
 assert sae
@@ -909,7 +940,7 @@ with torch.no_grad():
             steer_dim_results.append(steer_dim_result)
 
 
-# In[ ]:
+# In[10]:
 
 
 '''
