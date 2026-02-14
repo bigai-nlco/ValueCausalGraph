@@ -5,5 +5,5 @@ max-complexity = 25
 extend-select = E9, F63, F7, F82
 show-source = true
 statistics = true
-exclude = .git,__pycache__,.venv,./wandb,./research/wandb,value_data
+exclude = .git,__pycache__,.venv,./wandb,./research/wandb,value_data,tutorials,scripts
 
