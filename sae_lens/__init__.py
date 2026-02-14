@@ -34,4 +34,5 @@ __all__ = [
     "pretokenize_runner",
     "run_evals",
     "upload_saes_to_huggingface",
+    "TopKActivation",
 ]
