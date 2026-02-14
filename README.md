@@ -19,9 +19,9 @@ Set up the following directory structure outside the main project directory:
   - │   │   └── [Meta-Llama-3-8B-Instruct](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct)
   - │   ├── Juliushanhanhan
   - │   │   └── [llama-3-8b-it-res](https://huggingface.co/Juliushanhanhan/llama-3-8b-it-res)
+  - └── SAELens
   - │   └── value_data
   - │       └── [value_orientation.csv](https://github.com/ValueByte-AI/ValueBench/blob/main/data/value_orientation.csv)
-  - └── SAELens
 
 ## 3. Execution Instructions
 ### Generate Data
