@@ -1,5 +1,4 @@
 import json
-import os
 import re
 from typing import Any, Dict, Optional, Protocol, Tuple
 
@@ -22,6 +21,7 @@ class PretrainedSaeLoader(Protocol):
         cfg_overrides: dict[str, Any] | None = None,
     ) -> tuple[dict[str, Any], dict[str, torch.Tensor], Optional[torch.Tensor]]: ...
 
+
 '''
 def sae_lens_loader_oldself(
     repo_id: str,
@@ -31,7 +31,7 @@ def sae_lens_loader_oldself(
     force_download: bool = False,
     cfg_overrides: Optional[dict[str, Any]] = None,
 ) -> tuple[dict[str, Any], dict[str, torch.Tensor], Optional[torch.Tensor]]:
-    cfg_filename = f"{folder_name}/cfg.json"    
+    cfg_filename = f"{folder_name}/cfg.json"
     if local_model_path:
         cfg_path = os.path.join(local_model_path, repo_id, cfg_filename)
     else:
@@ -46,7 +46,6 @@ def sae_lens_loader_oldself(
         sae_path = hf_hub_download(
             repo_id=repo_id, filename=weights_filename, force_download=force_download
         )
-        
 
     # TODO: Make this cleaner. I hate try except statements.
     try:
@@ -77,6 +76,7 @@ def sae_lens_loader_oldself(
 
     return cfg_dict, state_dict, log_sparsity
 '''
+
 
 def sae_lens_loader(
     repo_id: str,
