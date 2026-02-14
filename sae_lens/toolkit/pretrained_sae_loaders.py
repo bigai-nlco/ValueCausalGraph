@@ -22,7 +22,7 @@ class PretrainedSaeLoader(Protocol):
     ) -> tuple[dict[str, Any], dict[str, torch.Tensor], Optional[torch.Tensor]]: ...
 
 
-'''
+"""
 def sae_lens_loader_oldself(
     repo_id: str,
     folder_name: str,
@@ -75,7 +75,7 @@ def sae_lens_loader_oldself(
         log_sparsity = None
 
     return cfg_dict, state_dict, log_sparsity
-'''
+"""
 
 
 def sae_lens_loader(
