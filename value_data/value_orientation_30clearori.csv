@@ -1,0 +1,250 @@
+questionnaire,item,value,agreement,question
+NFCC2000,I find that establishing a consistent routine enables me to enjoy my life.,Preference for Order and Structure,1,Will establishing a consistent routine enable me to enjoy my life?
+NFCC2000,I enjoy having a clear structured mode of life.,Preference for Order and Structure,1,Should I enjoy having a clear structured mode of life?
+NFCC2000,I like to have a place for everything and everything in its place.,Preference for Order and Structure,1,Should I like to have a place for everything and everything in its place?
+NFCC2000,I find that a well ordered life with regular hours suits my temperament.,Preference for Order and Structure,1,Would a well-ordered life with regular hours suit my temperament?
+NFCC1993,I think that having clear rules and order at work is essential for success.,Preference for Order and Structure,1,Should I think that having clear rules and order at work is essential for success?
+NFCC1993,I find that a well ordered life with regular hours suits my tempera_x0002_ment.,Preference for Order and Structure,1,Would a well-ordered life with regular hours suit my temperament?
+NFCC1993,I hate to change my plans at the last minute.,Preference for Order and Structure,1,Should I hate to change my plans at the last minute?
+NFCC1993,My personal space is usually messy and disorganized.,Preference for Order and Structure,-1,Should my personal space usually be messy and disorganized?
+NFCC1993,I don't like to be with people who are capable of unexpected actions.,Preference for Order and Structure,1,Should I avoid being with people who are capable of unexpected actions?
+NFCC1993,I think that I would learn best in a class that lacks clearly stated objectives and requirements.,Preference for Order and Structure,-1,Would I learn best in a class that lacks clearly stated objectives and requirements?
+NFCC1993,I find that establishing a consistent routine enables me to enjoy life more.,Preference for Order and Structure,1,Will establishing a consistent routine enable me to enjoy life more?
+NFCC1993,I enjoy having a clear and structured mode of life.,Preference for Order and Structure,1,Should I enjoy having a clear and structured mode of life?
+NFCC1993,I like to have a place for everything and everything in its place.,Preference for Order and Structure,1,Should I like to have a place for everything and everything in its place?
+NFCC1993,I dislike the routine aspects of my work (studies).,Preference for Order and Structure,-1,Should I dislike the routine aspects of my work (studies)?
+EACS,I take time to figure out what I'm really feeling.,Emotional Processing,1,Should I take time to figure out what I'm really feeling?
+EACS,I delve into my feelings to get a thorough understanding of them.,Emotional Processing,1,Should I delve into my feelings to get a thorough understanding of them?
+EACS,I realize that my feelings are valid and important.,Emotional Processing,1,Should I realize that my feelings are valid and important?
+EACS,I acknowledge my emotions.,Emotional Processing,1,Should I acknowledge my emotions?
+EACS,I let my feelings come out freely.,Emotional Expression,1,Should I let my feelings come out freely?
+EACS,I take time to express my emotions.,Emotional Expression,1,Should I take time to express my emotions?
+EACS,I allow myself to express my emotions.,Emotional Expression,1,Should I allow myself to express my emotions?
+EACS,I feel free to express my emotions.,Emotional Expression,1,Should I feel free to express my emotions?
+IRI,"I sometimes find it difficult to see things from the ""other guy's"" point of view.",Perspective Taking,-1,"Should I sometimes find it difficult to see things from the ""other guy's"" point of view?"
+IRI,I try to look at everybody's side of a disagreement before I make a decision.,Perspective Taking,1,Should I try to look at everybody's side of a disagreement before I make a decision?
+IRI,I sometimes try to understand my friends better by imagining how things look from their perspective.,Perspective Taking,1,Should I try to understand my friends better by imagining how things look from their perspective?
+IRI,I believe that there are two sides to every question and try to look at them both.,Perspective Taking,1,Should I believe that there are two sides to every question and try to look at them both?
+IRI,"When I'm upset at someone, I usually try to ""put myself in his shoes"" for a while.",Perspective Taking,1,"Should I try to ""put myself in his shoes"" for a while when I'm upset at someone?"
+IRI,"Before criticizing somebody, I try to imagine how I would feel if I were in their place.",Perspective Taking,1,Should I try to imagine how I would feel if I were in someone's place before criticizing them?
+HEXACO,"I avoid making ""small talk"" with people.",Sociability,-1,"Should I avoid making ""small talk"" with people?"
+HEXACO,"When I suffer from a painful experience, I need someone to make me feel comfortable.",Dependence,1,Do I need someone to make me feel comfortable when I suffer from a painful experience?
+HEXACO,I enjoy having lots of people around to talk with.,Sociability,1,Should I enjoy having lots of people around to talk with?
+HEXACO,I prefer jobs that involve active social interaction to those that involve working alone.,Sociability,1,Should I prefer jobs that involve active social interaction to those that involve working alone?
+HEXACO,"Whenever I feel worried about something, I want to share my concern with another person.",Dependence,1,Should I share my concern with another person whenever I feel worried about something?
+HEXACO,The first thing that I always do in a new place is to make friends.,Sociability,1,Should the first thing I do in a new place be to make friends?
+HEXACO,I rarely discuss my problems with other people.,Dependence,-1,Should I rarely discuss my problems with other people?
+FS,I lead a purposeful and meaningful life.,Psychosocial flourishing,1,Should I lead a purposeful and meaningful life?
+FS,My social relationships are supportive and rewarding.,Psychosocial flourishing,1,Should my social relationships be supportive and rewarding?
+FS,I am engaged and interested in my daily activities.,Psychosocial flourishing,1,Should I be engaged and interested in my daily activities?
+FS,I actively contribute to the happiness and well-being of others.,Psychosocial flourishing,1,Should I actively contribute to the happiness and well-being of others?
+FS,I am competent and capable in the activities that are important to me.,Psychosocial flourishing,1,Am I competent and capable in the activities that are important to me?
+FS,I am a good person and live a good life.,Psychosocial flourishing,1,Am I a good person who lives a good life?
+FS,I am optimistic about my future.,Psychosocial flourishing,1,Should I be optimistic about my future?
+FS,People respect me.,Psychosocial flourishing,1,Should people respect me?
+SWLS,In most ways my life is close to my ideal.,Satisfaction with life,1,Should my life be close to my ideal in most ways?
+SWLS,The conditions of my life are excellent.,Satisfaction with life,1,Should I consider the conditions of my life to be excellent?
+SWLS,I am satisfied with my life.,Satisfaction with life,1,Should I be satisfied with my life?
+SWLS,So far I have gotten the important things I want in life.,Satisfaction with life,1,Have I gotten the important things I want in life so far?
+6FPQ,I am good at making impromptu speeches.,Extraversion,1,Am I good at making impromptu speeches?
+6FPQ,I am skilled in handling social situations.,Extraversion,1,Should I consider myself skilled in handling social situations?
+6FPQ,I avoid contacts with others.,Affiliation,-1,Should I avoid contacts with others?
+6FPQ,I avoid difficult reading material.,Understanding,-1,Should I avoid difficult reading material?
+6FPQ,I believe in the importance of art.,Breadth of Interest,1,Should I believe in the importance of art?
+6FPQ,I can talk others into doing things.,Extraversion,1,Can I talk others into doing things?
+6FPQ,I enjoy discussing movies and books with others.,Understanding,1,Should I enjoy discussing movies and books with others?
+6FPQ,I enjoy hearing new ideas.,Breadth of Interest,1,Should I enjoy hearing new ideas?
+6FPQ,I express myself easily.,Extraversion,1,Should I express myself easily?
+6FPQ,I feel comfortable around people.,Affiliation,1,Should I feel comfortable around people?
+6FPQ,I find it difficult to approach others.,Extraversion,-1,Should I find it difficult to approach others?
+6FPQ,I find political discussions interesting.,Understanding,1,Should I find political discussions interesting?
+6FPQ,I get excited by new ideas.,Breadth of Interest,1,Should I get excited by new ideas?
+6FPQ,I have a natural talent for influencing people.,Extraversion,1,Do I have a natural talent for influencing people?
+6FPQ,I have a poor vocabulary.,Understanding,-1,Should I have a poor vocabulary?
+6FPQ,I have a rich vocabulary.,Understanding,1,Should I have a rich vocabulary?
+6FPQ,I keep in the background.,Extraversion,-1,Should I keep in the background?
+6FPQ,I lack the talent for influencing people.,Extraversion,-1,Do I lack the talent for influencing people?
+6FPQ,I like music.,Breadth of Interest,1,Should I like music?
+6FPQ,I like to read.,Understanding,1,Should I like to read?
+6FPQ,I love to learn new things.,Breadth of Interest,1,Should I love to learn new things?
+6FPQ,I love to read challenging material.,Understanding,1,Should I love to read challenging material?
+6FPQ,I make friends easily.,Affiliation,1,Should I make friends easily?
+6FPQ,I often feel uncomfortable around others.,Affiliation,-1,Should I often feel uncomfortable around others?
+6FPQ,I show a mastery of language.,Understanding,1,Should I show a mastery of language?
+6FPQ,I spend a lot of time reading.,Understanding,1,Should I spend a lot of time reading?
+6FPQ,I start conversations.,Affiliation,1,Should I start conversations?
+6FPQ,I talk to a lot of different people at parties.,Affiliation,1,Should I talk to a lot of different people at parties?
+6FPQ,I warm up quickly to others.,Affiliation,1,Should I warm up quickly to others?
+6FPQ,I would describe my experiences as somewhat dull.,Extraversion,-1,Should I describe my experiences as somewhat dull?
+AB5C,I am comfortable in unfamiliar situations.,Poise,1,Should I be comfortable in unfamiliar situations?
+AB5C,I am concerned about others.,Sympathy,1,Should I be concerned about others?
+AB5C,I am deeply moved by others' misfortunes.,Sympathy,1,Should I be deeply moved by others' misfortunes?
+AB5C,I am indifferent to the feelings of others.,Understanding,-1,Should I be indifferent to the feelings of others?
+AB5C,I am interested in people.,Warmth,1,Should I be interested in people?
+AB5C,I anticipate the needs of others.,Empathy,1,Should I anticipate the needs of others?
+AB5C,I appreciate the viewpoints of others.,Understanding,1,Should I appreciate the viewpoints of others?
+AB5C,I automatically take charge.,Assertiveness,1,Should I automatically take charge?
+AB5C,I believe crying helps me feel better.,Tenderness,1,Will crying help me feel better?
+AB5C,I believe in the importance of art.,Imagination,1,Should I believe in the importance of art?
+AB5C,I believe people should fend for themselves.,Sympathy,-1,Should I believe people should fend for themselves?
+AB5C,I can easily push myself forward.,Assertiveness,1,Can I easily push myself forward?
+AB5C,I can't do without the company of others.,Sociability,1,Should I be unable to do without the company of others?
+AB5C,I cherish mementos.,Tenderness,1,Should I cherish mementos?
+AB5C,I come up with a solution right away.,Assertiveness,1,Should I come up with a solution right away?
+AB5C,I dislike neighbors living too close.,Sociability,-1,Should I dislike neighbors living too close?
+AB5C,I enjoy being on the go.,Sociability,1,Should I enjoy being on the go?
+AB5C,I enjoy being part of a loud crowd.,Sociability,1,Should I enjoy being part of a loud crowd?
+AB5C,I enjoy discussing movies and books with others.,Reflection,1,Should I enjoy discussing movies and books with others?
+AB5C,I enjoy examining myself and my life.,Depth,1,Should I enjoy examining myself and my life?
+AB5C,I enjoy the beauty of nature.,Reflection,1,Should I enjoy the beauty of nature?
+AB5C,I feel comfortable around people.,Poise,1,Should I feel comfortable around people?
+AB5C,I feel little concern for others.,Understanding,-1,Should I feel little concern for others?
+AB5C,I feel sympathy for those who are worse off than myself.,Sympathy,1,Should I feel sympathy for those who are worse off than myself?
+AB5C,I find it difficult to approach others.,Poise,-1,Should I find it difficult to approach others?
+AB5C,I give up easily.,Poise,-1,Should I give up easily?
+AB5C,I go out of my way for others.,Nurturance,1,Should I go out of my way for others?
+AB5C,I have a soft heart.,Nurturance,1,Should I have a soft heart?
+AB5C,I have a vivid imagination.,Imagination,1,Should I have a vivid imagination?
+AB5C,I inquire about others' well-being.,Warmth,1,Should I inquire about others' well-being?
+AB5C,I know what I want.,Assertiveness,1,Should I know what I want?
+AB5C,I like to be alone.,Sociability,-1,Should I like to be alone?
+AB5C,I like to do things for others.,Sympathy,1,Should I like to do things for others?
+AB5C,I like to get lost in thought.,Depth,1,Should I like to get lost in thought?
+AB5C,I like to please others.,Nurturance,1,Should I like to please others?
+AB5C,I listen to my heart rather than my brain.,Tenderness,1,Should I listen to my heart rather than my brain?
+AB5C,I look down on any weakness.,Sympathy,-1,Should I look down on any weakness?
+AB5C,I look for hidden meanings in things.,Depth,1,Should I look for hidden meanings in things?
+AB5C,I love children's movies.,Tenderness,1,Should I love children's movies?
+AB5C,I make enemies.,Nurturance,-1,Should I make enemies?
+AB5C,I make others feel good.,Warmth,1,Should I make others feel good?
+AB5C,I make people feel welcome.,Warmth,1,Should I make people feel welcome?
+AB5C,I need a creative outlet.,Imagination,1,Do I need a creative outlet?
+AB5C,I need to understand my motives.,Depth,1,Do I need to understand my motives?
+AB5C,I often feel uncomfortable around others.,Poise,-1,Should I often feel uncomfortable around others?
+AB5C,I prefer variety to routine.,Imagination,1,Should I prefer variety to routine?
+AB5C,I pretend to be concerned for others.,Empathy,-1,Should I pretend to be concerned for others?
+AB5C,I put people under pressure.,Nurturance,-1,Should I put people under pressure?
+AB5C,I rarely look for a deeper meaning in things.,Depth,-1,Should I rarely look for a deeper meaning in things?
+AB5C,I rarely smile.,Warmth,-1,Should I rarely smile?
+AB5C,I reassure others.,Sympathy,1,Should I reassure others?
+AB5C,I remember my friends' birthdays.,Tenderness,1,Should I remember my friends' birthdays?
+AB5C,I respect others' feelings.,Understanding,1,Should I respect others' feelings?
+AB5C,I retreat from others.,Poise,-1,Should I retreat from others?
+AB5C,I see beauty in things that others might not notice.,Reflection,1,Should I see beauty in things that others might not notice?
+AB5C,I seek danger.,Nurturance,-1,Should I seek danger?
+AB5C,I sense others' wishes.,Empathy,1,Should I sense others' wishes?
+AB5C,I show my feelings.,Tenderness,1,Should I show my feelings?
+AB5C,I show my gratitude.,Warmth,1,Should I show my gratitude?
+AB5C,I stick up for myself.,Assertiveness,1,Should I stick up for myself?
+AB5C,I suffer from others' sorrows.,Tenderness,1,Should I suffer from others' sorrows?
+AB5C,I sympathize with others' feelings.,Understanding,1,Should I sympathize with others' feelings?
+AB5C,I take an interest in other people's lives.,Sympathy,1,Should I take an interest in other people's lives?
+AB5C,I take no time for others.,Understanding,-1,Should I take no time for others?
+AB5C,I take others' interests into account.,Understanding,1,Should I take others' interests into account?
+AB5C,I take time to reflect on things.,Reflection,1,Should I take time to reflect on things?
+AB5C,I tend to analyze things.,Depth,1,Should I tend to analyze things?
+AB5C,I tend to dislike soft-hearted people.,Sympathy,-1,Should I dislike soft-hearted people?
+AB5C,I tend to think about something for hours.,Depth,1,Should I think about something for hours?
+AB5C,I think deeply about things.,Depth,1,Should I think deeply about things?
+AB5C,I think of others first.,Nurturance,1,Should I think of others first?
+AB5C,I treat people as inferiors.,Empathy,-1,Should I treat people as inferiors?
+AB5C,I try to lead others.,Assertiveness,1,Should I try to lead others?
+AB5C,I try to outdo others.,Nurturance,-1,Should I try to outdo others?
+AB5C,I try to stay in touch with myself.,Empathy,1,Should I try to stay in touch with myself?
+AB5C,I turn plans into actions.,Assertiveness,1,Should I turn plans into actions?
+AB5C,I want to mean something to others.,Tenderness,1,Should I want to mean something to others?
+AB5C,I want to please others.,Tenderness,1,Should I want to please others?
+AB5C,I will do anything for others.,Nurturance,1,Should I do anything for others?
+AB5C,I wouldn't harm a fly.,Nurturance,1,Should I avoid harming a fly?
+Barchard2001,I am concerned about others.,Empathy,1,Should I be concerned about others?
+Barchard2001,I believe that criminals should receive help rather than punishment.,Empathy,1,Should I believe that criminals should receive help rather than punishment?
+Barchard2001,I believe that the poor deserve our sympathy.,Empathy,1,Should I believe that the poor deserve our sympathy?
+Barchard2001,I express my affection physically.,Positive Expressivity,1,Should I express my affection physically?
+Barchard2001,I express my happiness in a childlike manner.,Positive Expressivity,1,Should I express my happiness in a childlike manner?
+Barchard2001,I feel little concern for others.,Empathy,-1,Should I feel little concern for others?
+Barchard2001,I feel sympathy for those who are worse off than myself.,Empathy,1,Should I feel sympathy for those who are worse off than myself?
+Barchard2001,I find it difficult showing people that I care about them.,Positive Expressivity,-1,Should I find it difficult showing people that I care about them?
+Barchard2001,I have difficulty showing affection.,Positive Expressivity,-1,Should I have difficulty showing affection?
+Barchard2001,I have little sympathy for the unemployed.,Empathy,-1,Should I have little sympathy for the unemployed?
+Barchard2001,I have no sympathy for criminals.,Empathy,-1,Should I have no sympathy for criminals?
+Barchard2001,I hug my close friends.,Positive Expressivity,1,Should I hug my close friends?
+Barchard2001,I laugh out loud if something is funny.,Positive Expressivity,1,Should I laugh out loud if something is funny?
+Barchard2001,I look down on any weakness.,Empathy,-1,Should I look down on any weakness?
+Barchard2001,I show my feelings when I'm happy.,Positive Expressivity,1,Should I show my feelings when I'm happy?
+Barchard2001,I sometimes laugh out loud when reading or watching TV.,Positive Expressivity,1,Should I sometimes laugh out loud when reading or watching TV?
+Barchard2001,I sympathize with the homeless.,Empathy,1,Should I sympathize with the homeless?
+BIS_BAS,I feel pretty worried or upset when I think or know somebody is angry at me.,Behavioral Inhibition System,1,Should I feel pretty worried or upset when I think or know somebody is angry at me?
+BIS_BAS,"If I think something unpleasant is going to happen I usually get pretty ""worked up.""",Behavioral Inhibition System,1,"Should I get pretty ""worked up"" if I think something unpleasant is going to happen?"
+BIS_BAS,I feel worried when I think I have done poorly at something important.,Behavioral Inhibition System,1,Should I feel worried when I think I have done poorly at something important?
+BIS_BAS,I worry about making mistakes.,Behavioral Inhibition System,1,Should I worry about making mistakes?
+CAT-PD,I enjoy going to social gatherings.,Social Withdrawal,-1,Should I enjoy going to social gatherings?
+CAT-PD,I feel comfortable around people.,Social Withdrawal,-1,Should I feel comfortable around people?
+CAT-PD,I keep to myself even when I'm around other people.,Social Withdrawal,1,Should I keep to myself even when I'm around other people?
+JPI,I am deeply moved by others' misfortunes.,Empathy,1,Should I be deeply moved by others' misfortunes?
+JPI,I am easily moved to tears.,Empathy,1,Should I be easily moved to tears?
+JPI,I am good at making impromptu speeches.,Social Confidence,1,Am I good at making impromptu speeches?
+JPI,I am interested in many things.,Breadth of Interest,1,Should I be interested in many things?
+JPI,I am interested in people.,Sociability,1,Should I be interested in people?
+JPI,I avoid difficult reading material.,Breadth of Interest,-1,Should I avoid difficult reading material?
+JPI,I believe in the importance of art.,Complexity,1,Should I believe in the importance of art?
+JPI,I enjoy bringing people together.,Sociability,1,Should I enjoy bringing people together?
+JPI,I enjoy examining myself and my life.,Complexity,1,Should I enjoy examining myself and my life?
+JPI,I experience my emotions intensely.,Empathy,1,Should I experience my emotions intensely?
+JPI,I feel comfortable around people.,Social Confidence,1,Should I feel comfortable around people?
+JPI,I feel spiritally connected to other people.,Empathy,1,Should I feel spiritually connected to other people?
+JPI,I find political discussions interesting.,Breadth of Interest,1,Should I find political discussions interesting?
+JPI,I hate being the center of attention.,Social Confidence,-1,Should I hate being the center of attention?
+JPI,I have a natural talent for influencing people.,Social Confidence,1,Do I have a natural talent for influencing people?
+JPI,I have a rich vocabulary.,Complexity,1,Should I have a rich vocabulary?
+JPI,I lack the talent for influencing people.,Social Confidence,-1,Do I lack the talent for influencing people?
+JPI,I love surprise parties.,Sociability,1,Should I love surprise parties?
+JPI,I love to learn new things.,Breadth of Interest,1,Should I love to learn new things?
+JPI,I love to read challenging material.,Breadth of Interest,1,Should I love to read challenging material?
+JPI,I often feel uncomfortable around others.,Social Confidence,-1,Should I often feel uncomfortable around others?
+JPI,I prefer to stick with things that I know.,Breadth of Interest,-1,Should I stick with things that I know?
+JPI,I try to examine myself objectively.,Complexity,1,Should I try to examine myself objectively?
+JPI,I want to increase my knowledge.,Breadth of Interest,1,Should I want to increase my knowledge?
+MPQ,I am good at making impromptu speeches.,Assertiveness,1,Am I good at making impromptu speeches?
+MPQ,I find it difficult to manipulate others.,Assertiveness,-1,Should I find it difficult to manipulate others?
+MPQ,I have a natural talent for influencing people.,Assertiveness,1,Do I have a natural talent for influencing people?
+MPQ,I have little to say.,Assertiveness,-1,Should I have little to say?
+MPQ,I keep in the background.,Assertiveness,-1,Should I keep in the background?
+LVI,It is important to have time to myself.,Privacy,1,Should I have time to myself?
+LVI,It is important to have quiet time to think.,Privacy,1,Should I have quiet time to think?
+LVI,It is important to have a private place to go.,Privacy,1,Should I have a private place to go?
+SOV,The main object of scientific research should be the discovery of truth rather than its practical applications.,Theoretical,1,Should the main object of scientific research be the discovery of truth rather than its practical applications?
+SOV,"Among Aristotle and Abraham Lincoln,Aristotle should be judged as contributing more to the progress of the human race.",Theoretical,1,Should Aristotle be judged as contributing more to the progress of the human race than Abraham Lincoln?
+SOV,"Mathematics, rather than theology, ultimately will prove more important for the human race.",Theoretical,1,Will mathematics ultimately prove more important for the human race than theology?
+SOV,It is more important for modern leaders to encourage followers to take a greater interest in the rights of others rather than to bring about the accomplishment of practical goals.,Social,1,Is it more important for modern leaders to encourage followers to take a greater interest in the rights of others rather than to bring about the accomplishment of practical goals?
+SOV,Unselfishness and sympathy are more  desirable character traits rather than high ideals and reverence.,Social,1,Are unselfishness and sympathy more desirable character traits than high ideals and reverence?
+SOV,"If I were a university professor and had thenecessary ability, I would prefer to teach chemistry and physics rather than poetry.",Theoretical,1,Should I prefer to teach chemistry and physics rather than poetry if I were a university professor with the necessary ability?
+SOV,"If I should see the different news itemsin my morning paper, I would read NEW SCIENTIFIC THEORY ANNOUNCED more attentively rather than SUPREME COURT RENDERS DECISION.",Theoretical,1,Should I read NEW SCIENTIFIC THEORY ANNOUNCED more attentively than SUPREME COURT RENDERS DECISION in my morning paper?
+SOV,"Assuming that I have sufficient leisure time,  I would prefer to use it to do volunteer social or public service work rather than to develop my mastery of a favorite skill.",Social,1,Should I prefer to use my leisure time to do volunteer social or public service work rather than to develop my mastery of a favorite skill?
+SOV,"At an exposition, I chiefly like to go to the buildings where I can see scientific (e.g, chemical) apparatus rather than new manufactured products.",Theoretical,1,Should I chiefly go to the buildings where I can see scientific apparatus rather than new manufactured products at an exposition?
+SOV,The aim of religious institutions at the present times hould be to bring out altruistic and charitable tendencies rather than to encourage spiritual worship and a sense of communion with the highest.,Social,1,Should the aim of religious institutions at the present time be to bring out altruistic and charitable tendencies rather than to encourage spiritual worship and a sense of communion with the highest?
+SOV,"If I had some time to spend in a waiting room and there were only two magazines to choose from, I would prefer SCIENTIFIC AGE rather than ARTS AND DECORATIONS.",Theoretical,1,Should I prefer SCIENTIFIC AGE over ARTS AND DECORATIONS if I had some time to spend in a waiting room and there were only two magazines to choose from?
+SOV,I would consider the more important function of education as its preparation for participation in community activities and aiding less fortunate persons rather than its preparation for practical achievement and financial reward.,Social,1,Should I consider the more important function of education as its preparation for participation in community activities and aiding less fortunate persons rather than its preparation for practical achievement and financial reward?
+SOV,"I am more interested in reading accounts of the lives and works of individuals such as Ayn Rand, Jean-Paul Sartre, and Immanuel Kant rather than Indira Gandhi, Theodore Roosevelt and Winston Churchill.",Theoretical,1,"Should I be more interested in reading accounts of the lives and works of individuals such as Ayn Rand, Jean-Paul Sartre, and Immanuel Kant rather than Indira Gandhi, Theodore Roosevelt, and Winston Churchill?"
+SOV,"If I were engaged in an industrial organization (and assuming salaries to be equal), I would prefer to work as a counselor for employees rather than in an administrative position.",Social,1,Should I prefer to work as a counselor for employees rather than in an administrative position if salaries are equal?
+SOV,Modern society would benefit more from more concern for the rights and welfare of citizens rahter than greater knowledge of the fundamental laws of human behavior.,Social,1,Would modern society benefit more from more concern for the rights and welfare of citizens rather than greater knowledge of the fundamental laws of human behavior?
+SOV,Modern society would benefit more from greater knowledge of the fundamental laws of human behavior rahter than more concern for the rights and welfare of citizens.,Theoretical,1,Would modern society benefit more from greater knowledge of the fundamental laws of human behavior rather than more concern for the rights and welfare of citizens?
+SOV,I would prefer to hear a series of popular lectures on the progress of social service work in your part of the country rather than contemporary painters.,Social,1,Should I prefer to hear a series of popular lectures on the progress of social service work in my part of the country rather than contemporary painters?
+SOV,"I agree that all the evidence that has been impartially accumulated goes to show that the universe has evolved to its present state in accordance with natural principles, so that there is no necessity to assume a first cause,cosmic purpose, or God behind it.",Theoretical,1,"Should I agree that all the evidence shows the universe has evolved according to natural principles without needing to assume a first cause, cosmic purpose, or God behind it?"
+SOV,"I think that a good government should aim chiefly at more aid for the poor, sick, and old.",Social,1,"Should a good government aim chiefly at more aid for the poor, sick, and old?"
+SOV,"In my opinion, a person who works in business all the week can best spend Sunday in educating himself/herself by reading serious books.",Theoretical,1,Should a person who works in business all week spend Sunday educating themselves by reading serious books?
+SOV,"If I could influence the educational policies of the public schools of some city, I would undertake to to stimulate the study of social problems.",Social,1,Should I undertake to stimulate the study of social problems if I could influence the educational policies of the public schools of some city?
+SOV,"If I could influence the educational policies of the public schools of some city, I would undertake to provide additional laboratory facilities.",Theoretical,1,Should I undertake to provide additional laboratory facilities if I could influence the educational policies of the public schools of some city?
+SOV,"If I lived in a small town and had more than enough income for my needs, I would prefer to   give it for the development of scientific research in your locality.",Theoretical,1,Should I prefer to give my excess income for the development of scientific research in my locality if I lived in a small town?
+SOV,"If I lived in a small town and had more than enough income for my needs, I would prefer to   give it to The Family Welfare Society.",Social,1,Should I prefer to give my extra income to The Family Welfare Society if I lived in a small town and had more than enough for my needs?
+SOV,"Assuming that I possess the necessary ability, and that the salary for each occupations is the same, I would prefer to be a mathematician.",Theoretical,1,Should I prefer to be a mathematician if I have the necessary ability and the salary is the same for all occupations?
+SOV,"If I had sufficient leisure and money, I would prefer to establish a center for the care and training of the disabled.",Social,1,Should I prefer to establish a center for the care and training of the disabled if I had sufficient leisure and money?
+SOV,"At an evening discussion with close friends, I am more interested when the conversation concerns developments in science.",Theoretical,1,Should I be more interested in the conversation when it concerns developments in science during an evening discussion with close friends?
+SOV,"At an evening discussion with close friends, I am more interested when the conversation concerns poverty and social amelioration.",Social,1,Should I be more interested in a conversation about poverty and social amelioration when discussing with close friends in the evening?
+SOV,"If my ability and other conditions would permit during part of my next summer vacation, I would prefer to write and publish an original biological essay or article.",Theoretical,1,Should I prefer to write and publish an original biological essay or article during part of my next summer vacation if my ability and other conditions permit?
+SOV,"Great exploits and adventures of discovery such as Columbus's, Magellan's, and Earhart's seem significant to me because they add to our knowledge of geography, meteorology, oceanography, etc.",Theoretical,1,"Should great exploits and adventures of discovery like Columbus's, Magellan's, and Earhart's seem significant to me because they add to our knowledge of geography, meteorology, oceanography, etc.?"
+SOV,"Great exploits and adventures of discovery such as Columbus's, Magellan's, and Earhart's seem significant to me because they weld human interests and international feelings throughout the world.",Social,1,"Should great exploits and adventures of discovery like Columbus's, Magellan's, and Earhart's seem significant to me because they weld human interests and international feelings throughout the world?"
+SOV,"One should guide one's conduct according to, or develop one's chief loyalties toward ideals of charity.",Social,1,"Should I guide my conduct according to, or develop my chief loyalties toward, ideals of charity?"
+SOV,"Among Mother Theresa, General Colin Powell, Bill Gates and Marie Curie, the famous person that interests me most is Mother Theresa.",Social,1,"Should Mother Theresa be the famous person that interests me most among Mother Theresa, General Colin Powell, Bill Gates, and Marie Curie?"
+SOV,"Among Mother Theresa, General Colin Powell, Bill Gates and Marie Curie, the famous person that interests me most is Marie Curie.",Theoretical,1,"Should Marie Curie be the famous person that interests me most among Mother Theresa, General Colin Powell, Bill Gates, and Marie Curie?"
+SOV,"In choosing a spouse/life-time companion, I would prefer someone who likes to help people.",Social,1,Should I prefer someone who likes to help people when choosing a spouse or life-time companion?
+SOV,"Viewing Leonardo da Vinci's picture,""The Last Supper,"" I would tend to think of it in relation to Leonardo's versatility and its place in history.",Theoretical,1,"Should I think of Leonardo da Vinci's picture, ""The Last Supper,"" in relation to Leonardo's versatility and its place in history?"

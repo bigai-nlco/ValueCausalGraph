@@ -1,0 +1,688 @@
+questionnaire,item,value,agreement,question
+NFCC2000,I find that a well ordered life with regular hours suits my temperament.,Preference for Order and Structure,1,Would a well-ordered life with regular hours suit my temperament?
+NFCC2000,I find that establishing a consistent routine enables me to enjoy my life.,Preference for Order and Structure,1,Will establishing a consistent routine enable me to enjoy my life?
+NFCC2000,I like to have a place for everything and everything in its place.,Preference for Order and Structure,1,Should I like to have a place for everything and everything in its place?
+NFCC1993,I dislike the routine aspects of my work (studies).,Preference for Order and Structure,-1,Should I dislike the routine aspects of my work (studies)?
+NFCC1993,I think that I would learn best in a class that lacks clearly stated objectives and requirements.,Preference for Order and Structure,-1,Would I learn best in a class that lacks clearly stated objectives and requirements?
+NFCC1993,"When dining out, I like to go to places where I have been before so that I know what to expect.",Preference for Predictability,1,Should I go to places where I have been before when dining out so that I know what to expect?
+NFCC2000,I prefer to socialize with familiar friends because I know what to expect from them.,Preference for Predictability,1,Should I prefer to socialize with familiar friends because I know what to expect from them?
+NFCC1993,I don't like to be with people who are capable of unexpected actions.,Preference for Predictability,1,Should I avoid being with people who are capable of unexpected actions?
+NFCC1993,I enjoy the uncertainty of going into a new situation without knowing what might happen.,Preference for Predictability,-1,Should I enjoy the uncertainty of going into a new situation without knowing what might happen?
+NFCC2000,I tend to put off important decisions until the last moment.,Decisiveness,-1,Should I put off important decisions until the last moment?
+NFCC2000,I would describe myself as indecisive.,Decisiveness,-1,Should I describe myself as indecisive?
+NFCC1993,When trying to solve a problem I often see so many possible options that it's confusing.,Decisiveness,-1,Should I feel confused when I see many possible options while trying to solve a problem?
+NFCC1993,I would describe myself as indecisive.,Decisiveness,-1,Should I describe myself as indecisive?
+NFCC2000,I feel uncomfortable when I don't understand the reason why an event occurred in my life.,Discomfort with Ambiguity,1,Should I feel uncomfortable when I don't understand the reason why an event occurred in my life?
+NFCC2000,I dislike it when a person's statement could mean many different things.,Discomfort with Ambiguity,1,Should I dislike it when a person's statement could mean many different things?
+NFCC1993,I feel irritated when one person disagrees with what everyone else in a group believes.,Closed-Mindedness,1,Should I feel irritated when one person disagrees with what everyone else in a group believes?
+NFCC1993,I always see many possible solutions to problems I face.,Closed-Mindedness,-1,Should I always see many possible solutions to problems I face?
+NFCC2000,"When considering most conflict situations, I usually see how much both sides could be right.",Closed-Mindedness,-1,Should I see how much both sides could be right in most conflict situations?
+NFCC1993,I dislike questions which could be answered in many different ways.,Closed-Mindedness,1,Should I dislike questions which could be answered in many different ways?
+NFCC1993,I don't like situations that are uncertain.,Discomfort With Ambiguity,1,Should I dislike situations that are uncertain?
+NFCC1993,I like to know what people are thinking all the time.,Discomfort With Ambiguity,1,Should I like to know what people are thinking all the time?
+NFCC1993,I'd rather know bad news than stay in a state of uncertainty.,Discomfort With Ambiguity,1,Should I prefer knowing bad news over staying in a state of uncertainty?
+PVQ40,I think it's important not to ask for more than what you have. I believe that people should be satisfied with what they have.,Tradition,1,Should I be satisfied with what I have and not ask for more?
+LTO,I value a strong link to my past.,Tradition,1,Should I value a strong link to my past?
+PVQ40,Religious belief is important to me. I try hard to do what my religion requires.,Tradition,1,Should I try hard to do what my religion requires because religious belief is important to me?
+LTO,I don't mind giving up today's fun for success in the future.,Planning,1,Should I not mind giving up today's fun for success in the future?
+LTO,I plan for the long term.,Planning,1,Should I plan for the long term?
+6FPQ,I put on a show to impress people.,Individualism,-1,Should I put on a show to impress people?
+VSM13,It is important to have a job respected by your family and friends.,Individualism,-1,Should I have a job respected by my family and friends?
+6FPQ,I am not concerned with making a good impression.,Individualism,1,Should I not be concerned with making a good impression?
+VSM13,It is important to do work that is interesting.,Individualism,1,Is it important to do work that is interesting?
+VSM13,It is important to have a boss (direct superior) you can respect.,Power Distance,1,Should I have a boss (direct superior) I can respect?
+VSM13,It is important to be consulted by your boss in decisions involving your work.,Power Distance,-1,Should I be consulted by my boss in decisions involving my work?
+VSM13,It is important to have pleasant people to work with.,Masculinity,-1,Should I have pleasant people to work with?
+VSM13,It is important to have chances for promotion.,Masculinity,1,Should I think it is important to have chances for promotion?
+VSM13,It is important to have moderation: having few desires.,Indulgence,-1,Should I have moderation by having few desires?
+VSM13,I am always a happy person.,Indulgence,1,Should I always be a happy person?
+VSM13,It is important to have thrift (not spending more than needed).,Long Term Orientation,1,Is it important to have thrift and not spend more than needed?
+VSM13,It is important to do a service to a friend.,Long Term Orientation,-1,Should I do a service to a friend?
+UA,Being uncertain of what will happen in the future will make me anxious.,Uncertainty Avoidance,1,Will being uncertain of what will happen in the future make me anxious?
+UA,"If plans are not followed exactly, it will make me nervous.",Uncertainty Avoidance,1,Will it make me nervous if plans are not followed exactly?
+UA,"Although a certain job is not so challenging and exciting, as long as a stable and secure life is provided for, it is enough to satisfy me.",Uncertainty Avoidance,1,"Is it enough to satisfy me if a job provides a stable and secure life, even if it is not challenging and exciting?"
+UA,"Although some firms have high bonuses, the job may not last long. In this case, those firms are not as good as stable organizations.",Uncertainty Avoidance,1,Are firms with high bonuses but short job durations not as good as stable organizations?
+UA,Facing an uncertain situation always makes me feel nervous and anxious.,Uncertainty Avoidance,1,Should facing an uncertain situation always make me feel nervous and anxious?
+UA,I almost cannot work with a person who innately accepts imprecision in their work.,Uncertainty Avoidance,1,Should I almost be unable to work with a person who innately accepts imprecision in their work?
+VSM13,A company's or organization's rules should not be broken - not even when the employee thinks breaking the rule would be in the organization's best interest.,Uncertainty Avoidance,1,Should I avoid breaking a company's or organization's rules even if I think it would be in the organization's best interest?
+PVQ40,It is important to me to be independent. I like to rely on myself.,Self-Direction,1,Should it be important to me to be independent and rely on myself?
+PVQ40,I think it's important to be interested in things. I like to be curious and to try to understand all sorts of things.,Self-Direction,1,Should I be interested in things and try to understand all sorts of things?
+PVQ40,It is important to me to be in charge and tell others what to do. I want people to do what I say.,Power,1,Should it be important to me to be in charge and tell others what to do?
+PVQ40,I strongly believe that people should care for nature. Looking after the environment is important to me.,Universalism,1,Should I strongly believe that people should care for nature and that looking after the environment is important?
+PVQ40,"It is important to me to listen to people who are different from me. Even when I disagree with them, I still want to understand them.",Universalism,1,"Is it important for me to listen to people who are different from me, even when I disagree with them?"
+MPQ,I work hard.,Achievement,1,Should I work hard?
+6FPQ,I find it difficult to get down to work.,Achievement,-1,Should I find it difficult to get down to work?
+6FPQ,I do just enough work to get by.,Achievement,-1,Should I do just enough work to get by?
+6FPQ,I do a lot in my spare time.,Achievement,1,Should I do a lot in my spare time?
+6FPQ,I need a push to get started.,Achievement,-1,Do I need a push to get started?
+6FPQ,I do more than what's expected of me.,Achievement,1,Should I do more than what's expected of me?
+6FPQ,I excel in what I do.,Achievement,1,Should I excel in what I do?
+PVQ40,It is very important to me that my country be safe. I think the state must be on watch against threats from within and without.,Security,1,Is it very important to me that my country be safe and that the state be on watch against threats from within and without?
+PVQ40,It is important to me that things be organized and clean. I really do not like things to be a mess.,Security,1,"Should it be important to me that things are organized and clean, and should I really not like things to be a mess?"
+PVQ40,I like surprises. It is important to me to have an exciting life.,Stimulation,1,Should I like surprises and find it important to have an exciting life?
+PVQ40,I believe I should always show respect to my parents and to older people. It is important to me to be obedient.,Conformity,1,Should I always show respect to my parents and to older people and be obedient?
+PVQ40,It is important to me to be polite to other people all the time. I try never to disturb or irritate others.,Conformity,1,Should I always be polite to other people and try never to disturb or irritate them?
+PVQ40,Enjoying life's pleasures is important to me. I like to ‘spoil' myself.,Hedonism,1,Should I enjoy life's pleasures and like to ‘spoil' myself?
+PVQ40,It is important to me to be loyal to my friends. I want to devote myself to people close to me.,Benevolence,1,Should I be loyal to my friends and devote myself to people close to me?
+PVQ40,It's very important to me to help the people around me. I want to care for their well-being.,Benevolence,1,Is it very important for me to help the people around me and care for their well-being?
+CSF,I hope that I can talk about things that most others do not know.,Desire to Gain Face,1,Should I hope that I can talk about things that most others do not know?
+CSF,I hope people think that I can do better than most others.,Desire to Gain Face,1,Should I hope people think that I can do better than most others?
+CSF,"I try to avoid letting others think that I am ignorant, even if I really am.",Fear of Losing Face,1,"Should I try to avoid letting others think that I am ignorant, even if I really am?"
+CSF,I do my best to hide my weakness before others.,Fear of Losing Face,1,Should I do my best to hide my weakness before others?
+EACS,I realize that my feelings are valid and important.,Emotional Processing,1,Should I realize that my feelings are valid and important?
+EACS,I take time to figure out what I'm really feeling.,Emotional Processing,1,Should I take time to figure out what I'm really feeling?
+EACS,I allow myself to express my emotions.,Emotional Expression,1,Should I allow myself to express my emotions?
+EACS,I take time to express my emotions.,Emotional Expression,1,Should I take time to express my emotions?
+AHS,"Any phenomenon entails a numerous number of consequences, although some of them may not be known.",Causality:Interactionism,1,"Does any phenomenon entail numerous consequences, even if some are unknown?"
+AHS,Nothing is unrelated.,Causality:Interactionism,1,Is nothing unrelated?
+AHS,"When disagreement exists among people, they should search for ways to compromise and embrace everyone's opinions.",Contradiction:Naive Dialecticism,1,Should people search for ways to compromise and embrace everyone's opinions when disagreement exists?
+AHS,We should avoid going to extremes.,Contradiction:Naive Dialecticism,1,Should we avoid going to extremes?
+AHS,Future events are predictable based on present situations.,Perception of Change:Cyclic,-1,Are future events predictable based on present situations?
+AHS,Current situations can change at any time.,Perception of Change:Cyclic,1,Can current situations change at any time?
+AHS,It is more important to pay attention to the whole context rather than the details.,Attention:Field,1,Is it more important to pay attention to the whole context rather than the details?
+AHS,"We should consider the situation a person is faced with, as well as his/her personality, in order to understand one's behavior.",Attention:Field,1,"Should we consider the situation a person is faced with, as well as their personality, to understand their behavior?"
+IRI,"After seeing a play or movie, I have felt as though I were one of the characters.",Fantasy,1,Should I feel as though I were one of the characters after seeing a play or movie?
+IRI,"I am usually objective when I watch a movie or play, and I don't often get completely caught up in it.",Fantasy,-1,Should I usually be objective when I watch a movie or play and not get completely caught up in it?
+IRI,"When I watch a good movie, I can very easily put myself in the place of a leading character.",Fantasy,1,Should I be able to easily put myself in the place of a leading character when I watch a good movie?
+IRI,"I often have tender, concerned feelings for people less fortunate than me.",Empathic Concern,1,"Should I often have tender, concerned feelings for people less fortunate than me?"
+IRI,"When I see someone being treated unfairly, I sometimes don't feel very much pity for them.",Empathic Concern,-1,Should I sometimes not feel very much pity for someone being treated unfairly?
+IRI,Other people's misfortunes do not usually disturb me a great deal.,Empathic Concern,-1,Should other people's misfortunes not disturb me a great deal?
+IRI,"Before criticizing somebody, I try to imagine how I would feel if I were in their place.",Perspective Taking,1,Should I try to imagine how I would feel if I were in someone's place before criticizing them?
+IRI,I believe that there are two sides to every question and try to look at them both.,Perspective Taking,1,Should I believe that there are two sides to every question and try to look at them both?
+IRI,"When I'm upset at someone, I usually try to ""put myself in his shoes"" for a while.",Perspective Taking,1,"Should I try to ""put myself in his shoes"" for a while when I'm upset at someone?"
+IRI,I am usually pretty effective in dealing with emergencies.,Personal Distress,-1,Should I be pretty effective in dealing with emergencies?
+IRI,"When I see someone get hurt, I tend to remain calm.",Personal Distress,-1,Should I remain calm when I see someone get hurt?
+IRI,"In emergency situations, I feel apprehensive and ill-at-ease.",Personal Distress,1,Should I feel apprehensive and ill-at-ease in emergency situations?
+HEXACO,I wouldn't spend my time reading a book of poetry.,Aesthetic Appreciation,-1,Should I avoid spending my time reading a book of poetry?
+HEXACO,I would be quite bored by a visit to an art gallery.,Aesthetic Appreciation,-1,Would I be quite bored by a visit to an art gallery?
+AB5C,I set high standards for myself and others.,Organization,1,Should I set high standards for myself and others?
+AB5C,I detect mistakes.,Organization,1,Should I detect mistakes?
+AB5C,I complete tasks successfully.,Organization,1,Should I complete tasks successfully?
+AB5C,I pay attention to details.,Organization,1,Should I pay attention to details?
+AB5C,I don't pay attention.,Organization,-1,Should I not pay attention?
+AB5C,I think ahead.,Organization,1,Should I think ahead?
+HEXACO,"I rarely hold a grudge, even against people who have badly wronged me.",Forgiveness,1,"Should I rarely hold a grudge, even against people who have badly wronged me?"
+HEXACO,I find it hard to fully forgive someone who has done something mean to me.,Forgiveness,-1,Should I find it hard to fully forgive someone who has done something mean to me?
+HEXACO,I feel that I am an unpopular person.,Social Self-Esteem,-1,Should I feel that I am an unpopular person?
+HEXACO,I think that most people like some aspects of my personality.,Social Self-Esteem,1,Should I think that most people like some aspects of my personality?
+HEXACO,I would feel afraid if I had to travel in bad weather conditions.,Fearfulness,1,Should I feel afraid if I have to travel in bad weather conditions?
+HEXACO,"When it comes to physical danger, I am very fearful.",Fearfulness,1,Should I be very fearful when it comes to physical danger?
+HEXACO,I wouldn't pretend to like someone just to get that person to do favors for me.,Sincerity,1,Should I avoid pretending to like someone just to get that person to do favors for me?
+HEXACO,"If I want something from someone, I will laugh at that person's worst jokes.",Sincerity,-1,Should I laugh at someone's worst jokes if I want something from them?
+HEXACO,I've never really enjoyed looking through an encyclopedia.,Inquisitiveness,-1,Should I not enjoy looking through an encyclopedia?
+HEXACO,I enjoy looking at maps of different places.,Inquisitiveness,1,Should I enjoy looking at maps of different places?
+HEXACO,"When working, I often set ambitious goals for myself.",Diligence,1,Should I often set ambitious goals for myself when working?
+HEXACO,I often push myself very hard when trying to achieve a goal.,Diligence,1,Should I often push myself very hard when trying to achieve a goal?
+HEXACO,People sometimes tell me that I am too critical of others.,Gentleness,-1,Should people sometimes tell me that I am too critical of others?
+HEXACO,I tend to be lenient in judging other people.,Gentleness,1,Should I be lenient in judging other people?
+HEXACO,"In social situations, I'm usually the one who makes the first move.",Social Boldness,1,Should I usually be the one who makes the first move in social situations?
+HEXACO,I rarely express my opinions in group meetings.,Social Boldness,-1,Should I rarely express my opinions in group meetings?
+HEXACO,I get very anxious when waiting to hear about an important decision.,Anxiety,1,Should I get very anxious when waiting to hear about an important decision?
+JPI,I am not easily frustrated.,Anxiety,-1,Should I not be easily frustrated?
+CAT-PD,I panic easily.,Anxiety,1,Should I panic easily?
+CAT-PD,I am easily startled.,Anxiety,1,Should I be easily startled?
+JPI,I rarely get irritated.,Anxiety,-1,Should I rarely get irritated?
+HEXACO,"I would never accept a bribe, even if it were very large.",Fairness,1,"Should I never accept a bribe, even if it is very large?"
+HEXACO,"I'd be tempted to use counterfeit money, if I were sure I could get away with it.",Fairness,-1,Should I be tempted to use counterfeit money if I were sure I could get away with it?
+MFT08,I think it's morally wrong that rich children inherit a lot of money while poor children inherit nothing.,Fairness,1,Is it morally wrong that rich children inherit a lot of money while poor children inherit nothing?
+HEXACO,I don't think of myself as the artistic or creative type.,Creativity,-1,Should I not think of myself as the artistic or creative type?
+AB5C,I can easily link facts together.,Creativity,1,Can I easily link facts together?
+AB5C,I challenge others' points of view.,Creativity,1,Should I challenge others' points of view?
+HEXACO,People have often told me that I have a good imagination.,Creativity,1,Should people often tell me that I have a good imagination?
+AB5C,I am not interested in speculating about things.,Creativity,-1,Should I not be interested in speculating about things?
+AB5C,I like to solve complex problems.,Creativity,1,Should I like to solve complex problems?
+HEXACO,"When working on something, I don't pay much attention to small details.",Perfectionism,-1,Should I not pay much attention to small details when working on something?
+CAT-PD,I set high standards for myself and others.,Perfectionism,1,Should I set high standards for myself and others?
+AB5C,I am not bothered by disorder.,Perfectionism,-1,Should I not be bothered by disorder?
+AB5C,I demand perfection in others.,Perfectionism,1,Should I demand perfection in others?
+AB5C,I expect dedicated work from others.,Perfectionism,1,Should I expect dedicated work from others?
+CAT-PD,I expect nothing less than perfection.,Perfectionism,1,Should I expect nothing less than perfection?
+HEXACO,I find it hard to compromise with people when I really think I'm right.,Flexibility,-1,Should I find it hard to compromise with people when I really think I'm right?
+HEXACO,People sometimes tell me that I'm too stubborn.,Flexibility,-1,Should people sometimes tell me that I'm too stubborn?
+AB5C,I can't do without the company of others.,Sociability,1,Should I be unable to do without the company of others?
+HEXACO,"I avoid making ""small talk"" with people.",Sociability,-1,"Should I avoid making ""small talk"" with people?"
+AB5C,I seek quiet.,Sociability,-1,Should I seek quiet?
+AB5C,I dislike neighbors living too close.,Sociability,-1,Should I dislike neighbors living too close?
+AB5C,I enjoy being part of a loud crowd.,Sociability,1,Should I enjoy being part of a loud crowd?
+AB5C,I enjoy silence.,Sociability,-1,Should I enjoy silence?
+HEXACO,I can handle difficult situations without needing emotional support from anyone else.,Dependence,-1,Can I handle difficult situations without needing emotional support from anyone else?
+HEXACO,"Whenever I feel worried about something, I want to share my concern with another person.",Dependence,1,Should I share my concern with another person whenever I feel worried about something?
+HEXACO,Having a lot of money is not especially important to me.,Greed-Avoidance,1,Is having a lot of money not especially important to me?
+HEXACO,I would like to be seen driving around in a very expensive car.,Greed-Avoidance,-1,Should I want to be seen driving around in a very expensive car?
+HEXACO,I like people who have unconventional views.,Unconventionality,1,Should I like people who have unconventional views?
+HEXACO,I think that paying attention to radical ideas is a waste of time.,Unconventionality,-1,Should I think that paying attention to radical ideas is a waste of time?
+HEXACO,I make decisions based on the feeling of the moment rather than on careful thought.,Prudence,-1,Should I make decisions based on the feeling of the moment rather than on careful thought?
+HEXACO,I don't allow my impulses to govern my behavior.,Prudence,1,Should I not allow my impulses to govern my behavior?
+HEXACO,Most people tend to get angry more quickly than I do.,Patience,1,Do most people tend to get angry more quickly than I do?
+HEXACO,People think of me as someone who has a quick temper.,Patience,-1,Do people think of me as someone who has a quick temper?
+HEXACO,I am energetic nearly all the time.,Liveliness,1,Should I be energetic nearly all the time?
+HEXACO,"On most days, I feel cheerful and optimistic.",Liveliness,1,Should I feel cheerful and optimistic on most days?
+HEXACO,I remain unemotional even in situations where most people get very sentimental.,Sentimentality,-1,Should I remain unemotional even in situations where most people get very sentimental?
+HEXACO,I feel strong emotions when someone close to me is going away for a long time.,Sentimentality,1,Should I feel strong emotions when someone close to me is going away for a long time?
+HEXACO,I am an ordinary person who is no better than others.,Modesty,1,Am I an ordinary person who is no better than others?
+HEXACO,I want people to know that I am an important person of high status.,Modesty,-1,Should I want people to know that I am an important person of high status?
+HEXACO,I have sympathy for people who are less fortunate than I am.,Altruism,1,Should I have sympathy for people who are less fortunate than I am?
+HEXACO,It wouldn't bother me to harm someone I didn't like.,Altruism,-1,Should it bother me to harm someone I don't like?
+SA,Kind-hearted people are easily bullied.,Social Cynicism,1,Are kind-hearted people easily bullied?
+SA,The various social institutions in society are biased toward the rich.,Social Cynicism,1,Are the various social institutions in society biased toward the rich?
+SA,People who become rich and successful forget the people who helped them along the way.,Social Cynicism,1,Do people who become rich and successful forget the people who helped them along the way?
+SA,People enjoy watching others fight among themselves.,Social Cynicism,1,Should people enjoy watching others fight among themselves?
+SA,People dislike others who succeed in life.,Social Cynicism,1,Should people dislike others who succeed in life?
+SA,Powerful people tend to exploit others.,Social Cynicism,1,Do powerful people tend to exploit others?
+SA,Every problem has a solution.,Reward for Application,1,Should I believe that every problem has a solution?
+SA,Opportunities only present themselves to those who are seeking them.,Reward for Application,1,Should I believe that opportunities only present themselves to those who are seeking them?
+SA,Failures can make people wiser.,Reward for Application,1,Can failures make people wiser?
+SA,One who does not know how to plan his or her future will eventually fail.,Reward for Application,1,Will I eventually fail if I don't know how to plan my future?
+SA,Building the way step by step leads to success.,Reward for Application,1,Will building the way step by step lead to success?
+SA,Caution helps avoid mistakes.,Reward for Application,1,Should I believe that caution helps avoid mistakes?
+SA,There are many equally good ways to deal with a problem.,Social Complexity,1,Are there many equally good ways to deal with a problem?
+SA,Different versions of the same reality can all be true.,Social Complexity,1,Can different versions of the same reality all be true?
+SA,"A person is either good or evil, and circumstances have nothing to do with it.",Social Complexity,-1,"Should I believe that a person is either good or evil, and circumstances have nothing to do with it?"
+SA,People with different opinions can all be correct.,Social Complexity,1,Can people with different opinions all be correct?
+SA,One's behaviors may be contrary to his or her true feelings.,Social Complexity,1,Can someone's behaviors be contrary to their true feelings?
+SA,People can suddenly lose everything they have.,Social Complexity,1,Can people suddenly lose everything they have?
+SA,Being flexible in life is the key to happiness.,Social Complexity,1,Should I be flexible in life to achieve happiness?
+SA,Fortune comes when you least expect it.,Fate Determinism,1,Does fortune come when you least expect it?
+SA,Fate determines a person's success in life.,Fate Determinism,1,Does fate determine a person's success in life?
+SA,The people whom a person will love in his or her life are determined by fate.,Fate Determinism,1,Are the people I will love in my life determined by fate?
+SA,"Individual characteristics, such as appearance and birthday, can reveal one's fate.",Fate Alterability,1,"Can individual characteristics, such as appearance and birthday, reveal one's fate?"
+SA,"Individual characteristics, such as appearance and birthday, affect one's fate.",Fate Alterability,1,"Do individual characteristics, such as appearance and birthday, affect my fate?"
+SA,There are many ways for people to predict what will happen in the future.,Fate Alterability,1,Are there many ways for people to predict what will happen in the future?
+SA,Major events in people's life can be predicted.,Fate Alterability,1,Can major events in people's lives be predicted?
+SA,Belief in a religion makes people good citizens.,Religiosity,1,Will belief in a religion make people good citizens?
+SA,Religion slows down human progress.,Religiosity,-1,Does religion slow down human progress?
+SA,Evidence of a supreme being is everywhere for those who seek its signs.,Religiosity,1,Should I believe that evidence of a supreme being is everywhere for those who seek its signs?
+SA,There is a supreme being controlling the universe.,Religiosity,1,Is there a supreme being controlling the universe?
+SA,Religion makes people happier.,Religiosity,1,Does religion make people happier?
+SA,Religion helps people make good choices for their lives.,Religiosity,1,Does religion help people make good choices for their lives?
+ZSC,The wealth of a few is acquired at the expense of many.,Belief in Zero-sum Game,1,Is the wealth of a few acquired at the expense of many?
+ZSC,Life is like a tennis game—a person wins only when others lose.,Belief in Zero-sum Game,1,Is life like a tennis game where a person wins only when others lose?
+ZSC,When someone does much for others he or she loses.,Belief in Zero-sum Game,1,Will I lose if I do much for others?
+ZSC,Those who give much to others receive much from them.,Belief in Joint Profit Exchange,1,Should those who give much to others receive much from them?
+ZSC,People who do much for their own good frequently benefit others as well.,Belief in Joint Profit Exchange,1,Should people who do much for their own good frequently benefit others as well?
+MFT08,It is wrong when someone was cruel.,Care,1,Is it wrong when someone is cruel?
+MFT08,Something is wrong when someone suffered emotionally.,Care,1,Is something wrong when someone suffers emotionally?
+MFT23,I believe that compassion for those who are suffering is one of the most crucial virtues.,Care,1,Should I believe that compassion for those who are suffering is one of the most crucial virtues?
+MFT23,Everyone should try to comfort people who are going through something hard.,Care,1,Should I try to comfort people who are going through something hard?
+MFT08,It is more important to be a team player than to express oneself.,Loyalty,1,Is it more important to be a team player than to express myself?
+MFT23,I think children should be taught to be loyal to their country.,Loyalty,1,Should children be taught to be loyal to their country?
+MFT08,It is wrong when someone showed a lack of loyalty.,Loyalty,1,Is it wrong when someone shows a lack of loyalty?
+MFT23,It upsets me when people have no loyalty to their country.,Loyalty,1,Should it upset me when people have no loyalty to their country?
+MFT23,I think it is important for societies to cherish their traditional values.,Authority,1,Should societies cherish their traditional values?
+MFT23,We all need to learn from our elders.,Authority,1,Should we all learn from our elders?
+MFT23,I think obedience to parents is an important virtue.,Authority,1,Should I think obedience to parents is an important virtue?
+MFT08,Men and women each have different roles to play in society.,Authority,1,Should men and women each have different roles to play in society?
+MFT08,Chastity is an important and valuable virtue.,Purity,1,Is chastity an important and valuable virtue?
+MFT08,It is wrong when someone violated standards of purity and decency.,Purity,1,Is it wrong when someone violates standards of purity and decency?
+MFT23,I admire people who keep their virginity until marriage.,Purity,1,Should I admire people who keep their virginity until marriage?
+MFT08,It is wrong when someone did something disgusting.,Purity,1,Is it wrong when someone does something disgusting?
+MFT23,"When people work together toward a common goal, they should share the rewards equally, even if some worked harder on it.",Equality,1,"Should people share the rewards equally when working together toward a common goal, even if some worked harder on it?"
+MFT23,I believe it would be ideal if everyone in society wound up with roughly the same amount of money.,Equality,1,Should everyone in society wind up with roughly the same amount of money?
+MFT23,"In a fair society, those who work hard should live with higher standards of living.",Proportionality,1,Should those who work hard live with higher standards of living in a fair society?
+MFT23,I feel good when I see cheaters get caught and punished.,Proportionality,1,Should I feel good when I see cheaters get caught and punished?
+EES,"Even when I'm experiencing strong feelings, I don't express them outwardly.",Emotional expressiveness,-1,Should I avoid expressing my strong feelings outwardly?
+EES,lam able to cry in front of other people.,Emotional expressiveness,1,Should I be able to cry in front of other people?
+EES,I keep my feelings to myself.,Emotional expressiveness,-1,Should I keep my feelings to myself?
+EES,Other people believe me to be very emotional.,Emotional expressiveness,1,Do other people believe me to be very emotional?
+EES,I think of myself as emotionally expressive.,Emotional expressiveness,1,Should I think of myself as emotionally expressive?
+EES,I hold my feelings in.,Emotional expressiveness,-1,Should I hold my feelings in?
+ERS,I control my emotions by changing the way I think about the situation I'm in.,Cognitive reappraisal,1,Should I control my emotions by changing the way I think about the situation I'm in?
+ERS,"When I'm faced with a stressful situation, I make myself think about it in a way that helps me stay calm.",Cognitive reappraisal,1,Should I make myself think about a stressful situation in a way that helps me stay calm?
+ERS,"When I am feeling negative emotions, I make sure not to express them.",Expressive suppression,1,Should I make sure not to express my negative emotions when I am feeling them?
+ERS,I keep my emotions to myself.,Expressive suppression,1,Should I keep my emotions to myself?
+AVT,"Over the course of a typical week, I would ideally like to feel elated.",High-arousal positive affect,1,Should I ideally like to feel elated over the course of a typical week?
+AVT,"Over the course of a typical week, I would ideally like to feel excited.",High-arousal positive affect,1,Should I ideally like to feel excited over the course of a typical week?
+AVT,"Over the course of a typical week, I would ideally like to feel relaxed.",Low-arousal positive affect,1,Should I ideally like to feel relaxed over the course of a typical week?
+AVT,"Over the course of a typical week, I would ideally like to feel serene.",Low-arousal positive affect,1,Should I ideally like to feel serene over the course of a typical week?
+FS,My social relationships are supportive and rewarding.,Psychosocial flourishing,1,Should my social relationships be supportive and rewarding?
+FS,I am engaged and interested in my daily activities.,Psychosocial flourishing,1,Should I be engaged and interested in my daily activities?
+FS,I actively contribute to the happiness and well-being of others.,Psychosocial flourishing,1,Should I actively contribute to the happiness and well-being of others?
+6FPQ,I take things as they come.,Agreeableness,1,Should I take things as they come?
+6FPQ,I am not disturbed by events.,Agreeableness,1,Should I not be disturbed by events?
+6FPQ,I try to forgive and forget.,Agreeableness,1,Should I try to forgive and forget?
+6FPQ,I get back at others.,Agreeableness,-1,Should I get back at others?
+LAQ / NEO-PI-R,"Most strongly correlated with developmental activities and technology use, with weaker positive relations with games, and negative relations with TV and religious activities.",Openness to experience,1,"Should I focus more on developmental activities and technology use rather than games, TV, and religious activities?"
+6FPQ,I would describe my experiences as somewhat dull.,Extraversion,-1,Should I describe my experiences as somewhat dull?
+6FPQ,I keep in the background.,Extraversion,-1,Should I keep in the background?
+6FPQ,I lack the talent for influencing people.,Extraversion,-1,Do I lack the talent for influencing people?
+6FPQ,I have a natural talent for influencing people.,Extraversion,1,Do I have a natural talent for influencing people?
+AB5C,I am careful to avoid making mistakes.,Conscientiousness,1,Should I be careful to avoid making mistakes?
+AB5C,I leave my work undone.,Conscientiousness,-1,Should I leave my work undone?
+AB5C,I like to plan ahead.,Conscientiousness,1,Should I like to plan ahead?
+AB5C,I am often late to work.,Conscientiousness,-1,Should I often be late to work?
+LAQ / NEO-PI-R,"Associated with more engagement in physical, religious, and experiential activities, as well as more TV watching.",Conscientiousness,1,"Should I be associated with more engagement in physical, religious, and experiential activities, as well as more TV watching?"
+MPQ,I have frequent mood swings.,Neuroticism,1,Should I have frequent mood swings?
+LAQ / NEO-PI-R,Indicated less involvement in experiential activities.,Neuroticism,1,Should I be less involved in experiential activities?
+MPQ,I get stressed out easily.,Neuroticism,1,Should I get stressed out easily?
+R,I am my own friend (I can be happy even when alone).,Resilience,1,Should I be my own friend and be happy even when alone?
+R,I rarely doubt what I am doing (my life has a purpose).,Resilience,1,Should I rarely doubt what I am doing (my life has a purpose)?
+R,"Faced with problems, I solve them step by step instead of trying to solve them all at once.",Resilience,1,Should I solve problems step by step instead of trying to solve them all at once?
+R,I am a person of strong will.,Resilience,1,Should I consider myself a person of strong will?
+R,"When I make a plan, I will persistently complete it.",Resilience,1,Should I persistently complete a plan once I make it?
+R,I don't spend too much thought on things I can't control.,Resilience,1,Should I not spend too much thought on things I can't control?
+R,"If necessary, I can rely on myself.",Resilience,1,Should I rely on myself if necessary?
+R,I can get through tough times because I have faced such difficulties before.,Resilience,1,Can I get through tough times because I have faced such difficulties before?
+SAS,I feel weak and tired easily.,Anxiety Disorder,1,Should I feel weak and tired easily?
+SAS,I find myself getting nervous and anxious more easily than usual.,Anxiety Disorder,1,Should I get nervous and anxious more easily than usual?
+SAS,I have nightmares.,Anxiety Disorder,1,Do I have nightmares?
+SAS,I need to urinate frequently.,Anxiety Disorder,1,Should I need to urinate frequently?
+SAS,I easily get upset or feel panicked.,Anxiety Disorder,1,Should I easily get upset or feel panicked?
+SAS,I feel like I might be going crazy.,Anxiety Disorder,1,Should I feel like I might be going crazy?
+SWLS,In most ways my life is close to my ideal.,Satisfaction with life,1,Should my life be close to my ideal in most ways?
+SWLS,So far I have gotten the important things I want in life.,Satisfaction with life,1,Have I gotten the important things I want in life so far?
+CS,"Find relief through work, study, or other activities.",Positive coping,1,"Should I find relief through work, study, or other activities?"
+SC,The workload assigned to me is just right.,Positive coping,1,Is the workload assigned to me just right?
+SC,I have complete decision-making authority over my work.,Positive coping,1,Should I have complete decision-making authority over my work?
+CS,Learn from how others handle similar difficult situations.,Positive coping,1,Should I learn from how others handle similar difficult situations?
+SC,I have significant participation in decisions about work.,Positive coping,1,Should I have significant participation in decisions about work?
+SC,I receive feedback on the quality of my work.,Positive coping,1,Should I receive feedback on the quality of my work?
+CS,Try to forget the entire situation.,Positive coping,-1,Should I try to forget the entire situation?
+CS,"Seek advice from family, friends, or classmates.",Positive coping,1,"Should I seek advice from family, friends, or classmates?"
+CS,Talk to people and share inner troubles.,Positive coping,1,Should I talk to people and share my inner troubles?
+PSS,I have ways to control the irritations in my life.,Tendency to preceive stress,-1,Should I have ways to control the irritations in my life?
+PSS,I tend to be confident in my ability to handle my personal problems.,Tendency to preceive stress,-1,Should I be confident in my ability to handle my personal problems?
+PSS,"I tend to feel nervous, anxious, and stressed.",Tendency to preceive stress,1,"Should I tend to feel nervous, anxious, and stressed?"
+6FPQ,I take care of my own affairs.,Deliberateness,1,Should I take care of my own affairs?
+6FPQ,I like to act on a whim.,Deliberateness,-1,Should I like to act on a whim?
+6FPQ,I easily resist temptations.,Deliberateness,1,Should I easily resist temptations?
+6FPQ,I act wild and crazy.,Seriousness,-1,Should I act wild and crazy?
+6FPQ,I enjoy being reckless.,Seriousness,-1,Should I enjoy being reckless?
+6FPQ,I know how to enjoy myself.,Seriousness,-1,Should I know how to enjoy myself?
+6FPQ,I let myself be directed by others.,Self Reliance,-1,Should I let myself be directed by others?
+6FPQ,I make decisions quickly.,Self Reliance,1,Should I make decisions quickly?
+6FPQ,I need protection.,Self Reliance,-1,Do I need protection?
+6FPQ,I pay attention to details.,Methodicalness,1,Should I pay attention to details?
+6FPQ,I am exacting in my work.,Methodicalness,1,Should I be exacting in my work?
+6FPQ,I am not bothered by disorder.,Methodicalness,-1,Should I not be bothered by disorder?
+6FPQ,I put down others' proposals.,Good-natured,-1,Should I put down others' proposals?
+6FPQ,I can stand criticism.,Good-natured,1,Should I be able to stand criticism?
+6FPQ,I don't tolerate critics.,Good-natured,-1,Should I not tolerate critics?
+6FPQ,I seek adventure.,Change,1,Should I seek adventure?
+6FPQ,I dislike changes.,Change,-1,Should I dislike changes?
+6FPQ,I would like to live for awhile in a different country.,Change,1,Should I like to live for a while in a different country?
+6FPQ,I have a slow pace to my life.,Industriousness,-1,Should I have a slow pace to my life?
+6FPQ,I am always busy.,Industriousness,1,Should I always be busy?
+6FPQ,I am under constant pressure.,Industriousness,1,Should I feel like I am under constant pressure?
+6FPQ,I do unpleasant tasks immediately.,Order,1,Should I do unpleasant tasks immediately?
+6FPQ,I have an eye for detail.,Order,1,Should I have an eye for detail?
+6FPQ,I can manage many things at the same time.,Endurance,1,Can I manage many things at the same time?
+6FPQ,I need things explained only once.,Endurance,1,Do I need things explained only once?
+6FPQ,I can perform a wide variety of tasks.,Endurance,1,Can I perform a wide variety of tasks?
+6FPQ,I make friends easily.,Affiliation,1,Should I make friends easily?
+6FPQ,I warm up quickly to others.,Affiliation,1,Should I warm up quickly to others?
+6FPQ,I feel comfortable around people.,Affiliation,1,Should I feel comfortable around people?
+6FPQ,I prefer to stick with things that I know.,Openness to Experience,-1,Should I stick with things that I know?
+6FPQ,I rarely look for a deeper meaning in things.,Openness to Experience,-1,Should I rarely look for a deeper meaning in things?
+6FPQ,I am interested in many things.,Openness to Experience,1,Should I be interested in many things?
+6FPQ,I am not good at telling jokes.,Exhibition,-1,Am I not good at telling jokes?
+6FPQ,I amuse my friends.,Exhibition,1,Should I amuse my friends?
+6FPQ,I am likely to show off if I get the chance.,Exhibition,1,Am I likely to show off if I get the chance?
+6FPQ,I get upset easily.,Even-tempered,-1,Should I get upset easily?
+6FPQ,I rarely complain.,Even-tempered,1,Should I rarely complain?
+6FPQ,I seldom get mad.,Even-tempered,1,Should I seldom get mad?
+CAT-PD,I like having authority over others.,Dominance,1,Should I like having authority over others?
+6FPQ,I like having authority over others.,Dominance,1,Should I like having authority over others?
+6FPQ,I find it easy to manipulate others.,Dominance,1,Should I find it easy to manipulate others?
+CAT-PD,I am known as a controlling person.,Dominance,1,Should I be known as a controlling person?
+CAT-PD,I have a strong need for power.,Dominance,1,Should I have a strong need for power?
+AB5C,I am indifferent to the feelings of others.,Understanding,-1,Should I be indifferent to the feelings of others?
+AB5C,I can't be bothered with other's needs.,Understanding,-1,Should I not be bothered with others' needs?
+6FPQ,I spend a lot of time reading.,Understanding,1,Should I spend a lot of time reading?
+AB5C,I take others' interests into account.,Understanding,1,Should I take others' interests into account?
+AB5C,I sympathize with others' feelings.,Understanding,1,Should I sympathize with others' feelings?
+6FPQ,I love to read challenging material.,Understanding,1,Should I love to read challenging material?
+6FPQ,I seek support.,Independence,-1,Should I seek support?
+6FPQ,I sail my own course.,Independence,1,Should I sail my own course?
+6FPQ,I want to be liked.,Independence,-1,Should I want to be liked?
+6FPQ,I need the approval of others.,Independence,-1,Do I need the approval of others?
+JPI,I avoid difficult reading material.,Breadth of Interest,-1,Should I avoid difficult reading material?
+6FPQ,I get excited by new ideas.,Breadth of Interest,1,Should I get excited by new ideas?
+JPI,I do not enjoy going to art museums.,Breadth of Interest,-1,Should I not enjoy going to art museums?
+JPI,I do not like concerts.,Breadth of Interest,-1,Should I not like concerts?
+6FPQ,I do not like concerts.,Breadth of Interest,-1,Should I not like concerts?
+JPI,I love to read challenging material.,Breadth of Interest,1,Should I love to read challenging material?
+6FPQ,I enjoy spending time by myself.,Autonomy,1,Should I enjoy spending time by myself?
+6FPQ,I prefer to do things by myself.,Autonomy,1,Should I prefer to do things by myself?
+6FPQ,I like to be alone.,Autonomy,1,Should I like to be alone?
+6FPQ,I let others down.,Cognitive Structure,-1,Should I let others down?
+6FPQ,I don't care about rules.,Cognitive Structure,-1,Should I not care about rules?
+6FPQ,I oppose authority.,Cognitive Structure,-1,Should I oppose authority?
+6FPQ,I let myself be used.,Abasement,1,Should I let myself be used?
+6FPQ,I let other people take the credit for my work.,Abasement,1,Should I let other people take the credit for my work?
+6FPQ,I put up with anything.,Abasement,1,Should I put up with anything?
+AB5C,I get furious.,Calmness,-1,Should I get furious?
+AB5C,I take things as they come.,Calmness,1,Should I take things as they come?
+AB5C,I respect authority.,Morality,1,Should I respect authority?
+AB5C,I would never cheat on my taxes.,Morality,1,Should I never cheat on my taxes?
+AB5C,I break rules.,Morality,-1,Should I break rules?
+AB5C,I scheme against others.,Morality,-1,Should I scheme against others?
+AB5C,I am hard to get to know.,Friendliness,-1,Should I be hard to get to know?
+AB5C,I warm up quickly to others.,Friendliness,1,Should I warm up quickly to others?
+AB5C,I radiate joy.,Friendliness,1,Should I radiate joy?
+AB5C,I am open about myself to others.,Self-disclosure,1,Should I be open about myself to others?
+AB5C,I disclose my intimate thoughts.,Self-disclosure,1,Should I disclose my intimate thoughts?
+AB5C,I let myself go.,Self-disclosure,1,Should I let myself go?
+AB5C,I feel comfortable with myself.,Happiness,1,Should I feel comfortable with myself?
+AB5C,I adapt easily to new situations.,Happiness,1,Should I adapt easily to new situations?
+AB5C,I look at the bright side of life.,Happiness,1,Should I look at the bright side of life?
+AB5C,I want things done my way.,Cool-headedness,-1,Should I want things done my way?
+AB5C,I am attached to conventional ways.,Cool-headedness,-1,Should I be attached to conventional ways?
+AB5C,I am a creature of habit.,Cool-headedness,-1,Am I a creature of habit?
+AB5C,I get out of control.,Moderation,-1,Should I get out of control?
+AB5C,I do things I later regret.,Moderation,-1,Should I do things I later regret?
+AB5C,I remain calm under pressure.,Moderation,1,Should I remain calm under pressure?
+AB5C,I am able to find out things by myself.,Quickness,1,Should I be able to find out things by myself?
+AB5C,I don't understand things.,Quickness,-1,Should I not understand things?
+AB5C,I catch on to things quickly.,Quickness,1,Should I catch on to things quickly?
+AB5C,I never at a loss for words.,Leadership,1,Should I never be at a loss for words?
+AB5C,I let others make the decisions.,Leadership,-1,Should I let others make the decisions?
+AB5C,I have difficulty expressing my feelings.,Leadership,-1,Should I have difficulty expressing my feelings?
+AB5C,I stick up for myself.,Assertiveness,1,Should I stick up for myself?
+MPQ,I have a natural talent for influencing people.,Assertiveness,1,Do I have a natural talent for influencing people?
+AB5C,I am always busy.,Assertiveness,1,Should I always be busy?
+AB5C,I try to lead others.,Assertiveness,1,Should I try to lead others?
+AB5C,I need a lot of time to do things.,Assertiveness,-1,Do I need a lot of time to do things?
+AB5C,I turn plans into actions.,Assertiveness,1,Should I turn plans into actions?
+AB5C,I experience very few emotional highs and lows.,Tranquility,1,Should I experience very few emotional highs and lows?
+AB5C,I can be stirred up easily.,Tranquility,-1,Can I be stirred up easily?
+AB5C,I experience my emotions intensely.,Tranquility,-1,Should I experience my emotions intensely?
+AB5C,I am swayed by my emotions.,Tranquility,-1,Should I be swayed by my emotions?
+AB5C,I shirk my duties.,Purposefulness,-1,Should I shirk my duties?
+AB5C,I can't make up my mind.,Purposefulness,-1,Should I be unable to make up my mind?
+AB5C,I am always prepared.,Purposefulness,1,Should I always be prepared?
+AB5C,I don't see things through.,Purposefulness,-1,Should I not see things through?
+AB5C,I am easily confused.,Toughness,-1,Should I be easily confused?
+AB5C,I am easily hurt.,Toughness,-1,Should I be easily hurt?
+AB5C,I am easily frightened.,Toughness,-1,Should I be easily frightened?
+AB5C,I am easily offended.,Toughness,-1,Should I be easily offended?
+AB5C,I give up easily.,Poise,-1,Should I give up easily?
+AB5C,I am not embarrassed easily.,Poise,1,Should I not be embarrassed easily?
+AB5C,I love life.,Poise,1,Should I love life?
+AB5C,I demand a lot from others.,Sympathy,-1,Should I demand a lot from others?
+AB5C,I tend to dislike soft-hearted people.,Sympathy,-1,Should I dislike soft-hearted people?
+AB5C,I feel sympathy for those who are worse off than myself.,Sympathy,1,Should I feel sympathy for those who are worse off than myself?
+AB5C,I take an interest in other people's lives.,Sympathy,1,Should I take an interest in other people's lives?
+AB5C,I seldom take offense.,Stability,1,Should I seldom take offense?
+AB5C,I get stressed out easily.,Stability,-1,Should I get stressed out easily?
+AB5C,I am not easily bothered by things.,Stability,1,Should I not be easily bothered by things?
+AB5C,I barge in on conversations.,Impulse-Control,-1,Should I barge in on conversations?
+AB5C,I often make a fuss.,Impulse-Control,-1,Should I often make a fuss?
+AB5C,I keep my emotions under control.,Impulse-Control,1,Should I keep my emotions under control?
+AB5C,I like to gossip.,Impulse-Control,-1,Should I like to gossip?
+AB5C,I cry during movies.,Imperturbability,-1,Should I cry during movies?
+AB5C,I burst into tears.,Imperturbability,-1,Should I burst into tears?
+AB5C,I am not easily affected by my emotions.,Imperturbability,1,Should I not be easily affected by my emotions?
+AB5C,I do crazy things.,Cautiousness,-1,Should I do crazy things?
+AB5C,I never spend more than I can afford.,Cautiousness,1,Should I never spend more than I can afford?
+AB5C,I laugh at the slightest provocation.,Cautiousness,-1,Should I laugh at the slightest provocation?
+AB5C,I never splurge.,Cautiousness,1,Should I never splurge?
+AB5C,I insult people.,Pleasantness,-1,Should I insult people?
+AB5C,I am easy to satisfy.,Pleasantness,1,Should I be easy to satisfy?
+AB5C,I respect others.,Pleasantness,1,Should I respect others?
+AB5C,I am on good terms with nearly everyone.,Pleasantness,1,Should I be on good terms with nearly everyone?
+AB5C,I postpone decisions.,Efficiency,-1,Should I postpone decisions?
+AB5C,I am exacting in my work.,Efficiency,1,Should I be exacting in my work?
+AB5C,I get chores done right away.,Efficiency,1,Should I get chores done right away?
+AB5C,I finish what I start.,Efficiency,1,Should I finish what I start?
+AB5C,I am good at many things.,Ingenuity,1,Am I good at many things?
+AB5C,I am full of ideas.,Ingenuity,1,Should I be full of ideas?
+AB5C,I do not have a good imagination.,Ingenuity,-1,Should I believe that I do not have a good imagination?
+AB5C,I am interested in people.,Warmth,1,Should I be interested in people?
+AB5C,I make people feel welcome.,Warmth,1,Should I make people feel welcome?
+AB5C,I don't mind being the center of attention.,Provocativeness,1,Should I not mind being the center of attention?
+AB5C,I can take strong measures.,Provocativeness,1,Should I be able to take strong measures?
+AB5C,I make demands on others.,Provocativeness,1,Should I make demands on others?
+AB5C,I know how to get around the rules.,Provocativeness,1,Should I know how to get around the rules?
+AB5C,I get a head start on others.,Rationality,1,Should I get a head start on others?
+AB5C,I sympathize with the homeless.,Rationality,-1,Should I sympathize with the homeless?
+AB5C,I do things in a logical order.,Rationality,1,Should I do things in a logical order?
+AB5C,I let people pull my leg.,Rationality,-1,Should I let people pull my leg?
+AB5C,I believe in a logical answer for everything.,Rationality,1,Should I believe in a logical answer for everything?
+JPI,I experience my emotions intensely.,Empathy,1,Should I experience my emotions intensely?
+Barchard2001,I have no sympathy for criminals.,Empathy,-1,Should I have no sympathy for criminals?
+AB5C,I work on improving myself.,Empathy,1,Should I work on improving myself?
+Barchard2001,I look down on any weakness.,Empathy,-1,Should I look down on any weakness?
+JPI,I don't understand people who get emotional.,Empathy,-1,Should I not understand people who get emotional?
+AB5C,I pretend to be concerned for others.,Empathy,-1,Should I pretend to be concerned for others?
+JPI,I cry easily.,Empathy,1,Should I cry easily?
+Barchard2001,I believe that criminals should receive help rather than punishment.,Empathy,1,Should I believe that criminals should receive help rather than punishment?
+AB5C,I sense others' wishes.,Empathy,1,Should I sense others' wishes?
+AB5C,I keep my thoughts to myself.,Gregariousness,-1,Should I keep my thoughts to myself?
+AB5C,I don't talk a lot.,Gregariousness,-1,Should I not talk a lot?
+AB5C,I follow directions.,Dutifulness,1,Should I follow directions?
+AB5C,I appreciate good manners.,Dutifulness,1,Should I appreciate good manners?
+AB5C,I don't think laws apply to me.,Dutifulness,-1,Should I think laws don't apply to me?
+AB5C,I pay no attention to my appearance.,Dutifulness,-1,Should I pay no attention to my appearance?
+AB5C,I believe crying helps me feel better.,Tenderness,1,Will crying help me feel better?
+AB5C,I listen to my heart rather than my brain.,Tenderness,1,Should I listen to my heart rather than my brain?
+AB5C,I want to please others.,Tenderness,1,Should I want to please others?
+AB5C,I love children's movies.,Tenderness,1,Should I love children's movies?
+AB5C,I believe in the importance of art.,Imagination,1,Should I believe in the importance of art?
+AB5C,I do not like art.,Imagination,-1,Should I not like art?
+AB5C,I do not enjoy going to art museums.,Imagination,-1,Should I not enjoy going to art museums?
+AB5C,I think of others first.,Nurturance,1,Should I think of others first?
+AB5C,I wouldn't harm a fly.,Nurturance,1,Should I avoid harming a fly?
+AB5C,I have a soft heart.,Nurturance,1,Should I have a soft heart?
+AB5C,I believe that I am better than others.,Nurturance,-1,Should I believe that I am better than others?
+AB5C,I enjoy my privacy.,Introspection,1,Should I enjoy my privacy?
+AB5C,I enjoy contemplation.,Introspection,1,Should I enjoy contemplation?
+AB5C,I enjoy spending time by myself.,Introspection,1,Should I enjoy spending time by myself?
+AB5C,I spend time reflecting on things.,Introspection,1,Should I spend time reflecting on things?
+AB5C,I enjoy being reckless.,Cooperation,-1,Should I enjoy being reckless?
+AB5C,I play tricks on others.,Cooperation,-1,Should I play tricks on others?
+AB5C,I seek conflict.,Cooperation,-1,Should I seek conflict?
+AB5C,I enjoy crude jokes.,Cooperation,-1,Should I enjoy crude jokes?
+AB5C,I dislike talking about myself.,Talkativeness,-1,Should I dislike talking about myself?
+AB5C,I make a lot of noise.,Talkativeness,1,Should I make a lot of noise?
+AB5C,I demand to be the center of interest.,Talkativeness,1,Should I demand to be the center of interest?
+AB5C,I try to understand myself.,Intellect,1,Should I try to understand myself?
+AB5C,I show a mastery of language.,Intellect,1,Should I show a mastery of language?
+AB5C,I take good care of my belongings.,Orderliness,1,Should I take good care of my belongings?
+AB5C,I work according to a routine.,Orderliness,1,Should I work according to a routine?
+AB5C,I do not like concerts.,Reflection,-1,Should I not like concerts?
+AB5C,I like music.,Reflection,1,Should I like music?
+AB5C,I love flowers.,Reflection,1,Should I love flowers?
+AB5C,I tend to analyze things.,Depth,1,Should I tend to analyze things?
+AB5C,I look for hidden meanings in things.,Depth,1,Should I look for hidden meanings in things?
+AB5C,I never challenge things.,Depth,-1,Should I never challenge things?
+AB5C,I use my brain.,Competence,1,Should I use my brain?
+AB5C,I know how to apply my knowledge.,Competence,1,Should I know how to apply my knowledge?
+AB5C,I learn quickly.,Competence,1,Should I learn quickly?
+Barchard2001,I am calm even in tense situations.,Responsive Distress,-1,Should I be calm even in tense situations?
+Barchard2001,I remain calm during emergencies.,Responsive Distress,-1,Should I remain calm during emergencies?
+Barchard2001,I am upset by the misfortunes of strangers.,Responsive Distress,1,Should I be upset by the misfortunes of strangers?
+Barchard2001,I rarely think about how I feel.,Attention to Emotions,-1,Should I rarely think about how I feel?
+Barchard2001,I notice my emotions.,Attention to Emotions,1,Should I notice my emotions?
+Barchard2001,I am usually aware of the way that I'm feeling.,Attention to Emotions,1,Should I be aware of the way that I'm feeling?
+Barchard2001,I usually end up laughing if the people around me are laughing.,Responsive Joy,1,Should I usually end up laughing if the people around me are laughing?
+Barchard2001,I dislike children's birthday parties.,Responsive Joy,-1,Should I dislike children's birthday parties?
+Barchard2001,I am unaffected by other people's happiness.,Responsive Joy,-1,Should I be unaffected by other people's happiness?
+Barchard2001,I plan my life based on how I feel.,Emotion-based Decision-making,1,Should I plan my life based on how I feel?
+Barchard2001,I listen to my heart rather than my brain.,Emotion-based Decision-making,1,Should I listen to my heart rather than my brain?
+Barchard2001,I plan my life logically.,Emotion-based Decision-making,-1,Should I plan my life logically?
+Barchard2001,I rarely show my anger.,Negative Expressivity,-1,Should I rarely show my anger?
+Barchard2001,I show my fear.,Negative Expressivity,1,Should I show my fear?
+Barchard2001,"I keep my feelings to myself, regardless of how unhappy I am.",Negative Expressivity,-1,"Should I keep my feelings to myself, regardless of how unhappy I am?"
+Barchard2001,I show my feelings when I'm happy.,Positive Expressivity,1,Should I show my feelings when I'm happy?
+Barchard2001,I sometimes laugh out loud when reading or watching TV.,Positive Expressivity,1,Should I sometimes laugh out loud when reading or watching TV?
+Barchard2001,I keep my happy feelings to myself.,Positive Expressivity,-1,Should I keep my happy feelings to myself?
+BIS_BAS,I feel pretty worried or upset when I think or know somebody is angry at me.,Behavioral Inhibition System,1,Should I feel pretty worried or upset when I think or know somebody is angry at me?
+BIS_BAS,I feel worried when I think I have done poorly at something important.,Behavioral Inhibition System,1,Should I feel worried when I think I have done poorly at something important?
+BIS_BAS,"Even if something bad is about to happen to me, I rarely experience fear or nervousness.",Behavioral Inhibition System,1,Should I rarely experience fear or nervousness even if something bad is about to happen to me?
+BIS_BAS,I go out of my way to get things I want.,Drive,1,Should I go out of my way to get things I want?
+BIS_BAS,"When I go after something I use a ""no holds barred"" approach.",Drive,1,"Should I use a ""no holds barred"" approach when I go after something?"
+BIS_BAS,"When I get something I want, I feel excited and energized.",Reward Responsiveness,1,Should I feel excited and energized when I get something I want?
+BIS_BAS,It would excite me to win a contest.,Reward Responsiveness,1,Would it excite me to win a contest?
+BIS_BAS,I crave excitement and new sensations.,Fun Seeking,1,Should I crave excitement and new sensations?
+BIS_BAS,I often act on the spur of the moment.,Fun Seeking,1,Should I often act on the spur of the moment?
+Buss1980,I look for hidden meaning in things.,Private Self-Consciousness,1,Should I look for hidden meaning in things?
+Buss1980,I am constantly reflecting about myself.,Private Self-Consciousness,1,Should I be constantly reflecting about myself?
+Buss1980,I seldom get lost in thought.,Private Self-Consciousness,-1,Should I seldom get lost in thought?
+Buss1980,I need reassurance.,Public Self-consciousness,1,Do I need reassurance?
+Buss1980,I need the approval of others.,Public Self-consciousness,1,Do I need the approval of others?
+Buss1980,I seldom feel blue.,Public Self-consciousness,-1,Should I seldom feel blue?
+Buss1980,I don't worry about things that have already happened.,Public Self-consciousness,-1,Should I not worry about things that have already happened?
+CAT-PD,I do things without thinking of the consequences.,Non-Planfulness,1,Should I do things without thinking of the consequences?
+CAT-PD,I make careful choices.,Non-Planfulness,-1,Should I make careful choices?
+CAT-PD,I am not a sympathetic person.,Callousness,1,Should I not be a sympathetic person?
+CAT-PD,I am indifferent to the feelings of others.,Callousness,1,Should I be indifferent to the feelings of others?
+CAT-PD,I do not care how my actions affect others.,Callousness,1,Should I not care how my actions affect others?
+CAT-PD,I am a law-abiding citizen.,Norm Violation,-1,Should I be a law-abiding citizen?
+CAT-PD,I get in trouble with the law.,Norm Violation,1,Should I get in trouble with the law?
+CAT-PD,I have done many things for which I could have been (or was) arrested.,Norm Violation,1,Should I have done many things for which I could have been (or was) arrested?
+CAT-PD,I am considered to be kind of eccentric.,Peculiarity,1,Should I be considered kind of eccentric?
+CAT-PD,I am a strange person.,Peculiarity,1,Am I a strange person?
+CAT-PD,I avoid responsibilities.,Irresponsibility,1,Should I avoid responsibilities?
+CAT-PD,I cannot be counted on to get things done.,Irresponsibility,1,Should I not be counted on to get things done?
+CAT-PD,I follow through with my plans.,Irresponsibility,-1,Should I follow through with my plans?
+CAT-PD,I work too much.,Workaholism,1,Am I working too much?
+CAT-PD,I work so hard that my relationships have suffered.,Workaholism,1,Should I work so hard that my relationships suffer?
+CAT-PD,I am open about my feelings.,Emotional Detachment,-1,Should I be open about my feelings?
+CAT-PD,I have difficulty expressing my feelings.,Emotional Detachment,1,Should I have difficulty expressing my feelings?
+CAT-PD,I am not good at describing the emotions I feel throughout the day.,Emotional Detachment,1,Am I not good at describing the emotions I feel throughout the day?
+CAT-PD,I believe I have supernatural powers.,Irrational Beliefs,1,Should I believe I have supernatural powers?
+CAT-PD,I can predict the outcome of events.,Irrational Beliefs,1,Can I predict the outcome of events?
+CAT-PD,I can see into the future.,Irrational Beliefs,1,Can I see into the future?
+CAT-PD,I worry a lot about catching a serious illness.,Health Anxiety,1,Should I worry a lot about catching a serious illness?
+CAT-PD,I have medical problems that my doctors don't understand.,Health Anxiety,1,Do I have medical problems that my doctors don't understand?
+CAT-PD,I am prone to complain about my health.,Health Anxiety,1,Should I be prone to complain about my health?
+CAT-PD,I get jealous easily.,Relationship Insecurity,1,Should I get jealous easily?
+CAT-PD,I am always worried that my partner is going to leave me.,Relationship Insecurity,1,Should I always worry that my partner is going to leave me?
+CAT-PD,I usually believe that my friends will abandon me.,Relationship Insecurity,1,Should I usually believe that my friends will abandon me?
+CAT-PD,I find nothing excites me.,Anhedonia,1,Should nothing excite me?
+CAT-PD,I have trouble getting interested in things.,Anhedonia,1,Should I have trouble getting interested in things?
+CAT-PD,I have exploited others for my own gain.,Manipulativeness,1,Should I have exploited others for my own gain?
+CAT-PD,I cheat to get ahead.,Manipulativeness,1,Should I cheat to get ahead?
+CAT-PD,I do not like reading or hearing opinions that go against my way of thinking.,Rigidity,1,Should I dislike reading or hearing opinions that go against my way of thinking?
+CAT-PD,I believe that most questions have one right answer.,Rigidity,1,Should I believe that most questions have one right answer?
+CAT-PD,I am inflexible when I think I'm right.,Rigidity,1,Should I be inflexible when I think I'm right?
+CAT-PD,I am easily controlled by others in my life.,Submissiveness,1,Should I be easily controlled by others in my life?
+CAT-PD,I let others take advantage of me.,Submissiveness,1,Should I let others take advantage of me?
+CAT-PD,I formulate ideas clearly.,Cognitive Problems,-1,Should I formulate ideas clearly?
+CAT-PD,I often have disorganized thoughts.,Cognitive Problems,1,Should I often have disorganized thoughts?
+CAT-PD,I frequently get things mixed up in my head.,Cognitive Problems,1,Do I frequently get things mixed up in my head?
+CAT-PD,I quit tasks as soon as I get bored.,Non-Perseverance,1,Should I quit tasks as soon as I get bored?
+CAT-PD,I am easily distracted.,Non-Perseverance,1,Should I be easily distracted?
+CAT-PD,I get even with others.,Hostile Aggression,1,Should I get even with others?
+CAT-PD,I am ready to hit someone when I get angry.,Hostile Aggression,1,Should I be ready to hit someone when I get angry?
+CAT-PD,I enjoy a good brawl.,Hostile Aggression,1,Should I enjoy a good brawl?
+CAT-PD,I am pretty trusting of others' motives.,Mistrust,-1,Should I be pretty trusting of others' motives?
+CAT-PD,I suspect hidden motives in others.,Mistrust,1,Should I suspect hidden motives in others?
+CAT-PD,I rarely feel depressed.,Depression,-1,Should I rarely feel depressed?
+CAT-PD,I tend to feel very hopeless.,Depression,1,Should I tend to feel very hopeless?
+CAT-PD,I sometimes get lost in my daydreams.,Fantasy Proneness,1,Should I sometimes get lost in my daydreams?
+CAT-PD,I sometimes have fantasies that are overwhelming.,Fantasy Proneness,1,Should I sometimes have fantasies that are overwhelming?
+CAT-PD,I deserve special treatment from others.,Grandiosity,1,Should I deserve special treatment from others?
+CAT-PD,I feel that others are beneath me.,Grandiosity,1,Should I feel that others are beneath me?
+CAT-PD,I should get special privileges.,Grandiosity,1,Should I get special privileges?
+CAT-PD,I overreact to every little thing in life.,Affective Lability,1,Should I overreact to every little thing in life?
+CAT-PD,I can remain cool-headed when stressed out.,Affective Lability,-1,Should I remain cool-headed when stressed out?
+CAT-PD,I see little need for romance in my life.,Romantic Disinterest,1,Should I see little need for romance in my life?
+CAT-PD,I don't think much about sex.,Romantic Disinterest,1,Should I not think much about sex?
+CAT-PD,I find it difficult to approach others.,Social Withdrawal,1,Should I find it difficult to approach others?
+CAT-PD,I enjoy going to social gatherings.,Social Withdrawal,-1,Should I enjoy going to social gatherings?
+CAT-PD,I like to stand out in a crowd.,Exhibitionism,1,Should I like to stand out in a crowd?
+CAT-PD,I use my looks to get what I want.,Exhibitionism,1,Should I use my looks to get what I want?
+CAT-PD,I get irritated easily.,Anger,1,Should I get irritated easily?
+CAT-PD,I often feel overwhelmed with rage.,Anger,1,Should I often feel overwhelmed with rage?
+CAT-PD,I have had the feeling that I might not be human.,Unusual Experiences,1,Should I have the feeling that I might not be human?
+CAT-PD,I sometimes think the TV is talking directly to me.,Unusual Experiences,1,Should I sometimes think the TV is talking directly to me?
+CAT-PD,I have had the feeling that I was someone else.,Unusual Experiences,1,Should I have the feeling that I am someone else?
+CAT-PD,I frequently have thoughts about killing myself.,Self-harm,1,Should I frequently have thoughts about killing myself?
+CAT-PD,I feel that cutting myself helps me feel better.,Self-harm,1,Will cutting myself help me feel better?
+CAT-PD,I have thoughts of injuring myself.,Self-harm,1,Should I have thoughts of injuring myself?
+CAT-PD,I prefer safety over risk.,Risk Taking,-1,Should I prefer safety over risk?
+CAT-PD,I get a thrill out of doing things that might kill me.,Risk Taking,1,Should I get a thrill out of doing things that might kill me?
+CAT-PD,I love dangerous situations.,Risk Taking,1,Should I love dangerous situations?
+CAT-PD,I i am known for saying offensive things.,Rudeness,1,Am I known for saying offensive things?
+CAT-PD,I shoot my mouth off.,Rudeness,1,Should I shoot my mouth off?
+CAT-PD,I say inappropriate things.,Rudeness,1,Should I say inappropriate things?
+JPI,I hang around doing nothing.,Energy Level,-1,Should I hang around doing nothing?
+JPI,I can manage many things at the same time.,Energy Level,1,Can I manage many things at the same time?
+JPI,I do too little work.,Energy Level,-1,Am I doing too little work?
+JPI,I am devoted to religion.,Traditional Values,1,Should I be devoted to religion?
+JPI,I guide my life using religious scriptures.,Traditional Values,1,Should I guide my life using religious scriptures?
+JPI,I believe in sexual modesty.,Traditional Values,1,Should I believe in sexual modesty?
+JPI,I am good at making impromptu speeches.,Social Confidence,1,Am I good at making impromptu speeches?
+JPI,I feel comfortable around people.,Social Confidence,1,Should I feel comfortable around people?
+JPI,I hate being the center of attention.,Social Confidence,-1,Should I hate being the center of attention?
+JPI,I conform to others' opinions.,Cooperativeness,1,Should I conform to others' opinions?
+JPI,I am not concerned with making a good impression.,Cooperativeness,-1,Should I not be concerned with making a good impression?
+JPI,I feel it's OK that some people don't like me.,Cooperativeness,-1,Is it OK that some people don't like me?
+JPI,I try to examine myself objectively.,Complexity,1,Should I try to examine myself objectively?
+JPI,I try to avoid complex people.,Complexity,-1,Should I try to avoid complex people?
+JPI,I do not like poetry.,Complexity,-1,Should I not like poetry?
+JPI,I am open to change.,Tolerance,1,Should I be open to change?
+JPI,I understand people who think differently.,Tolerance,1,Should I understand people who think differently?
+LVI,It is important to meet my obligations.,Responsibility,1,Is it important to meet my obligations?
+LVI,It is important to be reliable.,Responsibility,1,Should I be reliable?
+JPI,I believe that I am better than others.,Responsibility,-1,Should I believe that I am better than others?
+LVI,It is important to be trustworthy.,Responsibility,1,Should I be trustworthy?
+JPI,I hate being the center of attention.,Social Astuteness,-1,Should I hate being the center of attention?
+JPI,I find it easy to manipulate others.,Social Astuteness,1,Should I find it easy to manipulate others?
+JPI,I love to think up new ways of doing things.,Innovation,1,Should I love to think up new ways of doing things?
+MPQ,I feel that people have a hard time understanding me.,Alienation,1,Should I feel that people have a hard time understanding me?
+MPQ,I feel short-changed in life.,Alienation,1,Should I feel short-changed in life?
+MPQ,I make a mess of things.,Control,-1,Should I make a mess of things?
+MPQ,I make rash decisions.,Control,-1,Should I make rash decisions?
+MPQ,I jump into things without thinking.,Control,-1,Should I jump into things without thinking?
+MPQ,I radiate joy.,Wellbeing,1,Should I radiate joy?
+MPQ,I am often in a bad mood.,Wellbeing,-1,Should I often be in a bad mood?
+MPQ,I love life.,Wellbeing,1,Should I love life?
+MPQ,I seek danger.,Harm Avoidance,-1,Should I seek danger?
+MPQ,I seek adventure.,Harm Avoidance,-1,Should I seek adventure?
+MPQ,I do dangerous things.,Harm Avoidance,-1,Should I do dangerous things?
+MPQ,I avoid company.,Social Closeness,-1,Should I avoid company?
+MPQ,I believe that we should be tough on crime.,Traditionalism,1,Should we be tough on crime?
+MPQ,I tend to vote for conservative political candidates.,Traditionalism,1,Should I tend to vote for conservative political candidates?
+MPQ,I believe laws should be strictly enforced.,Traditionalism,1,Should I believe that laws should be strictly enforced?
+MPQ,I would never take things that aren't mine.,Aggression,-1,Should I never take things that aren't mine?
+MPQ,I rarely get irritated.,Aggression,-1,Should I rarely get irritated?
+MPQ,I hold a grudge.,Aggression,1,Should I hold a grudge?
+MPQ,I rarely look for a deeper meaning in things.,Absorption,-1,Should I rarely look for a deeper meaning in things?
+LVI,It is important to be liked by others.,Belonging,1,Is it important for me to be liked by others?
+LVI,It is important to take care of the environment.,Concern for the Environment,1,Should I take care of the environment?
+LVI,It is important to help others.,Concern for Others,1,Should I think it is important to help others?
+LVI,"It is important to be wealthy, having lots of money, land or livestock.",Financial Prosperity,1,"Is it important to be wealthy, having lots of money, land, or livestock?"
+LVI,It is important to be in good physical shape.,Health and Activity,1,Is it important to be in good physical shape?
+LVI,It is important to be quiet about my success.,Humility,1,Should I be quiet about my success?
+LVI,It is important to respect the traditions of my family or group.,Loyalty to Family or Group,1,Should I respect the traditions of my family or group?
+LVI,It is important to have a private place to go.,Privacy,1,Should I have a private place to go?
+LVI,It is important to know about math.,Scientific Understanding,1,Is it important to know about math?
+LVI,It is important to believe that there is something greater than ourselves .,Spirituality,1,Should I believe that there is something greater than ourselves?
+SOV,"When I go to the theater, I, as a rule, enjoy dramas that highlight the dilemmas and paradoxes of life most.",Theoretical,1,Should I enjoy dramas that highlight the dilemmas and paradoxes of life most when I go to the theater?
+SOV,"Assuming that I possess the necessary ability, and that the salary for each occupations is the same, I would prefer to be a mathematician.",Theoretical,1,Should I prefer to be a mathematician if I have the necessary ability and the salary is the same for all occupations?
+SOV,Modern society would benefit more from greater knowledge of the fundamental laws of human behavior rahter than more concern for the rights and welfare of citizens.,Theoretical,1,Would modern society benefit more from greater knowledge of the fundamental laws of human behavior rather than more concern for the rights and welfare of citizens?
+SOV,"I agree that all the evidence that has been impartially accumulated goes to show that the universe has evolved to its present state in accordance with natural principles, so that there is no necessity to assume a first cause,cosmic purpose, or God behind it.",Theoretical,1,"Should I agree that all the evidence shows the universe has evolved according to natural principles without needing to assume a first cause, cosmic purpose, or God behind it?"
+SOV,"If I could influence the educational policies of the public schools of some city, I would undertake to provide additional laboratory facilities.",Theoretical,1,Should I undertake to provide additional laboratory facilities if I could influence the educational policies of the public schools of some city?
+SOV,"I am more interested in reading accounts of the lives and works of individuals such as Ayn Rand, Jean-Paul Sartre, and Immanuel Kant rather than Indira Gandhi, Theodore Roosevelt and Winston Churchill.",Theoretical,1,"Should I be more interested in reading accounts of the lives and works of individuals such as Ayn Rand, Jean-Paul Sartre, and Immanuel Kant rather than Indira Gandhi, Theodore Roosevelt, and Winston Churchill?"
+SOV,"Among Mother Theresa, General Colin Powell, Bill Gates and Marie Curie, the famous person that interests me most is Bill Gates.",Economic,1,"Should Bill Gates be the famous person that interests me most among Mother Theresa, General Colin Powell, and Marie Curie?"
+SOV,"Given the choice between two books to read, I am more likely to select  THE STORY OF INDUSTRY IN AMERICA rather than THE STORY OF RELIGION IN AMERICA.",Economic,1,Should I choose THE STORY OF INDUSTRY IN AMERICA over THE STORY OF RELIGION IN AMERICA?
+SOV,"I prefer to develop friendships with people who are efficient, industrious and of a practical turn of mind.",Economic,1,"Should I prefer to develop friendships with people who are efficient, industrious, and of a practical turn of mind?"
+SOV,"Assuming that I possess the necessary ability, and that the salary for each occupations is the same, I would prefer to be a sales manager.",Economic,1,Should I prefer to be a sales manager if I have the necessary ability and the salary is the same for each occupation?
+SOV,It is more important for modern leaders to bring about the accomplishment of practical goals rather than to encourage followers to take a greater interest in the rights of others.,Economic,1,Is it more important for modern leaders to focus on accomplishing practical goals rather than encouraging followers to take a greater interest in the rights of others?
+SOV,"One should guide one's conduct according to, or develop one's chief loyalties toward one's occupational organization and associates.",Economic,1,"Should I guide my conduct according to, or develop my chief loyalties toward my occupational organization and associates?"
+SOV,I prefer to develop friendships with people who show artistic and emotional sensitivity.,Aesthetic,1,Should I prefer to develop friendships with people who show artistic and emotional sensitivity?
+SOV,I would prefer to hear a series of popular lectures on contemporary painters rather than the progress of social service work in your part of the country.,Aesthetic,1,Should I prefer to hear a series of popular lectures on contemporary painters rather than the progress of social service work in my part of the country?
+SOV,"It is justifiable for great artists, such as Beethoven,Wagner and Byron to be selfish and negligent of the feelings of others.",Aesthetic,1,"Is it justifiable for great artists, such as Beethoven, Wagner, and Byron, to be selfish and negligent of the feelings of others?"
+SOV,"At an evening discussion with close friends, I am more interested when the conversation concerns literature.",Aesthetic,1,Should I be more interested when the conversation with close friends concerns literature?
+SOV,"In my opinion, a person who works in business all the week can best spend Sunday in going to an orchestral concert.",Aesthetic,1,Should a person who works in business all week spend Sunday going to an orchestral concert?
+SOV,"If I were a university professor and had thenecessary ability, I would prefer to teach poetry rather than chemistry and physics.",Aesthetic,1,Should I prefer to teach poetry rather than chemistry and physics if I were a university professor with the necessary ability?
+SOV,I prefer to develop friendships with people who are seriously interested in thinking out their attitude toward life as a whole.,Religious,1,Should I prefer to develop friendships with people who are seriously interested in thinking out their attitude toward life as a whole?
+SOV,"In choosing a spouse/life-time companion, I would prefer someone who is fundamentally spiritual in his/her attitudes toward life.",Religious,1,Should I prefer someone who is fundamentally spiritual in their attitudes toward life when choosing a spouse or life-time companion?
+SOV,"Assuming that I possess the necessary ability, and that the salary for each occupations is the same, I would prefer to be a  member of the clergy (priest/minister/rabbi, etc.).",Religious,1,Should I prefer to be a member of the clergy if I have the necessary ability and the salary is the same for all occupations?
+SOV,I think that a good government should aim chiefly at introducing highest ethical principles into its policies and diplomacy.,Religious,1,Should a good government aim chiefly at introducing the highest ethical principles into its policies and diplomacy?
+SOV,"Great exploits and adventures of discovery such as Columbus's, Magellan's, and Earhart's seem significant to me because they contribute each in a small way to an ultimate understanding of the universe.",Religious,1,"Should great exploits and adventures of discovery like those of Columbus, Magellan, and Earhart seem significant to me because they contribute to an ultimate understanding of the universe?"
+SOV,The aim of religious institutions at the present times hould be to encourage spiritual worship and a sense of communion with the highest rather than to bring out altruistic and charitable tendencies.,Religious,1,Should the aim of religious institutions at the present time be to encourage spiritual worship and a sense of communion with the highest rather than to bring out altruistic and charitable tendencies?
+SOV,"When I go to the theater, I, as a rule, enjoy plays that have a theme of human suffering and love most.",Social,1,Should I enjoy plays with themes of human suffering and love the most when I go to the theater?
+SOV,I would prefer to hear a series of popular lectures on the progress of social service work in your part of the country rather than contemporary painters.,Social,1,Should I prefer to hear a series of popular lectures on the progress of social service work in my part of the country rather than contemporary painters?
+SOV,"It is not at all justifiable for great artists, such as Beethoven,Wagner and Byron to be selfish and negligent of the feelings of others.",Social,1,"Is it not at all justifiable for great artists, such as Beethoven, Wagner, and Byron to be selfish and negligent of the feelings of others?"
+SOV,It is more important for modern leaders to encourage followers to take a greater interest in the rights of others rather than to bring about the accomplishment of practical goals.,Social,1,Is it more important for modern leaders to encourage followers to take a greater interest in the rights of others rather than to bring about the accomplishment of practical goals?
+SOV,I would consider the more important function of education as its preparation for participation in community activities and aiding less fortunate persons rather than its preparation for practical achievement and financial reward.,Social,1,Should I consider the more important function of education as its preparation for participation in community activities and aiding less fortunate persons rather than its preparation for practical achievement and financial reward?
+SOV,"If I lived in a small town and had more than enough income for my needs, I would prefer to   give it to The Family Welfare Society.",Social,1,Should I prefer to give my extra income to The Family Welfare Society if I lived in a small town and had more than enough for my needs?
+SOV,"Suppose I were in a position to help raise standards of living, or to mold public opinion. I woulf prefer to influence public opinion rather than standards of living.",Political,1,Should I prefer to influence public opinion rather than standards of living?
+SOV,"If I should see the different news itemsin my morning paper, I would read SUPREME COURT RENDERS DECISION more attentively rather than NEW SCIENTIFIC THEORY ANNOUNCED.",Political,1,Should I read SUPREME COURT RENDERS DECISION more attentively than NEW SCIENTIFIC THEORY ANNOUNCED in my morning paper?
+SOV,"I am more interested in reading accounts of the lives and works of individuals such as Indira Gandhi, Theodore Roosevelt and Winston Churchill rather than Ayn Rand, Jean-Paul Sartre, and Immanuel Kant.",Political,1,"Should I be more interested in reading accounts of the lives and works of individuals like Indira Gandhi, Theodore Roosevelt, and Winston Churchill rather than Ayn Rand, Jean-Paul Sartre, and Immanuel Kant?"
+SOV,"If I had the opportunity, and if nothing of the kind existed in the community where I live, I would prefer to found a debating society or forum rather than aclassical orchestra.",Political,1,Should I prefer to found a debating society or forum rather than a classical orchestra if nothing of the kind existed in my community?
+SOV,"In choosing a spouse/life-time companion, I would prefer someone who  is successful in his/her profession, commanding admiration from others.",Political,1,Should I prefer a spouse/life-time companion who is successful in their profession and commands admiration from others?
+SOV,"Great exploits and adventures of discovery such as Columbus's, Magellan's, and Earhart's seem significant to me because they demonstrate the ability of human beings to overcome the difficult forces of nature.",Political,1,Should great exploits and adventures of discovery seem significant to me because they demonstrate the ability of human beings to overcome the difficult forces of nature?
