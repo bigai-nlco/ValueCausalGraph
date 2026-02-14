@@ -81,6 +81,7 @@ mamba = ["mamba-lens"]
 [tool.isort]
 profile = "black"
 src_paths = ["sae_lens", "tests"]
+skip = ["value_data"]
 
 [tool.pyright]
 typeCheckingMode = "strict"
@@ -99,6 +100,23 @@ reportPrivateImportUsage = "none"
 ignore = [
     "**/wandb/**"
 ]
+exclude = ["value_data"]
+
+[tool.black]
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | value_data
+)/
+'''
 
 [build-system]
 requires = ["poetry-core"]
