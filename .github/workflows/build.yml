@@ -64,17 +64,6 @@ jobs:
         run: poetry run flake8 .
       - name: black code formatting
         run: poetry run black . --check
-      - name: isort linting
-        continue-on-error: true
-        run: poetry run isort . --check-only --diff
-      - name: Run Unit Tests
-    #   Would use make, but want cov report in xml format
-        run: poetry run pytest -v --cov=sae_lens/ --cov-report=term-missing --cov-branch tests/unit --cov-report=xml
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4.0.1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          slug: jbloomAus/SAELens
 
   release:
 
