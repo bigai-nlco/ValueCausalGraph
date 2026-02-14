@@ -1,7 +1,9 @@
-import os
 import json
+import os
+
 from safetensors.torch import load_file, save_file
 from tqdm import tqdm
+
 from sae_lens.config import LOCAL_SAE_MODEL_PATH
 
 # base_dir = '/data02/tuwenming/SAE/Pretrained_SAEs/sae-llama-3-8b-32x-v2/layers.{}/'

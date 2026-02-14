@@ -25,56 +25,49 @@ except:
     ipython.run_line_magic("load_ext", "autoreload")
     ipython.run_line_magic("autoreload", "2")
 
+import ast
+import json
+import math
+
 # Standard imports
 import os
-import plotly.express as px
-import pandas as pd
-import json
-import numpy as np
-import math
-import pandas as pd
 import random
 import shutil
-import networkx as nx
-import ast
-
 from collections import Counter
 from functools import partial
-from tqdm import tqdm
-from faker import Faker
 
+import networkx as nx
+import numpy as np
+import pandas as pd
+import plotly.express as px
 import torch
+from faker import Faker
+from tqdm import tqdm
 
 torch.set_grad_enabled(False)
-from openai import AzureOpenAI
-from datasets import load_dataset
-from transformers import (
-    AutoModelForCausalLM,
-    AutoTokenizer,
-    pipeline,
-    BitsAndBytesConfig,
-)
-
 import transformer_lens
-from transformer_lens import utils
-from transformer_lens import HookedTransformer
-from transformer_lens.utils import tokenize_and_concatenate
-
-from sae_lens import SAE
-from sae_lens.config import DTYPE_MAP, LOCAL_SAE_MODEL_PATH
-from sae_lens.analysis.neuronpedia_integration import get_neuronpedia_quick_list
-
-from sae_vis.data_config_classes import SaeVisConfig
-from sae_vis.data_storing_fns import SaeVisData
-
 from causallearn.search.ConstraintBased.FCI import fci
 from causallearn.search.ConstraintBased.PC import pc
 from causallearn.search.ScoreBased.ExactSearch import bic_exact_search
-from causallearn.utils.cit import kci
+from causallearn.utils.cit import fisherz, kci
 from causallearn.utils.GraphUtils import GraphUtils
 from causallearn.utils.PCUtils.BackgroundKnowledge import BackgroundKnowledge
-from causallearn.utils.cit import fisherz
+from datasets import load_dataset
+from openai import AzureOpenAI
+from sae_vis.data_config_classes import SaeVisConfig
+from sae_vis.data_storing_fns import SaeVisData
+from transformer_lens import HookedTransformer, utils
+from transformer_lens.utils import tokenize_and_concatenate
+from transformers import (
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    BitsAndBytesConfig,
+    pipeline,
+)
 
+from sae_lens import SAE
+from sae_lens.analysis.neuronpedia_integration import get_neuronpedia_quick_list
+from sae_lens.config import DTYPE_MAP, LOCAL_SAE_MODEL_PATH
 
 # In[2]:
 

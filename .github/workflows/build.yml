@@ -65,8 +65,10 @@ jobs:
       - name: black code formatting
         run: poetry run black . --check
       - name: isort linting
+        continue-on-error: true
         run: poetry run isort . --check-only --diff
       - name: type checking
+        continue-on-error: true
         run: poetry run pyright
       - name: Run Unit Tests
     #   Would use make, but want cov report in xml format

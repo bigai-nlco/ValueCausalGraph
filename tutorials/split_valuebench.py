@@ -7,10 +7,12 @@
 # The split is based on the value column
 
 
-import pandas as pd
-import numpy as np
 import os
 import random
+
+import numpy as np
+import pandas as pd
+
 from sae_lens.config import DTYPE_MAP, LOCAL_SAE_MODEL_PATH
 
 df_valuebench = pd.read_csv(

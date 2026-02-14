@@ -1,14 +1,16 @@
-from sae_lens import SAE
-from transformer_lens import HookedTransformer
-import torch
 import os
-from sae_lens.config import LOCAL_SAE_MODEL_PATH
+
+import torch
+from transformer_lens import HookedTransformer
 from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
-    pipeline,
     BitsAndBytesConfig,
+    pipeline,
 )
+
+from sae_lens import SAE
+from sae_lens.config import LOCAL_SAE_MODEL_PATH
 
 device = "cuda"
 model_base_dir = LOCAL_SAE_MODEL_PATH + "/meta-llama/Meta-Llama-3-8B-Instruct/"
