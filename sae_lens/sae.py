@@ -3,7 +3,6 @@ https://github.com/ArthurConmy/sae/blob/main/sae/model.py
 """
 
 import json
-import os
 import warnings
 from dataclasses import dataclass, field
 from typing import Any, Callable, Literal, Optional, Tuple, TypeVar, Union, overload
