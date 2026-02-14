@@ -3,6 +3,7 @@ https://github.com/ArthurConmy/sae/blob/main/sae/model.py
 """
 
 import json
+import os
 import warnings
 from dataclasses import dataclass, field
 from typing import Any, Callable, Literal, Optional, Tuple, TypeVar, Union, overload
@@ -15,7 +16,7 @@ from safetensors.torch import save_file
 from torch import nn
 from transformer_lens.hook_points import HookedRootModule, HookPoint
 
-from sae_lens.config import DTYPE_MAP
+from sae_lens.config import DTYPE_MAP, LOCAL_SAE_MODEL_PATH
 from sae_lens.toolkit.pretrained_sae_loaders import (
     NAMED_PRETRAINED_SAE_LOADERS,
     handle_config_defaulting,

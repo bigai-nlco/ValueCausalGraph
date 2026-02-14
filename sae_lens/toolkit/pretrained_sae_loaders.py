@@ -1,4 +1,5 @@
 import json
+import os
 import re
 from typing import Any, Dict, Optional, Protocol, Tuple
 
@@ -21,6 +22,61 @@ class PretrainedSaeLoader(Protocol):
         cfg_overrides: dict[str, Any] | None = None,
     ) -> tuple[dict[str, Any], dict[str, torch.Tensor], Optional[torch.Tensor]]: ...
 
+'''
+def sae_lens_loader_oldself(
+    repo_id: str,
+    folder_name: str,
+    local_model_path: str | None = None,
+    device: Optional[str] = None,
+    force_download: bool = False,
+    cfg_overrides: Optional[dict[str, Any]] = None,
+) -> tuple[dict[str, Any], dict[str, torch.Tensor], Optional[torch.Tensor]]:
+    cfg_filename = f"{folder_name}/cfg.json"    
+    if local_model_path:
+        cfg_path = os.path.join(local_model_path, repo_id, cfg_filename)
+    else:
+        cfg_path = hf_hub_download(
+            repo_id=repo_id, filename=cfg_filename, force_download=force_download
+        )
+
+    weights_filename = f"{folder_name}/sae_weights.safetensors"
+    if local_model_path:
+        sae_path = os.path.join(local_model_path, repo_id, weights_filename)
+    else:
+        sae_path = hf_hub_download(
+            repo_id=repo_id, filename=weights_filename, force_download=force_download
+        )
+        
+
+    # TODO: Make this cleaner. I hate try except statements.
+    try:
+        sparsity_filename = f"{folder_name}/sparsity.safetensors"
+        if local_model_path:
+            log_sparsity_path = os.path.join(local_model_path, repo_id, sparsity_filename)
+        else:
+            log_sparsity_path = hf_hub_download(
+                repo_id=repo_id, filename=sparsity_filename, force_download=force_download
+            )
+        if not os.path.exists(log_sparsity_path):
+            log_sparsity_path = None
+    except EntryNotFoundError:
+        log_sparsity_path = None  # no sparsity file
+
+    cfg_dict, state_dict = read_sae_from_disk(
+        cfg_dict=cfg_dict,
+        weight_path=sae_path,
+        device=device,
+    )
+
+    # get sparsity tensor if it exists
+    if log_sparsity_path is not None:
+        with safe_open(log_sparsity_path, framework="pt", device=device) as f:  # type: ignore
+            log_sparsity = f.get_tensor("sparsity")
+    else:
+        log_sparsity = None
+
+    return cfg_dict, state_dict, log_sparsity
+'''
 
 def sae_lens_loader(
     repo_id: str,
